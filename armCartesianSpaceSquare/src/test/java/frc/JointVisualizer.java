@@ -39,20 +39,20 @@ public class JointVisualizer {
        Translation2d t2 = new Translation2d(1.5, 0);
        Translation2d t3 = new Translation2d(1, 0);
        Translation2d t4 = new Translation2d(1, 0.5);
-    //    Trajectory trajectorystart = trajectories.onePoint(t0, t1,90,90);
+       Trajectory trajectorystart = trajectories.onePoint(t0, t1,90,90);
        Trajectory trajectory = trajectories.onePoint(t1, t2,270,270);
        Trajectory trajectory2 = trajectories.onePoint(t2, t3,180,180);
        Trajectory trajectory3 = trajectories.onePoint(t3, t4,90,90);
        Trajectory trajectory4 = trajectories.onePoint(t4, t1,0,0);
        XYSeries series1 = new XYSeries("Joints");
-    //    for (double t = 0; t < trajectorystart.getTotalTimeSeconds(); t += 0.05) {
-    //     Trajectory.State s = trajectorystart.sample(t);
-    //     // note distal is X here
-    //     // TODO: reverse these
-    //     double x1 = s.poseMeters.getY(); // proximal
-    //     double y1 = s.poseMeters.getX(); // distal
-    //     series1.add(x1, y1);
-    // }
+       for (double t = 0; t < trajectorystart.getTotalTimeSeconds(); t += 0.05) {
+        Trajectory.State s = trajectorystart.sample(t);
+        // note distal is X here
+        // TODO: reverse these
+        double x1 = s.poseMeters.getY(); // proximal
+        double y1 = s.poseMeters.getX(); // distal
+        series1.add(x1, y1);
+    }
        for (double t = 0; t < trajectory.getTotalTimeSeconds(); t += 0.05) {
         Trajectory.State s = trajectory.sample(t);
         // note distal is X here
@@ -109,7 +109,7 @@ public class JointVisualizer {
     private static XYSeriesCollection jointToCartesian(XYSeriesCollection data) {
         ArmKinematics k  = new ArmKinematics(1, 1);
         XYSeries joints = data.getSeries(0);
-        XYSeries end = new XYSeries("Cartesian End");
+        XYSeries end = new XYSeries("Arm End");
         int ct = joints.getItemCount();
         for (int i = 0; i < ct; ++i) {
             Number nx = joints.getX(i); // proximal
@@ -137,9 +137,9 @@ public class JointVisualizer {
 
             XYSeriesCollection joints = joints();
             JFreeChart jointChart = ChartFactory.createScatterPlot(
-                    "Trajectory in Joint Space",
-                    "Proximal (Lower)",
-                    "Distal (Upper)",
+                    "Trajectory in Cartesian Space",
+                    "X (Up)",
+                    "Y (Right)",
                     joints);
 
             XYPlot jointXY = (XYPlot) jointChart.getPlot();
@@ -157,9 +157,9 @@ public class JointVisualizer {
 
             XYSeriesCollection cartesian = jointToCartesian(joints);
             JFreeChart cartesianChart = ChartFactory.createScatterPlot(
-                    "Trajectory in Cartesian Space",
-                    "X (forward)",
-                    "Z (up)",
+                    "Trajectory in Joint Space",
+                    "Lower",
+                    "Upper",
                     cartesian);
 
             XYPlot cartesianXY = (XYPlot) cartesianChart.getPlot();
