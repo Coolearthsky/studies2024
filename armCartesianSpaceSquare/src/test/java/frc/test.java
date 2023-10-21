@@ -15,10 +15,8 @@ public class test {
     void testUnreachable() {
         TrajectoryConfig config = new TrajectoryConfig(1, 1);
         ArmTrajectories trajectories = new ArmTrajectories(config);
-        // when you pass an unreachable (null) goal to the trajectory maker ,,,
         ArmAngles t0 = new ArmAngles(0.089803, 1.681915);
         Trajectory trajectory = trajectories.makeTrajectory(t0);
-        // ,,, you get a null trajectory.
         assertNotNull(trajectory);
     }
 

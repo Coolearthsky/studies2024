@@ -17,14 +17,13 @@ public class ArmTrajectories {
     public static class Config {
         // Cone
         public ArmKinematics kinematics = new ArmKinematics(0.93, .92);
-        public ArmAngles t0 = kinematics.inverse(new Translation2d(1, 1));
         public ArmAngles test = kinematics.inverse(new Translation2d(3, 3));
+        public ArmAngles t0 = kinematics.inverse(new Translation2d(1, 1));
         public ArmAngles t1 = kinematics.inverse(new Translation2d(1.1, 1));
         public ArmAngles t2 = kinematics.inverse(new Translation2d(1.1, 1.1));
         public ArmAngles t3 = kinematics.inverse(new Translation2d(1, 1.1));
 
         // Cube
-        // public ArmAngles t4 = new ArmAngles(0.316365, 1.147321);
         public ArmAngles midGoalCube = new ArmAngles(0.089803, 1.681915);
         public ArmAngles lowGoalCube = new ArmAngles(-0.049849, 2.271662);
         public ArmAngles subCube = new ArmAngles(-0.341841, 1.361939);

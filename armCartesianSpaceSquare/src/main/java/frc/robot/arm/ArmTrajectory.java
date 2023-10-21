@@ -64,17 +64,16 @@ public class ArmTrajectory extends CommandBase {
             trajectoryConfig = m_config.normalTrajectory;
             // m_arm.setControlNormal();
         // }
-        System.out.println("INTITIAIAKRIEWIERWRIEWERWI");
+        System.out.println("Initialize");
         m_trajectory = new ArmTrajectories(trajectoryConfig).makeTrajectory(
                 m_robot.getMeasurement());
     }
 
     public void execute() {
         if (m_trajectory == null) {
-            // System.out.println("Null sad");
+            System.out.println("Null");
             return;
         }
-        System.out.println("WEORKKRRKKKKKKKKKKKKKKKKKKKKKKKK");
         ArmAngles measurement = m_robot.getMeasurement();
         double currentUpper = measurement.th2;
         double currentLower = measurement.th1;
