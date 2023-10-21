@@ -2,7 +2,8 @@ package frc.robot.arm;
 
 import frc.robot.Robot;
 import frc.robot.armMotion.ArmAngles;
-
+import frc.robot.armMotion.ArmKinematics;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.Trajectory.State;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
@@ -56,6 +57,7 @@ public class ArmTrajectory extends Command {
     @Override
     public void initialize() {
         m_timer.restart();
+        ArmKinematics kinematics = new ArmKinematics(.93, 0.92);
         final TrajectoryConfig trajectoryConfig;
         // if (m_position == ArmPosition.SAFE) {
         //     trajectoryConfig = m_config.safeTrajectory;
@@ -66,7 +68,7 @@ public class ArmTrajectory extends Command {
         // }
         System.out.println("Initialize");
         m_trajectory = new ArmTrajectories(trajectoryConfig).makeTrajectory(
-                m_robot.getMeasurement());
+            kinematics.forward(m_robot.getMeasurement()));
     }
 
     public void execute() {
@@ -90,9 +92,9 @@ public class ArmTrajectory extends Command {
         //     desiredUpper += oscillator(curTime);
         // }
 
-        ArmAngles reference = new ArmAngles(desiredLower, desiredUpper);
-
-        m_robot.setReference(reference);
+        Translation2d reference = new Translation2d(desiredLower, desiredUpper);
+        ArmKinematics kinematics = new ArmKinematics(.93, 0.92);
+        m_robot.setReference(kinematics.inverse(reference));
 
         measurmentX.set(currentUpper);
         measurmentY.set(currentLower);

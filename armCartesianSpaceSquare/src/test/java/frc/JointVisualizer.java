@@ -29,30 +29,30 @@ public class JointVisualizer {
 
     /** Return a dataset with one series with proximal in x and distal in y */
     private static XYSeriesCollection joints() {
+               ArmKinematics kinematics = new ArmKinematics(1, 1);
         XYSeriesCollection dataset = new XYSeriesCollection();
         TrajectoryConfig config = new TrajectoryConfig(1, 1);
         ArmTrajectories trajectories = new ArmTrajectories(config);
-        ArmAngles t0 = new ArmAngles(-0.639248, 1.838205); // safe
+        Translation2d t0 = kinematics.forward(new ArmAngles(-0.639248, 1.838205)); // safe
        // ArmAngles t0 = new ArmAngles(0.089803, 1.681915); // mid
-       ArmKinematics kinematics = new ArmKinematics(1, 1);
-       ArmAngles t1 = kinematics.inverse(new Translation2d(.5, .5));
-       ArmAngles t2 = kinematics.inverse(new Translation2d(.5, 1));
-       ArmAngles t3 = kinematics.inverse(new Translation2d(1, 1));
-       ArmAngles t4 = kinematics.inverse(new Translation2d(1, .5));
-       Trajectory trajectorystart = trajectories.onePoint(t0, t1,66,95);
-       Trajectory trajectory = trajectories.onePoint(t1, t2,66,95);
-       Trajectory trajectory2 = trajectories.onePoint(t2, t3,205,182);
-       Trajectory trajectory3 = trajectories.onePoint(t3, t4,268,245);
-       Trajectory trajectory4 = trajectories.onePoint(t4, t1,353,23);
+       Translation2d t1 = new Translation2d(1.5, 0.5);
+       Translation2d t2 = new Translation2d(1.5, 0);
+       Translation2d t3 = new Translation2d(1, 0);
+       Translation2d t4 = new Translation2d(1, 0.5);
+    //    Trajectory trajectorystart = trajectories.onePoint(t0, t1,90,90);
+       Trajectory trajectory = trajectories.onePoint(t1, t2,270,270);
+       Trajectory trajectory2 = trajectories.onePoint(t2, t3,180,180);
+       Trajectory trajectory3 = trajectories.onePoint(t3, t4,90,90);
+       Trajectory trajectory4 = trajectories.onePoint(t4, t1,0,0);
        XYSeries series1 = new XYSeries("Joints");
-       for (double t = 0; t < trajectorystart.getTotalTimeSeconds(); t += 0.05) {
-        Trajectory.State s = trajectorystart.sample(t);
-        // note distal is X here
-        // TODO: reverse these
-        double x1 = s.poseMeters.getY(); // proximal
-        double y1 = s.poseMeters.getX(); // distal
-        series1.add(x1, y1);
-    }
+    //    for (double t = 0; t < trajectorystart.getTotalTimeSeconds(); t += 0.05) {
+    //     Trajectory.State s = trajectorystart.sample(t);
+    //     // note distal is X here
+    //     // TODO: reverse these
+    //     double x1 = s.poseMeters.getY(); // proximal
+    //     double y1 = s.poseMeters.getX(); // distal
+    //     series1.add(x1, y1);
+    // }
        for (double t = 0; t < trajectory.getTotalTimeSeconds(); t += 0.05) {
         Trajectory.State s = trajectory.sample(t);
         // note distal is X here
@@ -110,22 +110,18 @@ public class JointVisualizer {
         ArmKinematics k  = new ArmKinematics(1, 1);
         XYSeries joints = data.getSeries(0);
         XYSeries end = new XYSeries("Cartesian End");
-        XYSeries elbow = new XYSeries("Cartesian Elbow");
         int ct = joints.getItemCount();
         for (int i = 0; i < ct; ++i) {
             Number nx = joints.getX(i); // proximal
             Number ny = joints.getY(i); // distal
             double proximal = nx.doubleValue();
             double distal = ny.doubleValue();
-            ArmAngles a = new ArmAngles(proximal, distal);
-            Translation2d c = k.forward(a);
-            end.add(c.getY(), c.getX());
-            Translation2d el = k.elbow(a);
-            elbow.add(el.getY(), el.getX());
+            Translation2d a = new Translation2d(proximal, distal);
+            ArmAngles c = k.inverse(a);
+            end.add(c.th1, c.th2);
         }
         XYSeriesCollection result = new XYSeriesCollection();
         result.addSeries(end);
-        result.addSeries(elbow);
         XYSeries base = new XYSeries("Base");
         base.add(0, 0);
         result.addSeries(base);
