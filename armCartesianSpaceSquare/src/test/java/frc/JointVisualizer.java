@@ -29,7 +29,7 @@ public class JointVisualizer {
 
     /** Return a dataset with one series with proximal in x and distal in y */
     private static XYSeriesCollection joints() {
-               ArmKinematics kinematics = new ArmKinematics(1, 1);
+        ArmKinematics kinematics = new ArmKinematics(.93, .92);
         XYSeriesCollection dataset = new XYSeriesCollection();
         TrajectoryConfig config = new TrajectoryConfig(1, 1);
         ArmTrajectories trajectories = new ArmTrajectories(config);
@@ -39,7 +39,7 @@ public class JointVisualizer {
        Translation2d t2 = new Translation2d(1.5, 0);
        Translation2d t3 = new Translation2d(1, 0);
        Translation2d t4 = new Translation2d(1, 0.5);
-       Trajectory trajectorystart = trajectories.onePoint(t0, t1,90,90);
+       Trajectory trajectorystart = trajectories.onePoint(t0, t1,0,0);
        Trajectory trajectory = trajectories.onePoint(t1, t2,270,270);
        Trajectory trajectory2 = trajectories.onePoint(t2, t3,180,180);
        Trajectory trajectory3 = trajectories.onePoint(t3, t4,90,90);
@@ -106,8 +106,8 @@ public class JointVisualizer {
      * @param data has proximal in x and distal in y
      * 
      */
-    private static XYSeriesCollection jointToCartesian(XYSeriesCollection data) {
-        ArmKinematics k  = new ArmKinematics(1, 1);
+    private static XYSeriesCollection cartesianToJoint(XYSeriesCollection data) {
+        ArmKinematics k  = new ArmKinematics(.93, .92);
         XYSeries joints = data.getSeries(0);
         XYSeries end = new XYSeries("Arm End");
         int ct = joints.getItemCount();
@@ -135,12 +135,12 @@ public class JointVisualizer {
 
             JFrame frame = new JFrame("Chart Collection");
 
-            XYSeriesCollection joints = joints();
+            XYSeriesCollection translation = joints();
             JFreeChart jointChart = ChartFactory.createScatterPlot(
                     "Trajectory in Cartesian Space",
-                    "X (Up)",
-                    "Y (Right)",
-                    joints);
+                    "Y (Up)",
+                    "X (Right)",
+                    translation);
 
             XYPlot jointXY = (XYPlot) jointChart.getPlot();
             jointXY.setBackgroundPaint(Color.WHITE);
@@ -155,7 +155,7 @@ public class JointVisualizer {
             };
             frame.add(jointPanel, BorderLayout.EAST);
 
-            XYSeriesCollection cartesian = jointToCartesian(joints);
+            XYSeriesCollection cartesian = cartesianToJoint(translation);
             JFreeChart cartesianChart = ChartFactory.createScatterPlot(
                     "Trajectory in Joint Space",
                     "Lower",
