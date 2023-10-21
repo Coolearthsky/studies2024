@@ -48,39 +48,30 @@ public class JointVisualizer {
         XYSeries elbow = new XYSeries("Cartesian Elbow");
         for (double t = 0; t < trajectorystart.getTotalTimeSeconds(); t += 0.05) {
             Trajectory.State s = trajectorystart.sample(t);
-            // note distal is X here
             double x1 = s.poseMeters.getX(); // proximal
             double y1 = s.poseMeters.getY(); // distal
             series1.add(x1, y1);
         }
         for (double t = 0; t < trajectory.getTotalTimeSeconds(); t += 0.05) {
             Trajectory.State s = trajectory.sample(t);
-            // note distal is X here
-            // TODO: reverse these
             double x1 = s.poseMeters.getX(); // proximal
             double y1 = s.poseMeters.getY(); // distal
             series1.add(x1, y1);
         }
         for (double t = 0; t < trajectory2.getTotalTimeSeconds(); t += 0.05) {
             Trajectory.State s = trajectory2.sample(t);
-            // note distal is X here
-            // TODO: reverse these
             double x1 = s.poseMeters.getX(); // proximal
             double y1 = s.poseMeters.getY(); // distal
             series1.add(x1, y1);
         }
         for (double t = 0; t < trajectory3.getTotalTimeSeconds(); t += 0.05) {
             Trajectory.State s = trajectory3.sample(t);
-            // note distal is X here
-            // TODO: reverse these
             double x1 = s.poseMeters.getX(); // proximal
             double y1 = s.poseMeters.getY(); // distal
             series1.add(x1, y1);
         }
         for (double t = 0; t < trajectory4.getTotalTimeSeconds(); t += 0.05) {
             Trajectory.State s = trajectory4.sample(t);
-            // note distal is X here
-            // TODO: reverse these
             double x1 = s.poseMeters.getX(); // proximal
             double y1 = s.poseMeters.getY(); // distal
             series1.add(x1, y1);
