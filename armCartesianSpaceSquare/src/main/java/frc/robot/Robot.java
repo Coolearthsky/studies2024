@@ -30,10 +30,10 @@ public class Robot extends TimedRobot {
     public double safeP = 2.5;
     public double safeI = 0;
     public double safeD = 0;
-    public double normalLowerP = 0.6;
+    public double normalLowerP = 1;
     public double normalLowerI = 0;
     public double normalLowerD = 0.1;
-    public double normalUpperP = 4;
+    public double normalUpperP = 3;
     public double normalUpperI = 0.2;
     public double normalUpperD = 0.05;
     public double tolerance = 0.001;
@@ -195,7 +195,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    lowerArmMotor.set(soften(u1));
+    System.out.println(u1);
+    lowerArmMotor.set(u1);
     upperArmMotor.set(u2);
   }
 
@@ -214,11 +215,11 @@ public class Robot extends TimedRobot {
     upperArmMotor.set(0);
     lowerArmMotor.set(0);
     if (controller.getAButton()) {
-    lowerArmMotor.set(.05);}
+    lowerArmMotor.set(.1);}
     if (controller.getBButton()) {
     upperArmMotor.set(.1);}
     if (controller.getXButton()) {
-    lowerArmMotor.set(-.05);}
+    lowerArmMotor.set(-.1);}
     if (controller.getYButton()) {
     upperArmMotor.set(-.1);}
   }

@@ -44,11 +44,11 @@ public class ArmTrajectories {
     }
 
     public Trajectory makeTrajectory(ArmAngles start) {
-        if (start == null) // unreachable
+        if (start == null)
             return null;
         if (m_config.t0 != null && m_config.t1 != null && m_config.t2 != null && m_config.t3 != null) {
             System.out.println(start.th1 + " " +  start.th2);
-            return onePoint(start, m_config.highGoalCube, 90);
+            return twoPoint(start, m_config.t0,m_config.t1, 90,90);
         } else {
             System.out.println("ERROR");
             return null;
@@ -56,34 +56,29 @@ public class ArmTrajectories {
     }
 
     /** from current location to an endpoint */
-    public Trajectory onePoint(ArmAngles start, ArmAngles end, double degrees) {
-        return withList(start, List.of(), end, degrees);
+    public Trajectory onePoint(ArmAngles start, ArmAngles end, double firstDegree, double secondDegree) {
+        return withList(start, List.of(), end, firstDegree, secondDegree);
     }
 
     // /** from current location, through a waypoint, to an endpoint */
-    private Trajectory twoPoint(ArmAngles start, ArmAngles mid, ArmAngles end,
-    double degrees) {
+    public Trajectory twoPoint(ArmAngles start, ArmAngles mid, ArmAngles end,
+    double firstDegree, double secondDegree) {
     return withList(start, List.of(new Translation2d(mid.th2, mid.th1)), end,
-    degrees);
+    firstDegree, secondDegree);
     }
 
-    private Trajectory fivePoint(ArmAngles start, ArmAngles mid1, ArmAngles mid2, ArmAngles mid3, ArmAngles mid4,
-            ArmAngles end, double degrees) {
+    public  Trajectory  fivePoint(ArmAngles start, ArmAngles mid1, ArmAngles mid2, ArmAngles mid3, ArmAngles mid4,
+            ArmAngles end, double firstDegree, double secondDegree) {
         List<Translation2d> list = List.of(new Translation2d(mid1.th2, mid1.th1), new Translation2d(mid2.th2, mid2.th1),
                 new Translation2d(mid3.th2, mid3.th1), new Translation2d(mid4.th2, mid4.th1));
-        if (list != null) {
-            return withList(start, list, end, degrees);
-        } else {
-            System.out.println("ERROR");
-            return null;
-        }
+            return withList(start, list, end, firstDegree, secondDegree);
     }
 
-    private Trajectory withList(ArmAngles start, List<Translation2d> list, ArmAngles end, double degrees) {
+    private Trajectory withList(ArmAngles start, List<Translation2d> list, ArmAngles end, double firstDegree, double secondDegree) {
         System.out.println("Start lower theta: " + start.th1 + " Start upper theta: " + start.th2);
         System.out.println("End lower theta: " + end.th1 + " End upper theta: " + end.th2);
         try {
-            return TrajectoryGenerator.generateTrajectory(startPose(start, degrees), list, endPose(end, degrees),
+            return TrajectoryGenerator.generateTrajectory(setPose(start, firstDegree), list, setPose(end, secondDegree),
                     trajecConfig);
         } catch (TrajectoryGenerationException e) {
             e.printStackTrace();
@@ -91,12 +86,8 @@ public class ArmTrajectories {
     }
 
     // note proximal is y
-    private Pose2d startPose(ArmAngles start, double degrees) {
+    private Pose2d setPose(ArmAngles start, double degrees) {
         return new Pose2d(start.th2, start.th1, Rotation2d.fromDegrees(degrees));
-    }
-
-    private Pose2d endPose(ArmAngles angles, double degrees) {
-        return new Pose2d(angles.th2, angles.th1, Rotation2d.fromDegrees(degrees));
     }
 
 }
