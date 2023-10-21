@@ -110,6 +110,7 @@ public class JointVisualizer {
         ArmKinematics k  = new ArmKinematics(.93, .92);
         XYSeries joints = data.getSeries(0);
         XYSeries end = new XYSeries("Arm End");
+        XYSeries elbow = new XYSeries("Cartesian Elbow");
         int ct = joints.getItemCount();
         for (int i = 0; i < ct; ++i) {
             Number nx = joints.getX(i); // proximal
@@ -118,10 +119,13 @@ public class JointVisualizer {
             double distal = ny.doubleValue();
             Translation2d a = new Translation2d(proximal, distal);
             ArmAngles c = k.inverse(a);
+            Translation2d el = k.elbow(c);
             end.add(c.th1, c.th2);
+            elbow.add(el.getY(), el.getX());
         }
         XYSeriesCollection result = new XYSeriesCollection();
         result.addSeries(end);
+        result.addSeries(elbow);
         XYSeries base = new XYSeries("Base");
         base.add(0, 0);
         result.addSeries(base);
@@ -136,16 +140,16 @@ public class JointVisualizer {
             JFrame frame = new JFrame("Chart Collection");
 
             XYSeriesCollection translation = joints();
-            JFreeChart jointChart = ChartFactory.createScatterPlot(
+            JFreeChart jointChart  = ChartFactory.createScatterPlot(
                     "Trajectory in Cartesian Space",
                     "Y (Up)",
                     "X (Right)",
                     translation);
 
-            XYPlot jointXY = (XYPlot) jointChart.getPlot();
-            jointXY.setBackgroundPaint(Color.WHITE);
-            jointXY.getDomainAxis().setRange(-1.0, 1.0); // 2
-            jointXY.getRangeAxis().setRange(0.5, 2.5); // 2
+            XYPlot cartesianXY = (XYPlot) jointChart.getPlot();
+            cartesianXY.setBackgroundPaint(Color.WHITE);
+            cartesianXY.getDomainAxis().setRange(-1, 1.5); // 2
+            cartesianXY.getRangeAxis().setRange(0, 2.5); // 2
 
             ChartPanel jointPanel = new ChartPanel(jointChart) {
                 @Override
@@ -162,10 +166,10 @@ public class JointVisualizer {
                     "Upper",
                     cartesian);
 
-            XYPlot cartesianXY = (XYPlot) cartesianChart.getPlot();
-            cartesianXY.setBackgroundPaint(Color.WHITE);
-            cartesianXY.getDomainAxis().setRange(-1, 1.5); // 2.5
-            cartesianXY.getRangeAxis().setRange(0, 2.5);
+            XYPlot jointXY = (XYPlot) cartesianChart.getPlot();
+            jointXY.setBackgroundPaint(Color.WHITE);
+            jointXY.getDomainAxis().setRange(-1.0, 1.0); // 2.5
+            jointXY.getRangeAxis().setRange(0, 2.5);
 
             ChartPanel cartesianPanel = new ChartPanel(cartesianChart) {
                 @Override
