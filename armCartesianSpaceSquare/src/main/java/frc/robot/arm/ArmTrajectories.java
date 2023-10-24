@@ -18,8 +18,8 @@ public class ArmTrajectories {
         // Cone
         public ArmKinematics kinematics = new ArmKinematics(0.93, .92);
         public Translation2d test = new Translation2d(3, 3);
-        public Translation2d t0 = new Translation2d(1, 1);
-        public Translation2d t1 = new Translation2d(1.1, 1);
+        public Translation2d t0 = new Translation2d(.6, .6);
+        public Translation2d t1 = new Translation2d(1, 1);
         public Translation2d t2 = new Translation2d(1.1, 1.1);
         public Translation2d t3 = new Translation2d(1, 1.1);
 
@@ -43,12 +43,12 @@ public class ArmTrajectories {
         trajecConfig = config;
     }
 
-    public Trajectory makeTrajectory(Translation2d start) {
+    public Trajectory makeTrajectory(Translation2d start, Translation2d end) {
         if (start == null)
             return null;
         if (m_config.t0 != null && m_config.t1 != null && m_config.t2 != null && m_config.t3 != null) {
             System.out.println(start.getX() + " " +  start.getY());
-            return twoPoint(start, m_config.t0,m_config.t1, 90,90);
+            return onePoint(start, end, 90,90);
         } else {
             System.out.println("ERROR");
             return null;

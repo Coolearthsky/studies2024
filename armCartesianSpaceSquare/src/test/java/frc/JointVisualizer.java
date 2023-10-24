@@ -35,10 +35,10 @@ public class JointVisualizer {
         ArmTrajectories trajectories = new ArmTrajectories(config);
         Translation2d t0 = kinematics.forward(new ArmAngles(-0.639248, 1.838205)); // safe
         Translation2d mid = kinematics.forward(new ArmAngles(0.089803, 1.681915)); // mid
-        Translation2d t1 = new Translation2d(.5, .5);
-        Translation2d t2 = new Translation2d(1, .5);
+        Translation2d t1 = new Translation2d(.6, .6);
+        Translation2d t2 = new Translation2d(1, .6);
         Translation2d t3 = new Translation2d(1, 1);
-        Translation2d t4 = new Translation2d(.5, 1);
+        Translation2d t4 = new Translation2d(.6, 1);
         Trajectory trajectorystart = trajectories.onePoint(t0, t1, 90, 90);
         Trajectory trajectory = trajectories.onePoint(t1, t2, 0, 0);
         Trajectory trajectory2 = trajectories.onePoint(t2, t3, 90, 90);

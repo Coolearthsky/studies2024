@@ -16,7 +16,8 @@ public class test {
         TrajectoryConfig config = new TrajectoryConfig(1, 1);
         ArmTrajectories trajectories = new ArmTrajectories(config);
         Translation2d t0 = new Translation2d(1,1);
-        Trajectory trajectory = trajectories.makeTrajectory(t0);
+        Translation2d t1 = new Translation2d(.6,.6);
+        Trajectory trajectory = trajectories.makeTrajectory(t0,t1);
         assertNotNull(trajectory);
     }
 

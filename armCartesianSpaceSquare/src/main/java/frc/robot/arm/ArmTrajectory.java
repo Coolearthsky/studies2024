@@ -28,7 +28,7 @@ public class ArmTrajectory extends Command {
     // private final boolean m_oscillate;
 
     private final Timer m_timer;
-
+    private final Translation2d m_set;
     private final DoublePublisher measurmentX;
     private final DoublePublisher measurmentY;
     private final DoublePublisher setpointUpper;
@@ -39,7 +39,8 @@ public class ArmTrajectory extends Command {
     /**
      * Go to the specified position and optionally oscillate when you get there.
      */
-    public ArmTrajectory(Robot robot) {
+    public ArmTrajectory(Robot robot, Translation2d set) {
+        m_set = set;
         m_robot = robot;
         // m_position = position;
         // m_oscillate = oscillate;
@@ -68,7 +69,8 @@ public class ArmTrajectory extends Command {
         // }
         System.out.println("Initialize");
         m_trajectory = new ArmTrajectories(trajectoryConfig).makeTrajectory(
-            kinematics.forward(m_robot.getMeasurement()));
+            kinematics.forward(m_robot.getMeasurement()),m_set);
+           
     }
 
     public void execute() {
@@ -110,9 +112,13 @@ public class ArmTrajectory extends Command {
 
     @Override
     public boolean isFinished() {
-        // if (m_position == ArmPosition.SAFEWAYPOINT) {
-        //     return m_timer.hasElapsed(m_trajectory.getTotalTimeSeconds());
-        // }
+        double curTime = m_timer.get();
+        State desiredState = m_trajectory.sample(curTime);
+        double desiredUpper = desiredState.poseMeters.getX();
+        double desiredLower = desiredState.poseMeters.getY();
+        if (Math.abs(m_robot.getMeasurement().th1-desiredLower) < 0.01 && Math.abs(m_robot.getMeasurement().th2-desiredUpper) < 0.01) {
+            return true;
+        }
         return false;
     }
 
