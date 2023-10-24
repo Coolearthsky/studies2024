@@ -1,4 +1,4 @@
-package frc.robot.org.team100.planning;
+package org.team100.planning;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -43,11 +43,11 @@ public class OperationExecutor {
         frame.setVisible(true);
     }
 
-    public void executeTrajectory(boolean penDown, Trajectory trajectory) {
+    public void executeTrajectory(boolean penDown, Trajectory trajectory, double dtSec) {
         Color color = penDown ? Color.BLACK : Color.GREEN;
 
         XYSeries series1 = new XYSeries(String.format("trajectory %d", seriesIdx));
-        for (double t = 0; t < trajectory.getTotalTimeSeconds(); t += 3) {
+        for (double t = 0; t < trajectory.getTotalTimeSeconds(); t += dtSec) {
             Trajectory.State s = trajectory.sample(t);
             series1.add(s.poseMeters.getX(), s.poseMeters.getY());
         }

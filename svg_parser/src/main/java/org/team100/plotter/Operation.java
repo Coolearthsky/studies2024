@@ -1,4 +1,4 @@
-package frc.robot.org.team100.plotter;
+package org.team100.plotter;
 
 import edu.wpi.first.math.trajectory.Trajectory;
 

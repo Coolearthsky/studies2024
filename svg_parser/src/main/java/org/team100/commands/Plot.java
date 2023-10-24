@@ -1,4 +1,4 @@
-package frc.robot.org.team100.commands;
+package org.team100.commands;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -6,13 +6,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Iterator;
 
+import org.team100.planning.SvgReader;
+import org.team100.plotter.Operation;
+import org.team100.plotter.SVGToPlotOperations;
+
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.org.team100.planning.SvgReader;
-import frc.robot.org.team100.plotter.Operation;
-import frc.robot.org.team100.plotter.SVGToPlotOperations;
 
 /**
  * The command inverts the file-reader control,
@@ -33,6 +34,7 @@ public class Plot extends Command {
 
     private static final double xScale = 1;
     private static final double yScale = 1;
+    private static final double tolerance = 0.01;
 
     private final SVGToPlotOperations ops;
 
@@ -44,7 +46,7 @@ public class Plot extends Command {
 
     public Plot() {
         // read the file once
-        ops = new SVGToPlotOperations(xScale, yScale);
+        ops = new SVGToPlotOperations(xScale, yScale, tolerance);
         try {
             new SvgReader(stream("subpop.svg"), ops).run();
         } catch (IOException e) {

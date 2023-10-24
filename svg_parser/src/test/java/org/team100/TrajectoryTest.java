@@ -87,7 +87,8 @@ public class TrajectoryTest {
 
     @Test
     void testAligned() {
-        // a series of splines is parameterized as a unit
+        // a series of splines is parameterized as a unit, which is cool
+        // when they're aligned.
 
         double[] x00 = new double[] { 0, 1 };
         double[] y00 = new double[] { 0, 0 };
@@ -122,7 +123,8 @@ public class TrajectoryTest {
     
     @Test
     void testNotAligned() {
-        // how does parameterization work with splines with only c0?
+        // does parameterization work with splines with c0 but not c1,
+        // i.e. a corner?
         // answer: no!  it goes around the corner at full speed.  :-(
 
         double[] x00 = new double[] { 0, 1 };

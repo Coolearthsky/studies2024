@@ -1,8 +1,9 @@
-package frc.robot.org.team100.planning;
+package org.team100.planning;
 
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.team100.plotter.SVGToPlotOperations;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -10,7 +11,6 @@ import org.w3c.dom.svg.SVGDocument;
 import org.w3c.dom.svg.SVGPathSeg;
 import org.w3c.dom.svg.SVGPathSegList;
 
-import frc.robot.org.team100.plotter.SVGToPlotOperations;
 import io.sf.carte.echosvg.anim.dom.SAXSVGDocumentFactory;
 import io.sf.carte.echosvg.anim.dom.SVGDOMImplementation;
 import io.sf.carte.echosvg.anim.dom.SVGOMPathElement;
@@ -44,6 +44,7 @@ public class SvgReader {
                 handleItem(item);
             }
         }
+        transformer.end();
     }
 
     private NodeList getPaths() {
