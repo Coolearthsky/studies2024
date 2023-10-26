@@ -66,17 +66,17 @@ public class ArmKinematics {
         double dx = vel.getX();
         double dy = vel.getY();
         ArmAngles theta = this.inverse(pos);
-        double divider = 2*l2*l2*Math.sqrt(1-Math.pow(y-l1*Math.sin(theta.th1),2)/(l2*l2));
-        double help = dx-dy/divider;
-        double next = -l1*Math.sin(theta.th1);
-        double next1 = 2*(y-l1*Math.sin(theta.th1))*(-l1*Math.cos(theta.th1));
-        double end1 = help/(next-next1);
-        double divider1 = 2*l1*l1*Math.sqrt(1-Math.pow(y-l2*Math.sin(theta.th2),2)/(l1*l1));
-        double help1 = dx-dy/divider1;
-        double next3 = -l2*Math.sin(theta.th2);
-        double next2 = 2*(y-l2*Math.sin(theta.th2))*(-l1*Math.cos(theta.th2));
-        double end2 = help1/(next3-next2);
-        ArmAngles dtheta = new ArmAngles(end1, end2);
+        double th1Divider = 2*l2*l2*Math.sqrt(1-Math.pow(y-l1*Math.sin(theta.th1),2)/(l2*l2));
+        double th1LeftOfEquation = dx-dy/th1Divider;
+        double th1Math1 = -l1*Math.sin(theta.th1);
+        double th1Math2 = 2*(y-l1*Math.sin(theta.th1))*(-l1*Math.cos(theta.th1));
+        double changeInLower = th1LeftOfEquation/(th1Math1-th1Math2);
+        double secondDivider = 2*l1*l1*Math.sqrt(1-Math.pow(y-l2*Math.sin(theta.th2),2)/(l1*l1));
+        double th2Divider = dx-dy/secondDivider;
+        double th2Math1 = -l2*Math.sin(theta.th2);
+        double th2Math2 = 2*(y-l2*Math.sin(theta.th2))*(-l1*Math.cos(theta.th2));
+        double changeInUpper = th2Divider/(th2Math1-th2Math2);
+        ArmAngles dtheta = new ArmAngles(changeInLower, changeInUpper);
         return dtheta;
     }
 }
