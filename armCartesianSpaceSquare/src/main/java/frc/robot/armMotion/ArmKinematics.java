@@ -71,7 +71,7 @@ public class ArmKinematics {
         double next = -l1*Math.sin(theta.th1);
         double next1 = 2*(y-l1*Math.sin(theta.th1))*(-l1*Math.cos(theta.th1));
         double end1 = help/(next-next1);
-        double divider1 = 2*l1*l1*Math.sqrt(1-Math.pow(y-l2*Math.sin(theta.th2),2)/(l2*l2));
+        double divider1 = 2*l1*l1*Math.sqrt(1-Math.pow(y-l2*Math.sin(theta.th2),2)/(l1*l1));
         double help1 = dx-dy/divider1;
         double next3 = -l2*Math.sin(theta.th2);
         double next2 = 2*(y-l2*Math.sin(theta.th2))*(-l1*Math.cos(theta.th2));
