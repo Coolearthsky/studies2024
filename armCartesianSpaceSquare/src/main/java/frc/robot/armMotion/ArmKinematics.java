@@ -71,11 +71,11 @@ public class ArmKinematics {
         double th1Math1 = -l1*Math.sin(theta.th1);
         double th1Math2 = 2*(y-l1*Math.sin(theta.th1))*(-l1*Math.cos(theta.th1));
         double changeInLower = th1LeftOfEquation/(th1Math1-th1Math2);
-        double secondDivider = 2*l1*l1*Math.sqrt(1-Math.pow(y-l2*Math.sin(theta.th2),2)/(l1*l1));
-        double th2Divider = dx-dy/secondDivider;
+        double th2Divider = 2*l1*l1*Math.sqrt(1-Math.pow(y-l2*Math.sin(theta.th2),2)/(l1*l1));
+        double th2LeftOfEquation = dx-dy/th2Divider;
         double th2Math1 = -l2*Math.sin(theta.th2);
         double th2Math2 = 2*(y-l2*Math.sin(theta.th2))*(-l1*Math.cos(theta.th2));
-        double changeInUpper = th2Divider/(th2Math1-th2Math2);
+        double changeInUpper = th2LeftOfEquation/(th2Math1-th2Math2);
         ArmAngles dtheta = new ArmAngles(changeInLower, changeInUpper);
         return dtheta;
     }
