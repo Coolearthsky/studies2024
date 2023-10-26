@@ -61,7 +61,6 @@ public class ArmKinematics {
         return new ArmAngles(th1, th2);
     }
     public ArmAngles inverseVel(Translation2d pos, Translation2d vel) { 
-        double x = pos.getX();
         double y = pos.getY();
         double dx = vel.getX();
         double dy = vel.getY();
