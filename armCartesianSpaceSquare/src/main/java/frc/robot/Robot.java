@@ -31,17 +31,17 @@ public class Robot extends TimedRobot {
     public double safeP = 2.5;
     public double safeI = 0;
     public double safeD = 0;
-    public double normalLowerP = 1;
+    public double normalLowerP = 2;
     public double normalLowerI = 0;
     public double normalLowerD = 0.1;
-    public double normalUpperP = 3;
-    public double normalUpperI = 0.2;
+    public double normalUpperP = 2;
+    public double normalUpperI = 0;
     public double normalUpperD = 0.05;
     public double tolerance = 0.001;
   }
 
   private final Config m_config = new Config();
-
+  private final ArmKinematics m_kinematics = new ArmKinematics(.93,.92);
   private Command m_autonomousCommand;
   private ArmTrajectory m_trajec;
   private ArmKinematics m_armKinematicsM;
@@ -62,12 +62,14 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
-    m_trajec = new ArmTrajectory(this, new Translation2d(.6, .6));
+    m_trajec = new ArmTrajectory(this, new Translation2d(.6, .6),m_kinematics);
     m_armKinematicsM = new ArmKinematics(m_config.kLowerArmLengthM, m_config.kUpperArmLengthM);
     m_lowerMeasurementFilter = LinearFilter.singlePoleIIR(m_config.filterTimeConstantS, m_config.filterPeriodS);
     m_upperMeasurementFilter = LinearFilter.singlePoleIIR(m_config.filterTimeConstantS, m_config.filterPeriodS);
     m_lowerController = new PIDController(m_config.normalLowerP, m_config.normalLowerI, m_config.normalLowerD);
     m_upperController = new PIDController(m_config.normalUpperP, m_config.normalUpperI, m_config.normalUpperD);
+    m_lowerController.setIntegratorRange(1, 1);
+    m_upperController.setIntegratorRange(1, 1);
     m_lowerController.setTolerance(m_config.tolerance);
     m_upperController.setTolerance(m_config.tolerance);
 
@@ -129,7 +131,7 @@ public class Robot extends TimedRobot {
     m_trajec.execute();
     ArmAngles measurement = getMeasurement();
     u1 = m_lowerController.calculate(measurement.th1, m_reference.th1);
-     u2 = m_upperController.calculate(measurement.th2, m_reference.th2);
+     u2 = m_upperController.calculate(measurement.th2, m_reference.th2) + m_upperController.getSetpoint();
     SmartDashboard.putNumber("Lower Encoder: ", measurement.th1);
     SmartDashboard.putNumber("Lower Ref: ", m_reference.th1);
     SmartDashboard.putNumber("Upper Encoder: ", measurement.th2);
@@ -153,7 +155,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-   m_robotContainer.scheduleAuton();
+   m_robotContainer.scheduleAuton(this,m_kinematics);
   }
 
   private double soften(double x) {
@@ -170,6 +172,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousPeriodic() {
+    lowerArmMotor.set(u1);
+    upperArmMotor.set(u2);
   }
 
   @Override
@@ -192,8 +196,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    System.out.println(u1);
-    System.out.println(u2);
+    // System.out.println(u1);
+    // System.out.println(u2);
     lowerArmMotor.set(u1);
     upperArmMotor.set(u2);
   }

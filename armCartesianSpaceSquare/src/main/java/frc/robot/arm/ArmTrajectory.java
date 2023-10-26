@@ -26,7 +26,7 @@ public class ArmTrajectory extends Command {
     private final Robot m_robot;
     // private final ArmPosition m_position;
     // private final boolean m_oscillate;
-
+    private final ArmKinematics m_kinematics;
     private final Timer m_timer;
     private final Translation2d m_set;
     private final DoublePublisher measurmentX;
@@ -39,9 +39,10 @@ public class ArmTrajectory extends Command {
     /**
      * Go to the specified position and optionally oscillate when you get there.
      */
-    public ArmTrajectory(Robot robot, Translation2d set) {
+    public ArmTrajectory(Robot robot, Translation2d set, ArmKinematics kinematics) {
         m_set = set;
         m_robot = robot;
+        m_kinematics = kinematics;
         // m_position = position;
         // m_oscillate = oscillate;
         m_timer = new Timer();
@@ -58,7 +59,6 @@ public class ArmTrajectory extends Command {
     @Override
     public void initialize() {
         m_timer.restart();
-        ArmKinematics kinematics = new ArmKinematics(.93, 0.92);
         final TrajectoryConfig trajectoryConfig;
         // if (m_position == ArmPosition.SAFE) {
         //     trajectoryConfig = m_config.safeTrajectory;
@@ -69,39 +69,31 @@ public class ArmTrajectory extends Command {
         // }
         System.out.println("Initialize");
         m_trajectory = new ArmTrajectories(trajectoryConfig).makeTrajectory(
-            kinematics.forward(m_robot.getMeasurement()),m_set);
+            m_kinematics.forward(m_robot.getMeasurement()),m_set);
            
     }
 
     public void execute() {
         if (m_trajectory == null) {
-            System.out.println("Null");
             return;
         }
         ArmAngles measurement = m_robot.getMeasurement();
         double currentUpper = measurement.th2;
         double currentLower = measurement.th1;
-
         double curTime = m_timer.get();
         State desiredState = m_trajectory.sample(curTime);
-
-        double desiredUpper = desiredState.poseMeters.getX();
-        double desiredLower = desiredState.poseMeters.getY();
-
-        // double upperError = desiredUpper - currentUpper;
-
-        // if (m_oscillate && upperError < m_config.oscillatorZone) {
-        //     desiredUpper += oscillator(curTime);
-        // }
-
-        Translation2d reference = new Translation2d(desiredLower, desiredUpper);
-        ArmKinematics kinematics = new ArmKinematics(.93, 0.92);
-        m_robot.setReference(kinematics.inverse(reference));
-
+        double desiredXPos = desiredState.poseMeters.getX();
+        double desiredYPos  = desiredState.poseMeters.getY();
+        double desiredVecloity = desiredState.velocityMetersPerSecond;
+        double theta = desiredState.poseMeters.getRotation().getRadians();
+        double desiredXVelocity = desiredVecloity*Math.cos(theta);
+        double desiredYVelocity = desiredVecloity*Math.cos(90-theta);
+        Translation2d reference = new Translation2d(desiredXPos, desiredYPos);
+        m_robot.setReference(m_kinematics.inverse(reference));
         measurmentX.set(currentUpper);
         measurmentY.set(currentLower);
-        setpointUpper.set(desiredUpper);
-        setpointLower.set(desiredLower);
+        setpointUpper.set(desiredYPos);
+        setpointLower.set(desiredXPos);
     }
 
     @Override
@@ -112,11 +104,12 @@ public class ArmTrajectory extends Command {
 
     @Override
     public boolean isFinished() {
-        double curTime = m_timer.get();
-        State desiredState = m_trajectory.sample(curTime);
-        double desiredUpper = desiredState.poseMeters.getX();
-        double desiredLower = desiredState.poseMeters.getY();
-        if (Math.abs(m_robot.getMeasurement().th1-desiredLower) < 0.01 && Math.abs(m_robot.getMeasurement().th2-desiredUpper) < 0.01) {
+        double th1 = m_kinematics.inverse(m_set).th1;
+        double th2 = m_kinematics.inverse(m_set).th2;
+        double lowerError = m_robot.getMeasurement().th1 - th1;
+        double upperError = m_robot.getMeasurement().th2 - th2;
+        if (Math.abs(upperError) < 0.02 && Math.abs(lowerError) < 0.02) {
+            System.out.println("ENDDDDDDDDDDDDDDDDDDDDDD");
             return true;
         }
         return false;

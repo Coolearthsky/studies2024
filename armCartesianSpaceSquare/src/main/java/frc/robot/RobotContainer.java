@@ -5,21 +5,21 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.arm.Sequence;
+import frc.robot.armMotion.ArmKinematics;
 
 public class RobotContainer {
+    private Command m_auton;
   public RobotContainer() {
     configureBindings();
   }
-  private final Robot robot = new Robot();
-  private final Command m_auton = new Sequence(robot);
+ 
   private void configureBindings() {}
-
   public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
+    return m_auton;
   }
-  public void scheduleAuton() {
+  public void scheduleAuton(Robot robot, ArmKinematics kinematics) {
+    m_auton = new Sequence(robot,kinematics); 
     m_auton.schedule();
 }
 
