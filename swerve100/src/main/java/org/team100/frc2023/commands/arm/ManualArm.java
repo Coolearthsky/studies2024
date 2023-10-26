@@ -27,25 +27,21 @@ public class ManualArm extends Command {
 
     @Override
     public void initialize() {
-        // m_arm.setReference(m_arm.getMeasurement());
+        m_arm.setReference(m_arm.getMeasurement());
     }
 
     @Override
     public void execute() {
-        // final double dt = 0.02;
-        // ArmAngles measurement = m_arm.getMeasurement();
-        // ArmAngles reference = new ArmAngles(
-        //         measurement.th1 + dt * m_config.maxSpeedRadS * m_lowerSpeed1_1.get(),
-        //         measurement.th2 + dt * m_config.maxSpeedRadS * m_upperSpeed1_1.get());
-        // m_arm.setReference(reference);
-
-        m_arm.setUpperSpeed(m_upperSpeed1_1.get());
-        m_arm.setLowerSpeed(m_lowerSpeed1_1.get());
-
+        final double dt = 0.02;
+        ArmAngles measurement = m_arm.getMeasurement();
+        ArmAngles reference = new ArmAngles(
+                measurement.th1 + dt * m_config.maxSpeedRadS * m_lowerSpeed1_1.get(),
+                measurement.th2 + dt * m_config.maxSpeedRadS * m_upperSpeed1_1.get());
+        m_arm.setReference(reference);
     }
 
     @Override
     public void end(boolean interrupted) {
-        // m_arm.setReference(m_arm.getMeasurement());
+        m_arm.setReference(m_arm.getMeasurement());
     }
 }

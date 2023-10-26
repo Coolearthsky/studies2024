@@ -8,9 +8,7 @@ public class SwerveModule {
     private final DriveServo m_driveServo;
     private final TurningServo m_turningServo;
 
-    public SwerveModule(
-            DriveServo driveServo,
-            TurningServo turningServo) {
+    public SwerveModule(DriveServo driveServo, TurningServo turningServo) {
         m_driveServo = driveServo;
         m_turningServo = turningServo;
     }

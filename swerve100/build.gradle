@@ -4,15 +4,11 @@ buildscript {
         mavenCentral()
         google()
     }
-    // dependencies {
-    //     classpath 'com.guardsquare:proguard-gradle:7.2.0-beta2'
-    // }
 }
 
 plugins {
     id "java"
     id "edu.wpi.first.GradleRIO" version "2023.4.3"
-    // id "jacoco"
 }
 
 // these four lines are for development builds
@@ -187,22 +183,7 @@ dependencies {
 test {
     useJUnitPlatform()
     systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'
-    // finalizedBy jacocoTestReport, jacocoTestCoverageVerification
 }
-
-// jacocoTestReport {
-//     dependsOn test
-// }
-
-// jacocoTestCoverageVerification {
-//     violationRules {
-//         rule {
-//             limit {
-//                 minimum = 0.04
-//             }
-//         }
-//     }
-// }
 
 // Simulation configuration (e.g. environment variables).
 wpi.sim.addGui().defaultEnabled = true
@@ -226,34 +207,3 @@ wpi.java.configureTestTasks(test)
 tasks.withType(JavaCompile) {
     options.compilerArgs.add '-XDstringConcat=inline'
 }
-
-// arg. comment out the proguard stuff until it actually works.
-
-// task proguard(type: proguard.gradle.ProGuardTask) {
-//     configuration 'proguard.txt'
-// }
-
-// task proguardshrink(type: proguard.gradle.ProGuardTask) {
-//     configuration 'proguard-shrink.txt'
-// }
-
-// //jar.finalizedBy proguard
-// jar.finalizedBy proguardshrink
-
-// //jar.finalizedBy proguard
-// jar.finalizedBy proguardshrink
-
-// task copyJar(type: Copy) {
-//     from "$buildDir/libs/swerve100.jar"
-//     into "$buildDir/libs/"
-//     rename('swerve100.jar', 'swerve100_big.jar')
-// }
-// task overwriteJar(type: Copy) {
-//     from "$buildDir/libs/swerve100_out.jar"
-//     into "$buildDir/libs/"
-//     rename('swerve100_out.jar', 'swerve100.jar')
-// }
-// // proguardshrink.finalizedBy overwriteJar
-// proguardshrink.finalizedBy copyJar
-// copyJar.finalizedBy overwriteJar
-// copyJar.finalizedBy overwriteJar

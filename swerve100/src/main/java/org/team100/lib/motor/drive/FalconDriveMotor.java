@@ -1,5 +1,7 @@
 package org.team100.lib.motor.drive;
 
+import org.team100.lib.telemetry.Telemetry;
+
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
@@ -11,9 +13,6 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Uses default position/velocity sensor which is the integrated one.
@@ -40,11 +39,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * 
  * TODO: deal with delay in velocity measurement.
  */
-public class FalconDriveMotor implements DriveMotor, Sendable {
+public class FalconDriveMotor implements DriveMotor {
+    private static final double ticksPerRevolution = 2048;
+
+    private final Telemetry t = Telemetry.get();
     private final WPI_TalonFX m_motor;
-    private final double ticksPerRevolution = 2048;
     private final double m_gearRatio;
     private final double m_wheelDiameter;
+    private final String m_name;
 
     /**
      * Throws if any of the configurations fail.
@@ -72,7 +74,8 @@ public class FalconDriveMotor implements DriveMotor, Sendable {
         m_motor.config_kI(0, 0);
         m_motor.config_kD(0, 0);
 
-        SmartDashboard.putData(String.format("Falcon Drive Motor %s", name), this);
+        m_name = String.format("/Falcon Drive Motor %s", name);
+        t.log(m_name + "/Device ID", m_motor.getDeviceID());
     }
 
     private void require(ErrorCode errorCode) {
@@ -88,31 +91,34 @@ public class FalconDriveMotor implements DriveMotor, Sendable {
     @Override
     public void set(double output) {
         m_motor.setVoltage(10 * MathUtil.clamp(output, -1.3, 1.3));
+
+        t.log(m_name + "/Speed (rot_s)", getVelocityRot_S());
+        t.log(m_name + "/Output [-1,1]", get());
+        t.log(m_name + "/Speed (2048ths_100ms)", getVelocity2048_100());
     }
 
+    @Override
     public void setPID(ControlMode control, double outputMetersPerSec) {
         double Kn = 0.11106;
         double Ks = 0.001515;
         double VSat = 11;
-        double revolutionsPerSec = outputMetersPerSec/(m_wheelDiameter*Math.PI);
-        double revsPer100ms = revolutionsPerSec/10;
-        double ticksPer100ms = revsPer100ms*ticksPerRevolution;
-        if (revolutionsPerSec<.575) {
+        double revolutionsPerSec = outputMetersPerSec / (m_wheelDiameter * Math.PI);
+        double revsPer100ms = revolutionsPerSec / 10;
+        double ticksPer100ms = revsPer100ms * ticksPerRevolution;
+        if (revolutionsPerSec < .575) {
             Ks = .03;
         }
-        double kFF = (Kn*revolutionsPerSec + Ks*Math.signum(revolutionsPerSec))*m_gearRatio/VSat;
+        double kFF = (Kn * revolutionsPerSec + Ks * Math.signum(revolutionsPerSec)) * m_gearRatio / VSat;
         DemandType type = DemandType.ArbitraryFeedForward;
-        m_motor.set(ControlMode.Velocity, ticksPer100ms*m_gearRatio, type, kFF);
+        m_motor.set(ControlMode.Velocity, ticksPer100ms * m_gearRatio, type, kFF);
+
+        t.log(m_name + "/Speed (rot_s)", getVelocityRot_S());
+        t.log(m_name + "/Output [-1,1]", get());
+        t.log(m_name + "/Speed (2048ths_100ms)", getVelocity2048_100());
     }
 
-    @Override
-    public void initSendable(SendableBuilder builder) {
-        double motorVelocityRotsPerSec = m_motor.getSelectedSensorVelocity()/(ticksPerRevolution/10*m_gearRatio);
-        builder.setSmartDashboardType("FalconDriveMotor");
-        builder.addDoubleProperty("Speed (rots per sec)", () -> motorVelocityRotsPerSec, null);
-        builder.addDoubleProperty("Device ID", () -> m_motor.getDeviceID(), null);
-        builder.addDoubleProperty("Output", this::get, null);
-        builder.addDoubleProperty("Speed", this::getVelocity, null);
+    double getVelocityRot_S() {
+        return m_motor.getSelectedSensorVelocity() / (ticksPerRevolution / 10 * m_gearRatio);
     }
 
     /**
@@ -125,7 +131,7 @@ public class FalconDriveMotor implements DriveMotor, Sendable {
     /**
      * @return integrated sensor velocity in sensor units (1/2048 turn) per 100ms.
      */
-    public double getVelocity() {
+    public double getVelocity2048_100() {
         return m_motor.getSelectedSensorVelocity();
     }
 

@@ -1,5 +1,7 @@
 package org.team100.lib.motor.turning;
 
+import org.team100.lib.telemetry.Telemetry;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -9,17 +11,18 @@ import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+public class FalconTurningMotor implements TurningMotor {
+    private static final double ticksPerRevolution = 2048;
+    private static final double gearRatio = 10.29;
 
-public class FalconTurningMotor implements TurningMotor, Sendable {
     public static class Config {
         public int kCurrentLimit = 40;
     }
 
     private final Config m_config = new Config();
+    private final Telemetry t = Telemetry.get();
     private final WPI_TalonFX m_motor;
+    private final String m_name;
 
     public FalconTurningMotor(String name, int canId) {
         m_motor = new WPI_TalonFX(canId);
@@ -31,7 +34,6 @@ public class FalconTurningMotor implements TurningMotor, Sendable {
                 new StatorCurrentLimitConfiguration(true, m_config.kCurrentLimit, m_config.kCurrentLimit, 0));
         m_motor.configSupplyCurrentLimit(
                 new SupplyCurrentLimitConfiguration(true, m_config.kCurrentLimit, m_config.kCurrentLimit, 0));
-        SmartDashboard.putData(String.format("Falcon Turning Motor %s", name), this);
         m_motor.configNominalOutputForward(0);
         m_motor.configNominalOutputReverse(0);
         m_motor.config_kF(0, 0);
@@ -40,6 +42,8 @@ public class FalconTurningMotor implements TurningMotor, Sendable {
         m_motor.config_kD(0, 0);
         m_motor.configVoltageCompSaturation(11);
         m_motor.enableVoltageCompensation(true);
+
+        m_name = String.format("/Falcon Turning Motor %s", name);
     }
 
     @Override
@@ -48,11 +52,9 @@ public class FalconTurningMotor implements TurningMotor, Sendable {
     }
 
     public void setPIDVelocity(double outputRadiansPerSec, double outputRadiansPerSecPerSec) {
-        double gearRatio = 10.29;
-        double ticksPerRevolution = 2048;
-        double motorVelocityRotsPerSec = m_motor.getSelectedSensorVelocity()/(ticksPerRevolution/10*gearRatio);
-        double revolutionsPerSec = outputRadiansPerSec/(2*Math.PI);
-        double revolutionsPerSec2 = outputRadiansPerSecPerSec/(2*Math.PI);
+        double motorVelocityRotsPerSec = m_motor.getSelectedSensorVelocity() / (ticksPerRevolution / 10 * gearRatio);
+        double revolutionsPerSec = outputRadiansPerSec / (2 * Math.PI);
+        double revolutionsPerSec2 = outputRadiansPerSecPerSec / (2 * Math.PI);
         double revsPer100ms = revolutionsPerSec / 10;
         double ticksPer100ms = revsPer100ms * ticksPerRevolution;
         DemandType type = DemandType.ArbitraryFeedForward;
@@ -62,27 +64,28 @@ public class FalconTurningMotor implements TurningMotor, Sendable {
         double VSat = 11;
         if (motorVelocityRotsPerSec < .1) {
             Ks = 0.0375;
-          }
-        double kFF = (Kn*revolutionsPerSec + Ks*Math.signum(revolutionsPerSec))*gearRatio/VSat;
-        m_motor.set(ControlMode.Velocity, ticksPer100ms*gearRatio, type, kFF);
         }
+        double kFF = (Kn * revolutionsPerSec + Ks * Math.signum(revolutionsPerSec)) * gearRatio / VSat;
+        m_motor.set(ControlMode.Velocity, ticksPer100ms * gearRatio, type, kFF);
+
+        t.log(m_name + "/Output", get());
+        t.log(m_name + "/Error", m_motor.getClosedLoopError() / (ticksPerRevolution / 10));
+    }
 
     public void setPIDPosition(double outputRadians) {
-        double gearRatio = 10.29;
-        double ticksPerRevolution = 2048;
         double outputTicks = outputRadians / (Math.PI * 2) * ticksPerRevolution;
-        m_motor.set(ControlMode.Position, outputTicks*gearRatio);
+        m_motor.set(ControlMode.Position, outputTicks * gearRatio);
+
+        t.log(m_name + "/Output", get());
+        t.log(m_name + "/Error", m_motor.getClosedLoopError() / (ticksPerRevolution / 10));
     }
 
     @Override
     public void set(double output) {
         m_motor.set(output);
+
+        t.log(m_name + "/Output", get());
+        t.log(m_name + "/Error", m_motor.getClosedLoopError() / (ticksPerRevolution / 10));
     }
 
-    @Override
-    public void initSendable(SendableBuilder builder) {
-        builder.setSmartDashboardType("Falcon Turning Motor");
-        builder.addDoubleProperty("Output", this::get, null);
-        builder.addDoubleProperty("Error", () -> m_motor.getClosedLoopError()/(2048/10), null);
-    }
 }

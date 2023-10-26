@@ -20,70 +20,70 @@ public interface Control {
      */
     default Twist2d twist() {
         return new Twist2d();
-    };
+    }
 
     default Rotation2d desiredRotation() {
         return new Rotation2d();
-    };
+    }
 
 
     default GoalOffset goalOffset() {
         return GoalOffset.center;
-    };
+    }
 
     default void driveToLeftGrid(Command command) {
-    };
+    }
 
     default void autoLevel(Command command) {
-    };
+    }
 
     default void driveToCenterGrid(Command command) {
-    };
+    }
 
     default void driveToRightGrid(Command command) {
-    };
+    }
 
     default void driveToSubstation(Command command) {
-    };
+    }
 
     default void resetRotation0(Command command) {
-    };
+    }
 
     default void resetRotation180(Command command) {
-    };
+    }
 
     default void driveSlow(Command command) {
-    };
+    }
 
     default void resetPose(Command command) {
-    };
+    }
 
     default void defense(Command defense) {
-    };
+    }
 
     default void rumbleOn() {
-    };
+    }
 
     default void rumbleTrigger(Command command) {
-    };
+    }
 
     default void rumbleOff() {
-    };
+    }
 
     default void rotate0(Command command) {
-    };
+    }
 
     default void driveMedium(Command command) {
-    };
+    }
 
     default void moveConeWidthLeft(Command command) {
-    };
+    }
 
     default void moveConeWidthRight(Command command) {
-    };
+    }
 
     default void driveWithLQR(Command command) {
-    };
+    }
 
     ///////////////////////////////
     //
@@ -92,22 +92,22 @@ public interface Control {
     /** @return [-1,1] */
     default double openSpeed() {
         return 0;
-    };
+    }
 
     /** @return [-1,1] */
     default double closeSpeed() {
         return 0;
-    };
+    }
 
     /** @return [-1,1] */
     default double lowerSpeed() {
         return 0;
-    };
+    }
 
     /** @return [-1,1] */
     default double upperSpeed() {
         return 0;
-    };
+    }
 
     /**
      * Cartesian arm control
@@ -116,7 +116,7 @@ public interface Control {
      */
     default double armX() {
         return 0;
-    };
+    }
 
     /**
      * Cartesian arm control
@@ -125,65 +125,59 @@ public interface Control {
      */
     default double armY() {
         return 0;
-    };
+    }
 
     default void armHigh(Command command) {
-    };
+    }
 
     default void armLow(Command command) {
-    };
+    }
 
     default void armSafe(Command command) {
-    };
+    }
 
     default void safeWaypoint(Command command) {
-    };
+    }
 
     default void armSafeSequential(Command command, Command command2) {
-    };
+    }
 
     default void armSafeBack(Command command) {
-    };
+    }
 
     default void hold(Command command) {
-    };
+    }
 
     default void armSubstation(Command command) {
-    };
+    }
 
     default void armMid(Command command) {
-    };
+    }
 
     default void open(Command command) {
-    };
+    }
 
     default void eject(Command command) {
-    };
+    }
 
     default void intake(Command command) {
-    };
+    }
 
     default void cubeMode(Command command) {
-    };
+    }
 
     default void coneMode(Command command) {
-    };
+    }
 
     default void armToSub(Command command) {
-    };
-
-    default void ledOn(Command command) {
-    };
+    }
 
     default void oscillate(Command command) {
-    };
-
-    default void tapeDetect(Command command) {
-    };
+    }
 
     default void armSubSafe(Command command) {
-    };
+    }
 
     default void driveWith254Trajec(Command command){
-    };
+    }
 }

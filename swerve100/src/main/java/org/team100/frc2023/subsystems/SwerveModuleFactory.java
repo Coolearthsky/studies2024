@@ -1,16 +1,15 @@
 package org.team100.frc2023.subsystems;
 
-import org.team100.frc2023.subsystems.turning.TalonSRXTurningEncoder;
 import org.team100.lib.encoder.drive.FalconDriveEncoder;
+import org.team100.lib.encoder.turning.AnalogTurningEncoder;
+import org.team100.lib.experiments.Experiments;
+import org.team100.lib.motion.drivetrain.DriveServo;
+import org.team100.lib.motion.drivetrain.SwerveModule;
+import org.team100.lib.motion.drivetrain.TurningServo;
 import org.team100.lib.motor.drive.FalconDriveMotor;
 import org.team100.lib.motor.turning.CANTurningMotor;
 import org.team100.lib.motor.turning.FalconTurningMotor;
 import org.team100.lib.motor.turning.PWMTurningMotor;
-import org.team100.lib.motion.drivetrain.DriveServo;
-import org.team100.lib.motion.drivetrain.SwerveModule;
-import org.team100.lib.motion.drivetrain.TurningServo;
-import org.team100.lib.encoder.turning.AnalogTurningEncoder;
-import org.team100.lib.experiments.Experiments;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;

@@ -8,21 +8,20 @@ import org.team100.lib.controller.HolonomicDriveRegulator;
 import org.team100.lib.controller.PidGains;
 import org.team100.lib.controller.State100;
 import org.team100.lib.motion.drivetrain.kinematics.FrameTransform;
+import org.team100.lib.telemetry.Telemetry;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.DoubleArrayPublisher;
-import edu.wpi.first.networktables.DoublePublisher;
-import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
 public class SwerveDriveSubsystem extends Subsystem implements SwerveDriveSubsystemInterface {
+    private final Telemetry t = Telemetry.get();
+
     private final Heading m_heading;
     private final SwerveDrivePoseEstimator m_poseEstimator;
     private final Field2d m_field;
@@ -50,6 +49,7 @@ public class SwerveDriveSubsystem extends Subsystem implements SwerveDriveSubsys
         m_swerveLocal = swerveLocal;
         m_controller = controller;
         truncate();
+        t.log("/field/.type", "Field2d");
     }
 
     /** Set desired states to current states and stop. */
@@ -112,16 +112,15 @@ public class SwerveDriveSubsystem extends Subsystem implements SwerveDriveSubsys
 
         // Update the Field2d widget
         Pose2d newEstimate = getPose();
-        robotPosePub.set(new double[] {
+        t.log("/field/robotPose", new double[] {
                 newEstimate.getX(),
                 newEstimate.getY(),
                 newEstimate.getRotation().getDegrees()
         });
-        poseXPublisher.set(Units.metersToInches(newEstimate.getX()));
-        poseYPublisher.set(Units.metersToInches(newEstimate.getY()));
-        poseRotPublisher.set(newEstimate.getRotation().getRadians());
-        headingWUPublisher.set(m_heading.getHeadingRateNWU());
-        // System.out.println(m_heading.getHeadingRateNWU());
+        t.log("/current pose/x inch", Units.metersToInches(newEstimate.getX()));
+        t.log("/current pose/y inch", Units.metersToInches(newEstimate.getY()));
+        t.log("/current pose/theta rad", newEstimate.getRotation().getRadians());
+        t.log("/current pose/Heading NWU rad_s", m_heading.getHeadingRateNWU());
     }
 
     private void driveToReference() {
@@ -152,9 +151,10 @@ public class SwerveDriveSubsystem extends Subsystem implements SwerveDriveSubsys
         m_swerveLocal.setChassisSpeeds(targetChassisSpeeds);
     }
 
-    public void setChassisSpeeds(com.team254.lib.swerve.ChassisSpeeds speeds){
+    public void setChassisSpeeds(com.team254.lib.swerve.ChassisSpeeds speeds) {
         m_swerveLocal.setChassisSpeeds254(speeds);
     }
+
     /**
      * Helper for incremental driving.
      * 
@@ -163,7 +163,8 @@ public class SwerveDriveSubsystem extends Subsystem implements SwerveDriveSubsys
      * TODO: correct acceleration.
      * 
      * @param twistM_S incremental input in m/s and rad/s
-     * @return SwerveState representing 0.02 sec of twist applied to the current pose.
+     * @return SwerveState representing 0.02 sec of twist applied to the current
+     *         pose.
      */
     public static SwerveState incremental(Pose2d currentPose, Twist2d twistM_S) {
         Twist2d twistM = DriveUtil.scale(twistM_S, 0.02, 0.02);
@@ -215,31 +216,5 @@ public class SwerveDriveSubsystem extends Subsystem implements SwerveDriveSubsys
     // TODO: this looks broken
     public double getVisionSize() {
         return keyList;
-    }
-
-    ///////////////////////////////////////////////////////////
-
-    // Do we need this?
-    // private void resetEncoders() {
-    // m_modules.resetEncoders();
-    // }
-
-    // observers
-    private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
-
-    // current pose
-    private final NetworkTable pose = inst.getTable("current pose");
-    private final DoublePublisher poseXPublisher = pose.getDoubleTopic("x").publish();
-    private final DoublePublisher poseYPublisher = pose.getDoubleTopic("y").publish();
-    private final DoublePublisher poseRotPublisher = pose.getDoubleTopic("theta").publish();
-
-    private final DoublePublisher headingWUPublisher = pose.getDoubleTopic("Heading NWU").publish();
-
-    // current pose in format that field2d can use
-    private final NetworkTable field = inst.getTable("field");
-    private final DoubleArrayPublisher robotPosePub = field.getDoubleArrayTopic("robotPose").publish();
-    private final StringPublisher fieldTypePub = field.getStringTopic(".type").publish();
-    {
-        fieldTypePub.set("Field2d");
     }
 }

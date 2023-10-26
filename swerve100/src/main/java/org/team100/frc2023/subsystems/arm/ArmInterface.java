@@ -23,9 +23,5 @@ public interface ArmInterface {
 
     void close();
 
-    void setUpperSpeed(double x);
-
-    void setLowerSpeed(double x);
-
     void setDefaultCommand(Command command);
 }

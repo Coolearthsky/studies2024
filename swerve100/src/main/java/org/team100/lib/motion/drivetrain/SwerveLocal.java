@@ -6,16 +6,13 @@ import org.team100.lib.experiments.Experiment;
 import org.team100.lib.experiments.Experiments;
 import org.team100.lib.motion.drivetrain.kinematics.SwerveKinematics;
 import org.team100.lib.swerve.AsymSwerveSetpointGenerator;
+import org.team100.lib.telemetry.Telemetry;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.networktables.BooleanPublisher;
-import edu.wpi.first.networktables.DoublePublisher;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 
 import com.team254.lib.swerve.SwerveSetpoint;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -25,6 +22,8 @@ import edu.wpi.first.math.geometry.Translation2d;
  * nothing about the outside world, it just accepts chassis speeds.
  */
 public class SwerveLocal {
+    private final Telemetry t = Telemetry.get();
+
     private final Experiments m_experiments;
     private final SpeedLimits m_speedLimits;
     private final SwerveDriveKinematics m_DriveKinematics;
@@ -74,14 +73,11 @@ public class SwerveLocal {
      * @param targetChassisSpeeds speeds in robot coordinates.
      */
     public void setChassisSpeeds(ChassisSpeeds targetChassisSpeeds) {
-        // if (m_experiments.enabled(Experiment.UseSetpointGenerator)) {
-        //     setChassisSpeedsNormally(targetChassisSpeeds);
-        // } else {
-        //     setChassisSpeedsWithSetpointGenerator(targetChassisSpeeds);
-        // }
-
-        setChassisSpeedsNormally(targetChassisSpeeds);
-
+        if (m_experiments.enabled(Experiment.UseSetpointGenerator)) {
+            setChassisSpeedsWithSetpointGenerator(targetChassisSpeeds);
+        } else {
+            setChassisSpeedsNormally(targetChassisSpeeds);
+        }
     }
 
     public void setChassisSpeeds254(com.team254.lib.swerve.ChassisSpeeds targetChassisSpeeds) {
@@ -89,11 +85,10 @@ public class SwerveLocal {
     }
 
     private void setChassisSpeedsNormally254(com.team254.lib.swerve.ChassisSpeeds targetChassisSpeeds) {
-  
-        desiredSpeed254XPublisher.set(targetChassisSpeeds.vxMetersPerSecond);
-        desiredSpeed254YPublisher.set(targetChassisSpeeds.vyMetersPerSecond);
-        desiredSpeed254RotPublisher.set(targetChassisSpeeds.omegaRadiansPerSecond);
-        // System.out.println("YOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+        t.log("/desired speed/x254", targetChassisSpeeds.vxMetersPerSecond);
+        t.log("/desired speed/y254", targetChassisSpeeds.vyMetersPerSecond);
+        t.log("/desired speed/theta254", targetChassisSpeeds.omegaRadiansPerSecond);
+
         com.team254.lib.swerve.SwerveModuleState[] swerveModuleStates254 = m_DriveKinematics2.as254()
                 .toSwerveModuleStates(targetChassisSpeeds);
         Rotation2d thetafl = new Rotation2d(swerveModuleStates254[0].angle.getRadians());
@@ -106,22 +101,19 @@ public class SwerveLocal {
         SwerveModuleState br = new SwerveModuleState(swerveModuleStates254[3].speedMetersPerSecond, thetabr);
         SwerveModuleState[] swerveModuleStates = new SwerveModuleState[] { fl, fr, bl, br };
 
-        flModule.set(swerveModuleStates[0].speedMetersPerSecond);
-        frModule.set(swerveModuleStates[1].speedMetersPerSecond);
-        blModule.set(swerveModuleStates[2].speedMetersPerSecond);
-        brModule.set(swerveModuleStates[3].speedMetersPerSecond);
-
-
+        t.log("/desired speed/front left", swerveModuleStates[0].speedMetersPerSecond);
+        t.log("/desired speed/front right", swerveModuleStates[1].speedMetersPerSecond);
+        t.log("/desired speed/back left", swerveModuleStates[2].speedMetersPerSecond);
+        t.log("/desired speed/back right", swerveModuleStates[3].speedMetersPerSecond);
 
         setModuleStates(swerveModuleStates);
     }
 
     private void setChassisSpeedsNormally(ChassisSpeeds targetChassisSpeeds) {
-        desiredSpeedXPublisher.set(targetChassisSpeeds.vxMetersPerSecond);
-        desiredSpeedYPublisher.set(targetChassisSpeeds.vyMetersPerSecond);
-        desiredSpeedRotPublisher.set(targetChassisSpeeds.omegaRadiansPerSecond);
+        t.log("/desired speed/x", targetChassisSpeeds.vxMetersPerSecond);
+        t.log("/desired speed/y", targetChassisSpeeds.vyMetersPerSecond);
+        t.log("/desired speed/theta", targetChassisSpeeds.omegaRadiansPerSecond);
         SwerveModuleState[] targetModuleStates = m_DriveKinematics.toSwerveModuleStates(targetChassisSpeeds);
-
         setModuleStates(targetModuleStates);
     }
 
@@ -199,34 +191,30 @@ public class SwerveLocal {
     ///////////////////////////////////////////////////////////
 
     private void setModuleStates(SwerveModuleState[] targetModuleStates) {
-
-        // System.out.println("BALOSDHGOSDHGSOUHSOHSGOUSDHGOUH");
-
         SwerveDriveKinematics.desaturateWheelSpeeds(targetModuleStates, m_speedLimits.speedM_S);
-        publishImpliedChassisSpeeds(targetModuleStates);
+        logImpliedChassisSpeeds(targetModuleStates);
         m_modules.setDesiredStates(targetModuleStates);
     }
 
     /**
-     * Publishes chassis speeds implied by the module settings. The difference from
+     * Logs chassis speeds implied by the module settings. The difference from
      * the desired speed might be caused by, for example, desaturation.
      */
-    private void publishImpliedChassisSpeeds(SwerveModuleState[] actualModuleState) {
+    private void logImpliedChassisSpeeds(SwerveModuleState[] actualModuleState) {
         ChassisSpeeds actualChassisSpeeds = impliedSpeed(actualModuleState);
-        speedXPublisher.set(actualChassisSpeeds.vxMetersPerSecond);
-        speedYPublisher.set(actualChassisSpeeds.vyMetersPerSecond);
-        speedRotPublisher.set(actualChassisSpeeds.omegaRadiansPerSecond);
-        movingPublisher.set(isMoving(actualChassisSpeeds));
+        t.log("/actual speed/x", actualChassisSpeeds.vxMetersPerSecond);
+        t.log("/actual speed/y", actualChassisSpeeds.vyMetersPerSecond);
+        t.log("/actual speed/theta", actualChassisSpeeds.omegaRadiansPerSecond);
+        t.log("/actual speed/moving", isMoving(actualChassisSpeeds));
     }
 
     /** The speed implied by the module states. */
     private ChassisSpeeds impliedSpeed(SwerveModuleState[] actualModuleState) {
-        ChassisSpeeds actualChassisSpeeds = m_DriveKinematics.toChassisSpeeds(
+        return m_DriveKinematics.toChassisSpeeds(
                 actualModuleState[0],
                 actualModuleState[1],
                 actualModuleState[2],
                 actualModuleState[3]);
-        return actualChassisSpeeds;
     }
 
     private static boolean isMoving(ChassisSpeeds speeds) {
@@ -234,34 +222,4 @@ public class SwerveLocal {
                 || speeds.vyMetersPerSecond >= 0.1
                 || speeds.omegaRadiansPerSecond >= 0.1);
     }
-
-    
-
-    // observers
-    private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
-
-    // desired speed
-    private final NetworkTable desired = inst.getTable("desired speed");
-    private final DoublePublisher desiredSpeedXPublisher = desired.getDoubleTopic("x").publish();
-    private final DoublePublisher desiredSpeedYPublisher = desired.getDoubleTopic("y").publish();
-    private final DoublePublisher desiredSpeedRotPublisher = desired.getDoubleTopic("theta").publish();
-
-    private final DoublePublisher desiredSpeed254XPublisher = desired.getDoubleTopic("x254").publish();
-    private final DoublePublisher desiredSpeed254YPublisher = desired.getDoubleTopic("y254").publish();
-    private final DoublePublisher desiredSpeed254RotPublisher = desired.getDoubleTopic("theta254").publish();
-
-    private final DoublePublisher frModule = desired.getDoubleTopic("front right").publish();
-    private final DoublePublisher flModule = desired.getDoubleTopic("front left").publish();
-    private final DoublePublisher brModule = desired.getDoubleTopic("back right").publish();
-    private final DoublePublisher blModule = desired.getDoubleTopic("back left").publish();
-
-
-
-    // actual speed
-    private final NetworkTable speed = inst.getTable("actual speed");
-    private final DoublePublisher speedXPublisher = speed.getDoubleTopic("x").publish();
-    private final DoublePublisher speedYPublisher = speed.getDoubleTopic("y").publish();
-    private final DoublePublisher speedRotPublisher = speed.getDoubleTopic("theta").publish();
-    private final BooleanPublisher movingPublisher = speed.getBooleanTopic("moving").publish();
-
 }

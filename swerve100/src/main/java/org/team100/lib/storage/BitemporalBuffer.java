@@ -43,8 +43,8 @@ public class BitemporalBuffer<Value> {
     public BitemporalBuffer(int capacity) {
         this.capacity = capacity;
         size = 0;
-        record = new ConcurrentSkipListMap<Long, Entry<Double, Value>>();
-        valid = new ConcurrentSkipListMap<Double, Entry<Long, Value>>();
+        record = new ConcurrentSkipListMap<>();
+        valid = new ConcurrentSkipListMap<>();
     }
 
     /**

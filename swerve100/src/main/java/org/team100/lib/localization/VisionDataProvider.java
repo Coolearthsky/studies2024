@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 
 import org.msgpack.jackson.dataformat.MessagePackFactory;
 import org.team100.frc2023.config.Cameras2023;
+import org.team100.lib.telemetry.Telemetry;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -21,14 +22,11 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTable.TableEventListener;
 import edu.wpi.first.networktables.NetworkTableEvent;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
 /**
@@ -52,17 +50,16 @@ public class VisionDataProvider extends Subsystem implements TableEventListener 
     }
 
     private final Config m_config = new Config();
+
+    private final Telemetry t = Telemetry.get();
+
     private final Supplier<Pose2d> poseSupplier;
-    private final DoublePublisher timestampPublisher;
     private final ObjectMapper objectMapper;
     private final SwerveDrivePoseEstimator poseEstimator;
     /** Discard results further than this from the previous one. */
     private final double kVisionChangeToleranceMeters = 0.1;
     private final AprilTagFieldLayoutWithCorrectOrientation layout;
-    // for Sendable observation
-    private Rotation3d tagRotation;
-    // for Sendable observation
-    private Pose2d currentRobotinFieldCoords;
+
     // for blip filtering
     private Pose2d lastRobotInFieldCoords;
 
@@ -75,19 +72,15 @@ public class VisionDataProvider extends Subsystem implements TableEventListener 
         this.layout = layout;
         this.poseEstimator = poseEstimator;
         this.poseSupplier = poseSupplier;
-        tagRotation = new Rotation3d();
-        currentRobotinFieldCoords = new Pose2d();
 
-        NetworkTableInstance inst = NetworkTableInstance.getDefault();
-        inst.startServer("example server");
-        NetworkTable example_table = inst.getTable("example_table");
-        timestampPublisher = example_table.getDoubleTopic("timestamp").publish();
         objectMapper = new ObjectMapper(new MessagePackFactory());
-        NetworkTable vision_table = inst.getTable("Vision");
+    }
+
+    /** Start listening for updates. */
+    public void enable() {
+        NetworkTable vision_table = NetworkTableInstance.getDefault().getTable("Vision");
         // Listen to ALL the updates in the vision table. :-)
         vision_table.addListener(EnumSet.of(NetworkTableEvent.Kind.kValueAll), this);
-
-        SmartDashboard.putData("Vision Data Provider", this);
     }
 
     /**
@@ -102,13 +95,6 @@ public class VisionDataProvider extends Subsystem implements TableEventListener 
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * Update the timestamp on the NetworkTable
-     */
-    public void updateTimestamp() {
-        timestampPublisher.set(Timer.getFPGATimestamp());
     }
 
     /**
@@ -143,9 +129,15 @@ public class VisionDataProvider extends Subsystem implements TableEventListener 
                     m_config.kTagRotationBeliefThresholdMeters);
 
             Translation2d robotTranslationInFieldCoords = robotPoseInFieldCoords.getTranslation().toTranslation2d();
-            currentRobotinFieldCoords = new Pose2d(robotTranslationInFieldCoords, gyroRotation);
 
-            tagRotation = PoseEstimationHelper.blipToRotation(blip);
+            Pose2d currentRobotinFieldCoords = new Pose2d(robotTranslationInFieldCoords, gyroRotation);
+            t.log("/Vision Data Provider/Vision X", currentRobotinFieldCoords.getX());
+            t.log("/Vision Data Provider/Vision Y", currentRobotinFieldCoords.getY());
+            t.log("/Vision Data Provider/Vision Rotation", currentRobotinFieldCoords.getRotation().getRadians());
+
+            Rotation3d tagRotation = PoseEstimationHelper.blipToRotation(blip);
+            t.log("/Vision Data Provider/Tag Rotation", tagRotation.getAngle());
+
             if (lastRobotInFieldCoords != null) {
                 Transform2d translationSinceLast = currentRobotinFieldCoords.minus(lastRobotInFieldCoords);
                 double xComponent = translationSinceLast.getX();
@@ -157,14 +149,5 @@ public class VisionDataProvider extends Subsystem implements TableEventListener 
             }
             lastRobotInFieldCoords = currentRobotinFieldCoords;
         }
-    }
-
-    @Override
-    public void initSendable(SendableBuilder builder) {
-        super.initSendable(builder);
-        builder.addDoubleProperty("Vision X", () -> currentRobotinFieldCoords.getX(), null);
-        builder.addDoubleProperty("Vision Y", () -> currentRobotinFieldCoords.getY(), null);
-        builder.addDoubleProperty("Vision Rotation", () -> currentRobotinFieldCoords.getRotation().getRadians(), null);
-        builder.addDoubleProperty("Tag Rotation", () -> tagRotation.getAngle(), null);
     }
 }

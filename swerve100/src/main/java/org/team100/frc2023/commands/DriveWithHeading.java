@@ -11,18 +11,17 @@ import org.team100.lib.motion.drivetrain.SwerveState;
 import org.team100.lib.profile.MotionProfile;
 import org.team100.lib.profile.MotionProfileGenerator;
 import org.team100.lib.profile.MotionState;
+import org.team100.lib.telemetry.Telemetry;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Twist2d;
-import edu.wpi.first.networktables.DoublePublisher;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class DriveWithHeading extends Command {
+    private final Telemetry t = Telemetry.get();
     private final Supplier<Twist2d> m_twistSupplier;
     private final SwerveDriveSubsystem m_robotDrive;
     private final HeadingInterface m_heading;
@@ -85,7 +84,6 @@ public class DriveWithHeading extends Command {
             m_timer.reset();
         }
 
-
         Twist2d twist1_1 = m_twistSupplier.get();
         // if you touch the rotational control, we turn off snap mode
         if (Math.abs(twist1_1.dtheta) < 0.1) {
@@ -119,15 +117,16 @@ public class DriveWithHeading extends Command {
             m_robotDrive.setDesiredState(manualState);
         }
 
-        // publish what we did
+        // log what we did
         double headingMeasurement = currentPose.getRotation().getRadians();
         double headingRate = m_heading.getHeadingRateNWU();
-        refX.set(m_ref.getX());
-        refV.set(m_ref.getV());
-        measurementX.set(headingMeasurement);
-        measurementV.set(headingRate);
-        errorX.set(m_ref.getX() - headingMeasurement);
-        errorV.set(m_ref.getV() - headingRate);
+
+        t.log("/DriveWithHeading/refX", m_ref.getX());
+        t.log("/DriveWithHeading/refV", m_ref.getV());
+        t.log("/DriveWithHeading/measurementX", headingMeasurement);
+        t.log("/DriveWithHeading/measurementV", headingRate);
+        t.log("/DriveWithHeading/errorX", m_ref.getX() - headingMeasurement);
+        t.log("/DriveWithHeading/errorV", m_ref.getV() - headingRate);
     }
 
     @Override
@@ -135,14 +134,4 @@ public class DriveWithHeading extends Command {
         m_robotDrive.truncate();
     }
 
-    //////////////////////////////////////////////////////
-
-    private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
-    private final NetworkTable table = inst.getTable("rotate");
-    private final DoublePublisher errorX = table.getDoubleTopic("errorX").publish();
-    private final DoublePublisher errorV = table.getDoubleTopic("errorV").publish();
-    private final DoublePublisher measurementX = table.getDoubleTopic("measurementX").publish();
-    private final DoublePublisher measurementV = table.getDoubleTopic("measurementV").publish();
-    private final DoublePublisher refX = table.getDoubleTopic("refX").publish();
-    private final DoublePublisher refV = table.getDoubleTopic("refV").publish();
 }

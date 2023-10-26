@@ -4,8 +4,7 @@ import org.team100.lib.encoder.turning.TurningEncoder;
 import org.team100.lib.experiments.Experiment;
 import org.team100.lib.experiments.Experiments;
 import org.team100.lib.motor.turning.TurningMotor;
-
-import com.ctre.phoenix.motorcontrol.ControlMode;
+import org.team100.lib.telemetry.Telemetry;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -13,27 +12,22 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /** Feedforward and feedback control of a single turning motor. */
-public class TurningServo implements Sendable {
+public class TurningServo {
     public static class Config {
         public double kSteeringDeadband = 0.03;
     }
 
     private final Config m_config = new Config();
+    private final Telemetry t = Telemetry.get();
+
     private final Experiments m_experiments;
     private final TurningMotor m_turningMotor;
     private final TurningEncoder m_turningEncoder;
     private final ProfiledPIDController m_turningController;
     private final SimpleMotorFeedforward m_turningFeedforward;
-
-    public double turningFeedForwardOutput;
-    public double turningMotorControllerOutput;
-
-    // private double m_turnOutput;
+    private final String m_name;
 
     public TurningServo(
             Experiments experiments,
@@ -47,27 +41,52 @@ public class TurningServo implements Sendable {
         m_turningEncoder = turningEncoder;
         m_turningController = turningController;
         m_turningFeedforward = turningFeedforward;
-        SmartDashboard.putData(String.format("Swerve TurningServo %s", name), this);
+        m_name = String.format("/Swerve TurningServo %s", name);
     }
 
     void setTurning(SwerveModuleState state) {
-        offboard(state);
-
-        
+        if (m_experiments.enabled(Experiment.UseClosedLoopSteering)) {
+            offboard(state);
+        } else {
+            onboard(state);
+        }
+        log();
     }
 
     void offboard(SwerveModuleState state) {
-        turningMotorControllerOutput = m_turningController.calculate(getTurningAngleRad(), state.angle.getRadians());
-        turningFeedForwardOutput = getTurnSetpointVelocityRadS();
-        double turnOutputRadsPerSec =  MathUtil.applyDeadband(turningMotorControllerOutput + turningFeedForwardOutput, m_config.kSteeringDeadband);
-        m_turningMotor.setPIDVelocity(turnOutputRadsPerSec, 0);
+        double turningMotorControllerOutputRad_S = m_turningController.calculate(
+                getTurningAngleRad(), state.angle.getRadians());
+        double turningFeedForwardRad_S = getTurnSetpointVelocityRadS();
+        double turnOutputRad_S = turningMotorControllerOutputRad_S + turningFeedForwardRad_S;
+        double turnOutputDeadbandRad_S = MathUtil.applyDeadband(turnOutputRad_S, m_config.kSteeringDeadband);
+        m_turningMotor.setPIDVelocity(turnOutputDeadbandRad_S, 0);
+
+        t.log(m_name + "/Controller Output rad_s", turningMotorControllerOutputRad_S);
+        t.log(m_name + "/Feed Forward Output rad_s", turningFeedForwardRad_S);
     }
 
     void onboard(SwerveModuleState state) {
-        turningMotorControllerOutput = m_turningController.calculate(getTurningAngleRad(), state.angle.getRadians());
-        turningFeedForwardOutput = m_turningFeedforward.calculate(getTurnSetpointVelocityRadS(), 0);
+        double turningMotorControllerOutput = m_turningController.calculate(
+                getTurningAngleRad(), state.angle.getRadians());
+        double turningFeedForwardOutput = m_turningFeedforward.calculate(getTurnSetpointVelocityRadS(), 0);
         double turnOutput = turningMotorControllerOutput + turningFeedForwardOutput;
         set(MathUtil.applyDeadband(turnOutput, m_config.kSteeringDeadband));
+
+        t.log(m_name + "/Controller Output", turningMotorControllerOutput);
+        t.log(m_name + "/Feed Forward Output", turningFeedForwardOutput);
+    }
+
+    private void log() {
+        t.log(m_name + "/Turning Measurement (rad)", getTurningAngleRad());
+        t.log(m_name + "/Turning Measurement (deg)", Units.radiansToDegrees(getTurningAngleRad()));
+
+        t.log(m_name + "/Turning Goal (rad)", m_turningController.getGoal().position);
+        t.log(m_name + "/Turning Setpoint (rad)", m_turningController.getSetpoint().position);
+        t.log(m_name + "/Turning Setpoint Velocity (rad/s)", getTurnSetpointVelocityRadS());
+        t.log(m_name + "/Turning Error (rad)", m_turningController.getPositionError());
+        t.log(m_name + "/Turning Error Velocity (rad/s)", m_turningController.getVelocityError());
+
+        t.log(m_name + "/Turning Motor Output [-1, 1]", m_turningMotor.get());
     }
 
     void set(double output) {
@@ -89,25 +108,4 @@ public class TurningServo implements Sendable {
     public void close() {
         m_turningEncoder.close();
     }
-
-    @Override
-    public void initSendable(SendableBuilder builder) {
-        builder.addDoubleProperty("Turning Angle (rad)", () -> getTurningAngleRad(), null);
-        builder.addDoubleProperty("Turning Angle (deg)", () -> Units.radiansToDegrees(getTurningAngleRad()), null);
-
-        builder.addDoubleProperty("Turning Goal (rad)", () -> m_turningController.getGoal().position, null);
-        builder.addDoubleProperty("Turning Setpoint (rad)", () -> m_turningController.getSetpoint().position, null);
-        builder.addDoubleProperty("Turning Setpoint Velocity (rad/s)", this::getTurnSetpointVelocityRadS, null);
-        builder.addDoubleProperty("Turning Position Error (rad)", () -> m_turningController.getPositionError(), null);
-        builder.addDoubleProperty("Turning Velocity Error (rad/s)", () -> m_turningController.getVelocityError(), null);
-
-        builder.addDoubleProperty("Controller Output", () -> turningMotorControllerOutput, null);
-        builder.addDoubleProperty("Feed Forward Output", () -> turningFeedForwardOutput, null);
-
-        builder.addDoubleProperty("Turning Motor Output [-1, 1]", () -> m_turningMotor.get(), null);
-
-        // builder.addDoubleProperty("m_turnOutput", () -> m_turnOutput, null);
-
-    }
-
 }

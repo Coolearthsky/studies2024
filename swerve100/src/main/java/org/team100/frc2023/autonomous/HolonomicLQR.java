@@ -5,6 +5,7 @@ import org.team100.lib.motion.drivetrain.SwerveDriveSubsystem;
 import org.team100.lib.profile.MotionProfile;
 import org.team100.lib.profile.MotionProfileGenerator;
 import org.team100.lib.profile.MotionState;
+import org.team100.lib.telemetry.Telemetry;
 
 // these are replaced by our own versions
 // import com.acmerobotics.roadrunner.profile.MotionProfile;
@@ -18,9 +19,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.DoublePublisher;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 
 /**
@@ -42,6 +40,8 @@ import edu.wpi.first.wpilibj.Timer;
  * point toward. This heading reference is profiled for smoothness.
  */
 public class HolonomicLQR {
+    private final Telemetry t = Telemetry.get();
+
     private Pose2d m_poseError = new Pose2d();
     private Rotation2d m_rotationError = new Rotation2d();
     private Pose2d m_poseTolerance = new Pose2d();
@@ -164,8 +164,9 @@ public class HolonomicLQR {
         // m_lastYRef = (new TrapezoidProfile(m_yManager.m_constraints, goalY,
         // m_lastYRef)).calculate(0.020);
 
-        xDesired.set(m_lastXRef.getX());
-        yDesired.set(m_lastYRef.getX());
+        t.log("/Holonomic LQR/X Desired", m_lastXRef.getX());
+        t.log("/Holonomic LQR/Y Desired", m_lastYRef.getX());
+
         // m_xManager.feedforward.calculate(null)
         m_xManager.m_loop.setNextR(m_lastXRef.getX(), m_lastXRef.getV());
         m_yManager.m_loop.setNextR(m_lastYRef.getX(), m_lastYRef.getV());
@@ -178,8 +179,8 @@ public class HolonomicLQR {
         // double nextXVoltage = m_xManager.m_loop.getU(0);
         // double nextYVoltage = m_yManager.m_loop.getU(0);
 
-        xVolt.set(0.5 * m_lastXRef.getV() + m_lastXRef.getA());
-        yVolt.set(0.5 * m_lastYRef.getV() + m_lastYRef.getA());
+        t.log("/Holonomic LQR/X Volt", 0.5 * m_lastXRef.getV() + m_lastXRef.getA());
+        t.log("/Holonomic LQR/Y Volt", 0.5 * m_lastYRef.getV() + m_lastYRef.getA());
 
         // nextXVoltage + m_lastXRef.getA()
         // nextYVoltage + m_lastYRef.getA()
@@ -216,7 +217,7 @@ public class HolonomicLQR {
                 new MotionState(m_robotDrive.getPose().getX(), 0),
                 new MotionState(goalX, 0),
                 maxVel,
-                maxAccel ,
+                maxAccel,
                 maxJerk);
 
         profileY = MotionProfileGenerator.generateSimpleMotionProfile(
@@ -238,13 +239,4 @@ public class HolonomicLQR {
     public void setEnabled(boolean enabled) {
         m_enabled = enabled;
     }
-
-    NetworkTableInstance inst = NetworkTableInstance.getDefault();
-    NetworkTable table = inst.getTable("Holonomic LQR");
-    DoublePublisher xOutPublisher = table.getDoubleTopic("X Output").publish();
-    DoublePublisher yOutPublisher = table.getDoubleTopic("Y Output").publish();
-    DoublePublisher xDesired = table.getDoubleTopic("X Desired").publish();
-    DoublePublisher yDesired = table.getDoubleTopic("Y Desired").publish();
-    DoublePublisher xVolt = table.getDoubleTopic("X Volt").publish();
-    DoublePublisher yVolt = table.getDoubleTopic("Y Volt").publish();
 }

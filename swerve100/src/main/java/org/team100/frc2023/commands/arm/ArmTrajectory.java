@@ -3,12 +3,11 @@ package org.team100.frc2023.commands.arm;
 import org.team100.frc2023.subsystems.arm.ArmPosition;
 import org.team100.frc2023.subsystems.arm.ArmInterface;
 import org.team100.lib.motion.arm.ArmAngles;
+import org.team100.lib.telemetry.Telemetry;
 
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.Trajectory.State;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.networktables.DoublePublisher;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -24,16 +23,14 @@ public class ArmTrajectory extends Command {
     }
 
     private final Config m_config = new Config();
+
+    private final Telemetry t = Telemetry.get();
+
     private final ArmInterface m_arm;
     private final ArmPosition m_position;
     private final boolean m_oscillate;
 
     private final Timer m_timer;
-
-    private final DoublePublisher measurmentX;
-    private final DoublePublisher measurmentY;
-    private final DoublePublisher setpointUpper;
-    private final DoublePublisher setpointLower;
 
     private Trajectory m_trajectory;
 
@@ -45,12 +42,6 @@ public class ArmTrajectory extends Command {
         m_position = position;
         m_oscillate = oscillate;
         m_timer = new Timer();
-
-        NetworkTableInstance inst = NetworkTableInstance.getDefault();
-        measurmentX = inst.getTable("Arm Trajec").getDoubleTopic("measurmentX").publish();
-        measurmentY = inst.getTable("Arm Trajec").getDoubleTopic("measurmentY").publish();
-        setpointUpper = inst.getTable("Arm Trajec").getDoubleTopic("Setpoint Upper").publish();
-        setpointLower = inst.getTable("Arm Trajec").getDoubleTopic("Setpoint Lower").publish();
 
         addRequirements(m_arm.subsystem());
     }
@@ -96,10 +87,10 @@ public class ArmTrajectory extends Command {
 
         m_arm.setReference(reference);
 
-        measurmentX.set(currentUpper);
-        measurmentY.set(currentLower);
-        setpointUpper.set(desiredUpper);
-        setpointLower.set(desiredLower);
+        t.log("/Arm Trajec/measurmentX", currentUpper);
+        t.log("/Arm Trajec/measurmentY", currentLower);
+        t.log("/Arm Trajec/Setpoint Upper", desiredUpper);
+        t.log("/Arm Trajec/Setpoint Lower", desiredLower);
     }
 
     @Override

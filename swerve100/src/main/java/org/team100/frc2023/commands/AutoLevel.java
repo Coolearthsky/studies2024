@@ -48,6 +48,7 @@ public class AutoLevel extends Command {
         count = 0;
     }
 
+    @Override
     public void execute() {
         Rotation2d rot = m_robotDrive.getPose().getRotation();
 

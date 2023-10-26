@@ -15,21 +15,22 @@ public class History<Value> {
     public History(int capacity) {
         this.capacity = capacity;
         size = 0;
-        valid = new ConcurrentSkipListMap<Double, Value>();
+        valid = new ConcurrentSkipListMap<>();
     }
 
     /**
-     * @param validTime  represents the real-world time the value describes, in
-     *                   seconds. the most-recent entries are retained, up to the
-     *                   capacity.
-     * @param value      value to store
+     * @param validTime represents the real-world time the value describes, in
+     *                  seconds. the most-recent entries are retained, up to the
+     *                  capacity.
+     * @param value     value to store
      */
     public synchronized void put(double validTime, Value value) {
         // fix the key to avoid overwriting anything.
         while (valid.containsKey(validTime)) {
             validTime = Math.nextUp(validTime); // add smallest possible double
         }
-        if(debug)System.out.println("put " + validTime + " " + value);
+        if (debug)
+            System.out.println("put " + validTime + " " + value);
         valid.put(validTime, value);
         if (++size > capacity) {
             valid.pollFirstEntry();
@@ -42,15 +43,13 @@ public class History<Value> {
     }
 
     /**
-     * Find the most-recent value earlier than, or equal to, the specified valid time, or null if no such entry exists.
+     * Find the most-recent value earlier than, or equal to, the specified valid
+     * time, or null if no such entry exists.
      */
     public Entry<Double, Value> floor(double validTimeSec) {
         if (validTimeSec < 0)
             throw new IllegalArgumentException("Negative time is not allowed: " + validTimeSec);
-        Entry<Double, Value> floor = validFloorEntry(validTimeSec);
-        // if (floor == null)
-        //     throw new IllegalStateException("No floor key (not initialized?): " + validTimeSec);
-        return floor;
+        return validFloorEntry(validTimeSec);
     }
 
     public Value floorValue(double validTimeSec) {

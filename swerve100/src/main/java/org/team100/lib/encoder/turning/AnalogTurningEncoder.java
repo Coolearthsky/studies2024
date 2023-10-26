@@ -1,14 +1,17 @@
 package org.team100.lib.encoder.turning;
 
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.util.sendable.SendableBuilder;
+import org.team100.lib.telemetry.Telemetry;
+
 import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class AnalogTurningEncoder implements TurningEncoder, Sendable {
+public class AnalogTurningEncoder implements TurningEncoder {
+
+    private final Telemetry t = Telemetry.get();
+
     private final AnalogInput m_input;
     private final AnalogEncoder m_encoder;
+    private final String m_name;
 
     /**
      * @param channel
@@ -24,17 +27,17 @@ public class AnalogTurningEncoder implements TurningEncoder, Sendable {
         m_encoder = new AnalogEncoder(m_input);
         m_encoder.setPositionOffset(inputOffset);
         m_encoder.setDistancePerRotation(2.0 * Math.PI / gearRatio);
-
-        SmartDashboard.putData(String.format("Analog Turning Encoder %s", name), this);
+        m_name = String.format("/Analog Turning Encoder %s", name);
     }
 
     @Override
     public double getAngle() {
+        t.log(m_name + "/Channel", m_encoder.getChannel());
+        t.log(m_name + "/Angle rad", m_encoder.getDistance());
+        t.log(m_name + "/Turns", m_encoder.get());
+        t.log(m_name + "/Absolute", m_encoder.getAbsolutePosition());
+        t.log(m_name + "/Volts", m_input.getVoltage());
         return m_encoder.getDistance();
-    }
-
-    public double get() {
-        return m_encoder.get();
     }
 
     @Override
@@ -45,15 +48,5 @@ public class AnalogTurningEncoder implements TurningEncoder, Sendable {
     public void close() {
         m_input.close();
         m_encoder.close();
-    }
-
-    @Override
-    public void initSendable(SendableBuilder builder) {
-        builder.setSmartDashboardType("AnalogTurningEncoder");
-        builder.addDoubleProperty("Channel", () -> m_encoder.getChannel(), null);
-        builder.addDoubleProperty("Angle", this::getAngle, null);
-        builder.addDoubleProperty("Turns", () -> this.get(), null);
-        builder.addDoubleProperty("absolute", () -> m_encoder.getAbsolutePosition(), null);
-        builder.addDoubleProperty("Volts", () -> m_input.getVoltage(), null);
     }
 }

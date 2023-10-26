@@ -1,24 +1,17 @@
 package com.team254.frc2022;
 
-import com.team254.lib.drivers.CanDeviceId;
-import com.team254.lib.drivers.ServoMotorSubsystem.ServoMotorSubsystemConstants;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Enumeration;
+
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.swerve.SwerveDriveKinematics;
 import com.team254.lib.swerve.SwerveSetpointGenerator.KinematicLimits;
-import com.team254.lib.util.InterpolatingDouble;
-import com.team254.lib.util.InterpolatingTreeMap;
-import com.team254.lib.util.PolynomialRegression;
-import com.team254.lib.util.ShootingParameters;
-import com.team254.lib.vision.GoalTracker;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.Enumeration;
 
 public class Constants {
     public static final double kLooperDt = 0.01;
@@ -125,26 +118,7 @@ public class Constants {
             new Translation2d(-Constants.kDriveTrackwidthMeters / 2.0, -Constants.kDriveWheelbaseMeters / 2.0)
     );
 
-    // Module Configurations
-    public static final CanDeviceId kBackLeftDriveTalonId = new CanDeviceId(3, kCANivoreCANBusName);
-    public static final CanDeviceId kBackLeftAziTalonId = new CanDeviceId(2, kCANivoreCANBusName);
-    public static final CanDeviceId kBackLeftEncoderPortId = new CanDeviceId(4, kCANivoreCANBusName);
-    public static final Rotation2d kBackLeftAziEncoderOffset = kPracticeBot ? Rotation2d.fromDegrees(272.285) : Rotation2d.fromDegrees(283.62);
 
-    public static final CanDeviceId kBackRightDriveTalonId = new CanDeviceId(6, kCANivoreCANBusName);
-    public static final CanDeviceId kBackRightAziTalonId = new CanDeviceId(5, kCANivoreCANBusName);
-    public static final CanDeviceId kBackRightEncoderPortId = new CanDeviceId(7, kCANivoreCANBusName);
-    public static final Rotation2d kBackRightAziEncoderOffset = kPracticeBot ? Rotation2d.fromDegrees(194.67) : Rotation2d.fromDegrees(201.5);
-
-    public static final CanDeviceId kFrontRightDriveTalonId = new CanDeviceId(12, kCANivoreCANBusName);
-    public static final CanDeviceId kFrontRightAziTalonId = new CanDeviceId(11, kCANivoreCANBusName);
-    public static final CanDeviceId kFrontRightEncoderPortId = new CanDeviceId(13, kCANivoreCANBusName);
-    public static final Rotation2d kFrontRightAziEncoderOffset = kPracticeBot ? Rotation2d.fromDegrees(103.45) : Rotation2d.fromDegrees(67.5);
-
-    public static final CanDeviceId kFrontLeftDriveTalonId = new CanDeviceId(9, kCANivoreCANBusName);
-    public static final CanDeviceId kFrontLeftAziTalonId = new CanDeviceId(8, kCANivoreCANBusName);
-    public static final CanDeviceId kFrontLeftEncoderPortId = new CanDeviceId(10, kCANivoreCANBusName);
-    public static final Rotation2d kFrontLeftAziEncoderOffset = kPracticeBot ? Rotation2d.fromDegrees(14.5) : Rotation2d.fromDegrees(10.75);
 
     // TODO rename these to be steer/drive
     public static final double kMk4AziKp = 0.75;
@@ -163,37 +137,8 @@ public class Constants {
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
             new TrapezoidProfile.Constraints(kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
 
-    // Left Intake
-    public static final CanDeviceId kLeftIntakeMotorId = new CanDeviceId(15, Constants.kCANivoreCANBusName);
-    public static final int kLeftIntakeSolenoidId = 4;
-    public static final boolean kLeftIntakeInvertRoller = true;
 
-    // Right Intake
-    public static final CanDeviceId kRightIntakeMotorId = new CanDeviceId(14, kCANivoreCANBusName);
-    public static final int kRightIntakeSolenoidId = 5;
-    public static final boolean kRightIntakeInvertRoller = false;
 
-    // Feeder/Serializer
-    public static final CanDeviceId kRightFeederMasterId = new CanDeviceId(16, kCANivoreCANBusName);
-    public static final boolean kInvertRightFeeder = true;
-    public static final int kRightFeederBannerSensorId = 5;
-    public static final int kRightFeederColorSensorId = 9;
-
-    public static final CanDeviceId kLeftFeederMasterId = new CanDeviceId(17, kCANivoreCANBusName);
-    public static final boolean kInvertLeftFeeder = true;
-    public static final int kLeftFeederBannerSensorId = 4;
-    public static final int kLeftFeederColorSensorId = 8;
-
-    public static final int kUpperBannerSensorId = 6;
-
-    public static final double kFeederKp = 0.04;
-    public static final double kFeederKi = 0.0;
-    public static final double kFeederKd = 2.0;
-    public static final double kFeederKf = 0.04844;
-
-    // Shooter
-    public static final CanDeviceId kShooterLeftId = new CanDeviceId(18, kCANivoreCANBusName);
-    public static final CanDeviceId kShooterRightId = new CanDeviceId(19, kCANivoreCANBusName);
 
     public static final double kShooterKp = 0.03;
     public static final double kShooterKi = 0.0003;
@@ -215,70 +160,7 @@ public class Constants {
 
     // Turret
     public static final boolean kTurretHomingUseReverseLimit = kPracticeBot ? false : true;
-    public static final ServoMotorSubsystemConstants kTurretConstants = new ServoMotorSubsystemConstants();
-    static {
-        kTurretConstants.kName = "Turret";
 
-        kTurretConstants.kMasterConstants.id = new CanDeviceId(21, Constants.kCANivoreCANBusName);
-        kTurretConstants.kMasterConstants.invert_motor = false;
-        kTurretConstants.kMasterConstants.invert_sensor_phase = true;
-
-        // Unit == Degrees
-        kTurretConstants.kHomePosition = 0;
-        kTurretConstants.kTicksPerUnitDistance = 1.0 / (1.0 / 2048.0 * 11.0 / 38.0 * 10.0 / 130.0 * 360.0);
-
-        kTurretConstants.kPositionKp = 0.2;
-        kTurretConstants.kPositionKd = 0.0;
-        kTurretConstants.kPositionKi = 0.0;
-        kTurretConstants.kPositionIZone = 0;
-
-        kTurretConstants.kKf = 0.045; //Tuned by Sending 0.4 percent output to turret motor and measuring closed loop velocity
-        kTurretConstants.kKa = 0.002;
-        kTurretConstants.kPositionDeadband = 50;
-        kTurretConstants.kCruiseVelocity = 20000;
-        kTurretConstants.kDeadband = 50;
-        kTurretConstants.kAcceleration = 20000;
-
-        kTurretConstants.kEnableStatorCurrentLimit = false;
-        kTurretConstants.kStatorContinuousCurrentLimit = 30;
-
-        kTurretConstants.kMinUnitsLimit = -115.0;
-        kTurretConstants.kMaxUnitsLimit = 115.0;
-
-        // TODO current limits, should recover position on reset?
-
-        kTurretConstants.kRecoverPositionOnReset = false;
-    }
-
-    // Hood
-    public static final ServoMotorSubsystemConstants kHoodConstants = new ServoMotorSubsystemConstants();
-    static {
-        kHoodConstants.kName = "Hood";
-
-        kHoodConstants.kMasterConstants.id = new CanDeviceId(23,  Constants.kCANivoreCANBusName);
-
-        // Unit == Degrees
-        kHoodConstants.kHomePosition = 0.0;
-        kHoodConstants.kTicksPerUnitDistance = 1.0 / ((1.0 / 2048.0) * (16.0 / 56.0) * (14.0 / 42.0) * (14.0 / 510.0) * 360.0);
-
-        kHoodConstants.kPositionKp = 2.0;
-        kHoodConstants.kPositionKd = 0.0;
-        kHoodConstants.kPositionDeadband = (int) (0.2 * kHoodConstants.kTicksPerUnitDistance); // Ticks
-
-        kHoodConstants.kMasterConstants.invert_motor = false;
-        kHoodConstants.kMasterConstants.invert_sensor_phase = false;
-
-        kHoodConstants.kEnableStatorCurrentLimit = true;
-        kHoodConstants.kStatorContinuousCurrentLimit = 100;
-        kHoodConstants.kStatorPeakCurrentLimit = 100;
-        kHoodConstants.kStatorPeakCurrentDuration = 0.2;
-
-        kHoodConstants.kMinUnitsLimit = 0.0;
-        kHoodConstants.kMaxUnitsLimit = 35.0;
-
-        // TODO current limits, should recover position on reset?
-        kHoodConstants.kRecoverPositionOnReset = true;
-    }
 
     // Swerve Heading Controller
     public static final double kSwerveHeadingControllerErrorTolerance = 1.5; // degree error
@@ -303,18 +185,7 @@ public class Constants {
     public static final double kMaintainRadiusKi = 0.0;
     public static final double kMaintainRadiusKd = 0.0;
 
-    // Goal Tracker
-    public static final GoalTracker.Configuration kGoalTrackerConstants = new GoalTracker.Configuration();
-    static {
-        kGoalTrackerConstants.kMaxTrackerDistance = 1.0; //m
-        kGoalTrackerConstants.kMaxGoalTrackAge = kLimelightSnapshotMode ? Double.MAX_VALUE : 20.0; //seconds
-        kGoalTrackerConstants.kMaxGoalTrackSmoothingTime = 0.5; //seconds
-        kGoalTrackerConstants.kCameraFrameRate = 22.0; // fps
 
-        kGoalTrackerConstants.kStabilityWeight = 0.0;
-        kGoalTrackerConstants.kAgeWeight = 10.0;
-        kGoalTrackerConstants.kSwitchingWeight = 0.25;
-    }
 
     // Camera Calibration
     public static final double kHorizontalFOV = 29.8 * 2; //degrees
@@ -334,7 +205,6 @@ public class Constants {
 
     // Hood Tuning
     public static final double kDefaultShooterRPM = 600;
-    public static final double kMaxHoodAngleForShooting = Constants.kHoodConstants.kMaxUnitsLimit;
     public static final boolean kIsShooterTuning = false;
 
     // Positive direction means bias shots away from robot.
@@ -350,55 +220,8 @@ public class Constants {
     // Exit angle of ball (in degrees) when hood is at "0" as measured on video
     public static final double kHoodAngleOffset = 12.0;
 
-    public static double[][] kRPMValues = {
-        {6.7, 1084},
-        {5.5, 990},
-        {4.5, 900},
-        {3.5, 813},
-        {2.5, 770},
-        {2, 730},
-        {1.5, 740},
-    };
 
-    public static double[][] kHoodValues = {
-        {6.7, 25},
-        {5.5, 21.66},
-        {4.5, 19.2},
-        {3.5, 12},
-        {2.5, 7},
-        {2, 4.5},
-        {1.5, 0}
-    };
 
-    public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kHoodMap = new InterpolatingTreeMap<>();
-    public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kRPMMap = new InterpolatingTreeMap<>();
-
-    public static PolynomialRegression kHoodRegression;
-    public static PolynomialRegression kRPMRegression;
-
-    static {
-        for (double[] pair : kRPMValues) {
-            kRPMMap.put(new InterpolatingDouble(pair[0]), new InterpolatingDouble(pair[1]));
-        }
-
-        for (double[] pair : kHoodValues) {
-            kHoodMap.put(new InterpolatingDouble(pair[0]), new InterpolatingDouble(pair[1]));
-        }
-
-        kHoodRegression = new PolynomialRegression(kHoodValues, 1);
-        kRPMRegression = new PolynomialRegression(kRPMValues, 1);
-    }
-
-    public static final ShootingParameters kShootingParams = new ShootingParameters(
-            kHoodMap, // old hood map
-            kHoodMap, // medium hood map
-            kHoodMap, // new hood map
-            kRPMMap, // rpm map
-            Pose2d.identity(), // vision target to goal offset
-            20.0, // shooter allowable error (rpm)
-            0.4, // turret allowable error (m at goal)
-            0.6 // hood allowable error (°)
-    );
 
     // Climber
     public static final double kClimberKp = 0.13;
@@ -413,9 +236,6 @@ public class Constants {
             1.0 / 2048.0 * 11.0 / 40.0 * 22.0 / 38.0 * 14.0 / 48.0          // ticks to sprocket revs
                     * 0.25 / Math.sin(Math.toRadians(180.0 / 22.0)) * Math.PI;  // sprocket revs to inches of travel
 
-    public static final CanDeviceId kClimberMasterId = new CanDeviceId(22, kCANivoreCANBusName);
-    public static final int kTailExtendId = 6;
-    public static final int kDropStingerId = 7;
 
 
     public static final Translation2d goalToTruss = new Translation2d(-7, 2.5);

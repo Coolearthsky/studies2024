@@ -8,12 +8,10 @@ import org.team100.lib.motion.drivetrain.SwerveState;
 import org.team100.lib.profile.MotionProfile;
 import org.team100.lib.profile.MotionProfileGenerator;
 import org.team100.lib.profile.MotionState;
+import org.team100.lib.telemetry.Telemetry;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.networktables.DoublePublisher;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -28,6 +26,9 @@ public class Rotate extends Command {
     }
 
     private final Config m_config = new Config();
+
+    private final Telemetry t = Telemetry.get();
+
     private final SwerveDriveSubsystemInterface m_robotDrive;
     private final HeadingInterface m_heading;
     private final SpeedLimits m_speedLimits;
@@ -57,7 +58,8 @@ public class Rotate extends Command {
     @Override
     public void initialize() {
         ChassisSpeeds initialSpeeds = m_robotDrive.speeds();
-        MotionState start = new MotionState(m_robotDrive.getPose().getRotation().getRadians(), initialSpeeds.omegaRadiansPerSecond);
+        MotionState start = new MotionState(m_robotDrive.getPose().getRotation().getRadians(),
+                initialSpeeds.omegaRadiansPerSecond);
         m_profile = MotionProfileGenerator.generateSimpleMotionProfile(
                 start,
                 m_goalState,
@@ -87,13 +89,13 @@ public class Rotate extends Command {
         // TODO: extend the pose estimator to include rate.
         headingRate = m_heading.getHeadingRateNWU();
 
-        // publish what we did
-        refX.set(refTheta.getX());
-        refV.set(refTheta.getV());
-        measurementX.set(headingMeasurement);
-        measurementV.set(headingRate);
-        errorX.set(xErrorRad());
-        errorV.set(vErrorRad_S());
+        // log what we did
+        t.log("/rotate/errorX", xErrorRad());
+        t.log("/rotate/errorV", vErrorRad_S());
+        t.log("/rotate/measurementX", headingMeasurement);
+        t.log("/rotate/measurementV", headingRate);
+        t.log("/rotate/refX", refTheta.getX());
+        t.log("/rotate/refV", refTheta.getV());
     }
 
     @Override
@@ -119,14 +121,4 @@ public class Rotate extends Command {
     private boolean atSetpoint() {
         return Math.abs(xErrorRad()) < m_config.xToleranceRad && Math.abs(vErrorRad_S()) < m_config.vToleranceRad_S;
     }
-
-    private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
-    private final NetworkTable table = inst.getTable("rotate");
-    private final DoublePublisher errorX = table.getDoubleTopic("errorX").publish();
-    private final DoublePublisher errorV = table.getDoubleTopic("errorV").publish();
-    private final DoublePublisher measurementX = table.getDoubleTopic("measurementX").publish();
-    private final DoublePublisher measurementV = table.getDoubleTopic("measurementV").publish();
-    private final DoublePublisher refX = table.getDoubleTopic("refX").publish();
-    private final DoublePublisher refV = table.getDoubleTopic("refV").publish();
-
 }

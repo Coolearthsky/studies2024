@@ -1,6 +1,7 @@
 package org.team100.lib.motion.drivetrain;
 
 import org.team100.lib.sensors.RedundantGyroInterface;
+import org.team100.lib.telemetry.Telemetry;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 
@@ -9,6 +10,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
  * counterclockwise-positive.
  */
 public class Heading implements HeadingInterface {
+    private final Telemetry t = Telemetry.get();
+
     private final RedundantGyroInterface m_gyro;
 
     public Heading(RedundantGyroInterface gyro) {
@@ -19,7 +22,10 @@ public class Heading implements HeadingInterface {
     public Rotation2d getHeadingNWU() {
         double yawNED = m_gyro.getRedundantYawNED();
         // invert NED to get NWU
-        return Rotation2d.fromDegrees(-1.0 * yawNED);
+        Rotation2d result = Rotation2d.fromDegrees(-1.0 * yawNED);
+        t.log("/Heading/Heading deg", result.getDegrees());
+        t.log("/Heading/Heading rad", result.getRadians());
+        return result;
     }
 
     @Override

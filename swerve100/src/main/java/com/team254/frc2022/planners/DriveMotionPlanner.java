@@ -1,12 +1,10 @@
 package com.team254.frc2022.planners;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import com.team254.frc2022.Constants;
-// import com.team254.frc2022.subsystems.Drive;
 import com.team254.lib.control.Lookahead;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
@@ -24,13 +22,12 @@ import com.team254.lib.trajectory.timing.SwerveDriveDynamicsConstraint;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.trajectory.timing.TimingConstraint;
 import com.team254.lib.trajectory.timing.TimingUtil;
-import com.team254.lib.util.CSVWritable;
 import com.team254.lib.util.Units;
 import com.team254.lib.util.Util;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class DriveMotionPlanner implements CSVWritable {
+public class DriveMotionPlanner  {
     private static final double kMaxDx = 2.0;
     private static final double kMaxDy = 0.25;
     private static final double kMaxDTheta = Math.toRadians(1.0);
@@ -194,15 +191,7 @@ public class DriveMotionPlanner implements CSVWritable {
         return timed_trajectory;
     }
 
-    @Override
-    public String toCSV() {
-        DecimalFormat fmt = new DecimalFormat("#0.000");
-        String ret = "";
-        ret += fmt.format(mOutput.vxMetersPerSecond + ",");
-        ret += fmt.format(mOutput.vyMetersPerSecond + ",");
-        ret += fmt.format(mOutput.omegaRadiansPerSecond + ",");
-        return ret + mPathSetpoint.toCSV() + mHeadingSetpoint.toCSV();
-    }
+
 
     protected ChassisSpeeds updatePIDChassis(ChassisSpeeds chassisSpeeds) {
         // Feedback on longitudinal error (distance).

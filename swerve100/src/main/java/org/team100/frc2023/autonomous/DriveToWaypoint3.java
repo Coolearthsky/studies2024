@@ -6,6 +6,7 @@ import org.team100.frc2023.LQRManager;
 import org.team100.frc2023.commands.GoalOffset;
 import org.team100.lib.motion.drivetrain.SwerveDriveSubsystem;
 import org.team100.lib.motion.drivetrain.SwerveState;
+import org.team100.lib.telemetry.Telemetry;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
@@ -30,9 +31,6 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrajectoryParameterizer.TrajectoryGenerationException;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.networktables.DoublePublisher;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -51,6 +49,7 @@ public class DriveToWaypoint3 extends Command {
     }
 
     private final Config m_config = new Config();
+    private final Telemetry t = Telemetry.get();
     private final Pose2d m_goal;
     private final SwerveDriveSubsystem m_swerve;
     private final SwerveDriveKinematics m_kinematics;
@@ -188,6 +187,7 @@ public class DriveToWaypoint3 extends Command {
 
     }
 
+    @Override
     public void execute() {
         // if (m_trajectory == null) {
         // return;
@@ -213,15 +213,15 @@ public class DriveToWaypoint3 extends Command {
         SwerveState manualState = SwerveDriveSubsystem.incremental(currentPose, fieldRelativeTarget);
         m_swerve.setDesiredState(manualState);
 
-        desiredXPublisher.set(desiredState.poseMeters.getX());
-        desiredYPublisher.set(desiredState.poseMeters.getY());
-        poseXPublisher.set(m_swerve.getPose().getX());
-        poseYPublisher.set(m_swerve.getPose().getY());
-        desiredRotPublisher.set(m_goal.getRotation().getRadians());
-        rotSetpoint.set(m_rotationController.getSetpoint().position);
-        poseRotPublisher.set(m_swerve.getPose().getRotation().getRadians());
-        poseXErrorPublisher.set(xController.getPositionError());
-        poseYErrorPublisher.set(yController.getPositionError());
+        t.log("/Drive To Waypoint/Desired X", desiredState.poseMeters.getX());
+        t.log("/Drive To Waypoint/Desired Y", desiredState.poseMeters.getY());
+        t.log("/Drive To Waypoint/Pose X", m_swerve.getPose().getX());
+        t.log("/Drive To Waypoint/Pose Y", m_swerve.getPose().getY());
+        t.log("/Drive To Waypoint/Desired Rot", m_goal.getRotation().getRadians());
+        t.log("/Drive To Waypoint/Rot Setpoint", m_rotationController.getSetpoint().position);
+        t.log("/Drive To Waypoint/Pose Rot", m_swerve.getPose().getRotation().getRadians());
+        t.log("/Drive To Waypoint/Error X", xController.getPositionError());
+        t.log("/Drive To Waypoint/Error Y", yController.getPositionError());
     }
 
     @Override
@@ -235,19 +235,4 @@ public class DriveToWaypoint3 extends Command {
         m_timer.stop();
         m_swerve.truncate();
     }
-
-    //////////////////////////////////////////////////////////////////////
-
-    private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
-    private final NetworkTable table = inst.getTable("drive to waypoint");
-    private final DoublePublisher desiredXPublisher = table.getDoubleTopic("Desired X").publish();
-    private final DoublePublisher desiredYPublisher = table.getDoubleTopic("Desired Y").publish();
-    private final DoublePublisher poseXPublisher = table.getDoubleTopic("Pose X").publish();
-    private final DoublePublisher poseYPublisher = table.getDoubleTopic("Pose Y").publish();
-    private final DoublePublisher poseRotPublisher = table.getDoubleTopic("Pose Rot").publish();
-    private final DoublePublisher desiredRotPublisher = table.getDoubleTopic("Desired Rot").publish();
-    private final DoublePublisher poseXErrorPublisher = table.getDoubleTopic("Error X").publish();
-    private final DoublePublisher poseYErrorPublisher = table.getDoubleTopic("Error Y").publish();
-    private final DoublePublisher rotSetpoint = table.getDoubleTopic("Rot Setpoint").publish();
-
 }

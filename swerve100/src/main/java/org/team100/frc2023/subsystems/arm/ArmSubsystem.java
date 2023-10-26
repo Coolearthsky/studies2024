@@ -1,19 +1,19 @@
 package org.team100.frc2023.subsystems.arm;
 
-import org.team100.lib.motion.arm.ArmKinematics;
-import org.team100.lib.motor.FRCNEO;
 import org.team100.lib.config.Identity;
 import org.team100.lib.controller.State100;
 import org.team100.lib.motion.arm.ArmAngles;
+import org.team100.lib.motion.arm.ArmKinematics;
+import org.team100.lib.telemetry.Telemetry;
 
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.LinearFilter;
-import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
 /**
@@ -27,47 +27,40 @@ public class ArmSubsystem extends Subsystem implements ArmInterface {
             return this;
         }
 
-		@Override
-		public boolean getCubeMode() {
-			return false;
-		}
+        @Override
+        public boolean getCubeMode() {
+            return false;
+        }
 
-		@Override
-		public void setCubeMode(boolean b) {			
-		}
+        @Override
+        public void setCubeMode(boolean b) {
+            //
+        }
 
         @Override
         public void setReference(ArmAngles reference) {
-            
+            //
         }
 
         @Override
         public ArmAngles getMeasurement() {
-            return new ArmAngles(0,0);
+            return new ArmAngles(0, 0);
         }
 
         @Override
         public void setControlNormal() {
+            //
         }
 
         @Override
-        public void setControlSafe() {            
+        public void setControlSafe() {
+            //
         }
 
         @Override
-        public void close() {            
+        public void close() {
+            //
         }
-
-        @Override
-        public void setUpperSpeed(double x){
-
-        }
-
-        @Override
-        public void setLowerSpeed(double x){
-
-        }
-
     }
 
     public static class Factory {
@@ -126,31 +119,26 @@ public class ArmSubsystem extends Subsystem implements ArmInterface {
 
     private final Config m_config = new Config();
 
+    private final Telemetry t = Telemetry.get();
+
     /** Kinematics in meters. Coordinates are x up, y forward. */
     private final ArmKinematics m_armKinematicsM;
     private final LinearFilter m_lowerMeasurementFilter;
     private final LinearFilter m_upperMeasurementFilter;
     private final PIDController m_lowerController;
     private final PIDController m_upperController;
-    private final FRCNEO lowerArmMotor;
-    private final FRCNEO upperArmMotor;
+    private final CANSparkMax lowerArmMotor;
+    private final CANSparkMax upperArmMotor;
     private final AnalogInput lowerArmInput;
     private final AnalogInput upperArmInput;
     private final AnalogEncoder lowerArmEncoder;
     private final AnalogEncoder upperArmEncoder;
 
-    // TODO: move this somewhere else
-    private boolean cubeMode = true;
-    public void setCubeMode(boolean mode) {
-        cubeMode = mode;
-    }
-    @Override
-    public boolean getCubeMode() {
-        return cubeMode;
-    }
+    private boolean cubeMode;
     private ArmAngles m_reference;
 
     private ArmSubsystem() {
+        setCubeMode(true);
         m_armKinematicsM = new ArmKinematics(m_config.kLowerArmLengthM, m_config.kUpperArmLengthM);
         m_lowerMeasurementFilter = LinearFilter.singlePoleIIR(m_config.filterTimeConstantS, m_config.filterPeriodS);
         m_upperMeasurementFilter = LinearFilter.singlePoleIIR(m_config.filterTimeConstantS, m_config.filterPeriodS);
@@ -159,46 +147,63 @@ public class ArmSubsystem extends Subsystem implements ArmInterface {
         m_lowerController.setTolerance(m_config.tolerance);
         m_upperController.setTolerance(m_config.tolerance);
 
-        lowerArmMotor = new FRCNEO.FRCNEOBuilder(43)
-                .withInverted(false)
-                .withSensorPhase(false)
-                .withTimeout(10)
-                .withCurrentLimitEnabled(true)
-                .withCurrentLimit(40)
-                .withPeakOutputForward(0.5)
-                .withPeakOutputReverse(-0.5)
-                .withNeutralMode(IdleMode.kBrake)
-                .build();
+		lowerArmMotor = new CANSparkMax(43, MotorType.kBrushless);
+		lowerArmMotor.restoreFactoryDefaults();
+		lowerArmMotor.setInverted(false);
+		lowerArmMotor.setSmartCurrentLimit(40);
+		lowerArmMotor.setSecondaryCurrentLimit(40);
+		lowerArmMotor.setIdleMode(IdleMode.kBrake);
 
-        upperArmMotor = new FRCNEO.FRCNEOBuilder(42)
-                .withInverted(false)
-                .withSensorPhase(false)
-                .withTimeout(10)
-                .withCurrentLimitEnabled(true)
-                .withCurrentLimit(40)
-                .withPeakOutputForward(0.5)
-                .withPeakOutputReverse(-0.5)
-                .withNeutralMode(IdleMode.kBrake)
-                .withForwardSoftLimitEnabled(false)
-                .build();
+		upperArmMotor = new CANSparkMax(42, MotorType.kBrushless);
+		upperArmMotor.restoreFactoryDefaults();
+		upperArmMotor.setInverted(false);
+		upperArmMotor.setSmartCurrentLimit(40);
+		upperArmMotor.setSecondaryCurrentLimit(40);
+		upperArmMotor.setIdleMode(IdleMode.kBrake);        
 
         lowerArmInput = new AnalogInput(6);
         lowerArmEncoder = new AnalogEncoder(lowerArmInput);
         upperArmInput = new AnalogInput(5);
         upperArmEncoder = new AnalogEncoder(upperArmInput);
 
-        m_reference = getMeasurement();
-
-        SmartDashboard.putData("Arm Subsystem", this);
+        setReference(getMeasurement());
     }
 
     @Override
     public void periodic() {
+        // TODO: add some sort of "enable auto" for this to be safe and not conflict with manual mode
         ArmAngles measurement = getMeasurement();
+
+        t.log("/Arm Subsystem/Upper Arm Measurement Radians", measurement.th2);
+        t.log("/Arm Subsystem/Lower Arm Measurement Radians", measurement.th1);
+        t.log("/Arm Subsystem/ARM X", m_armKinematicsM.forward(measurement).getX());
+        t.log("/Arm Subsystem/ARM Y", m_armKinematicsM.forward(measurement).getY());
+
+        t.log("/Arm Subsystem/Upper Arm Absolute Angle", upperArmEncoder.getAbsolutePosition());
+        t.log("/Arm Subsystem/Lower Arm Absolute Angle", lowerArmEncoder.getAbsolutePosition());
+        t.log("/Arm Subsystem/Upper Arm Absolute Radians", getUpperArm());
+        t.log("/Arm Subsystem/Lower Arm Absolute Radians", getLowerArm());
+        t.log("/Arm Subsystem/Upper Arm Absolute Degrees", getUpperArm() * 180 / Math.PI);
+        t.log("/Arm Subsystem/Lower Arm Absolute Degrees", getLowerArm() * 180 / Math.PI);
+
         double u1 = m_lowerController.calculate(measurement.th1, m_reference.th1);
         double u2 = m_upperController.calculate(measurement.th2, m_reference.th2);
         lowerArmMotor.set(soften(u1));
         upperArmMotor.set(u2);
+
+        t.log("/Arm Subsystem/Upper Arm Output amps", lowerArmMotor.getOutputCurrent());
+        t.log("/Arm Subsystem/Lower Arm Output amps", upperArmMotor.getOutputCurrent());
+
+    }
+
+    public void setCubeMode(boolean mode) {
+        cubeMode = mode;
+        t.log("Arm Subsystem/Cube Mode", cubeMode);
+    }
+
+    @Override
+    public boolean getCubeMode() {
+        return cubeMode;
     }
 
     /**
@@ -207,6 +212,8 @@ public class ArmSubsystem extends Subsystem implements ArmInterface {
      */
     public void setReference(ArmAngles reference) {
         m_reference = reference;
+        t.log("/Arm Subsystem/Upper Angle Setpoint", m_reference.th2);
+        t.log("/Arm Subsystem/Lower Angle Setpoint", m_reference.th1);
     }
 
     /** Measure the arm position, smoothed with single-pole IIR low-pass filter. */
@@ -267,44 +274,8 @@ public class ArmSubsystem extends Subsystem implements ArmInterface {
         return x * Math.PI / 180;
     }
 
-    public void setUpperSpeed(double x){
-
-        upperArmMotor.drivePercentOutput(x);
-
-    }
-
-    public void setLowerSpeed(double x){
-
-        lowerArmMotor.drivePercentOutput(x);
-
-    }
-
-    private double getUpperArmDegrees() {
-        return getUpperArm() * 180 / Math.PI;
-    }
-
-    private double getLowerArmDegrees() {
-        return getLowerArm() * 180 / Math.PI;
-    }
-
     @Override
     public Subsystem subsystem() {
         return this;
-    }
-
-    @Override
-    public void initSendable(SendableBuilder builder) {
-        super.initSendable(builder);
-        builder.addDoubleProperty("ARM X", () -> m_armKinematicsM.forward(getMeasurement()).getX(), null);
-        builder.addDoubleProperty("ARM Y", () -> m_armKinematicsM.forward(getMeasurement()).getY(), null);
-        builder.addDoubleProperty("Upper Arm Absolute Angle", () -> upperArmEncoder.getAbsolutePosition(), null);
-        builder.addDoubleProperty("Lower Arm Absolute Angle", () -> lowerArmEncoder.getAbsolutePosition(), null);
-        builder.addDoubleProperty("Upper Arm Absolute Radians", () -> getUpperArm(), null);
-        builder.addDoubleProperty("Lower Arm Absolute Rasians", () -> getLowerArm(), null);
-        builder.addDoubleProperty("Upper Arm Absolute Degrees", () -> getUpperArmDegrees(), null);
-        builder.addDoubleProperty("Lower Arm Absolute Degrees", () -> getLowerArmDegrees(), null);
-        builder.addBooleanProperty("Cube Mode", () -> cubeMode, null);
-        builder.addDoubleProperty("Upper Angle Setpoint", () -> m_reference.th2, null);
-        builder.addDoubleProperty("Lower Angle Setpoint", () -> m_reference.th1, null);
     }
 }

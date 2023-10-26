@@ -8,6 +8,7 @@ import org.team100.lib.controller.PidGains;
 import org.team100.lib.localization.AprilTagFieldLayoutWithCorrectOrientation;
 import org.team100.lib.motion.drivetrain.SwerveDriveSubsystem;
 import org.team100.lib.motion.drivetrain.SwerveState;
+import org.team100.lib.telemetry.Telemetry;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -19,13 +20,12 @@ import edu.wpi.first.math.trajectory.Trajectory.State;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrajectoryParameterizer.TrajectoryGenerationException;
-import edu.wpi.first.networktables.DoublePublisher;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class DriveToAprilTag extends Command {
+    private final Telemetry t = Telemetry.get();
+
     private final Pose2d m_goal;
     private final SwerveDriveSubsystem m_swerve;
     private final SwerveDriveKinematics m_kinematics;
@@ -86,6 +86,7 @@ public class DriveToAprilTag extends Command {
         m_timer.stop();
     }
 
+    @Override
     public void execute() {
         if (m_trajectory == null) {
             return;
@@ -106,9 +107,9 @@ public class DriveToAprilTag extends Command {
 
         SwerveState desiredSwerveState = SwerveState.fromState(desiredState, desiredRot);
 
-        desiredXPublisher.set(desiredSwerveState.x().x());
-        desiredYPublisher.set(desiredSwerveState.y().x());
-        desiredRotPublisher.set(desiredSwerveState.theta().x());
+        t.log("/desired pose/x", desiredSwerveState.x().x());
+        t.log("/desired pose/y", desiredSwerveState.y().x());
+        t.log("/desired pose/theta", desiredSwerveState.theta().x());
 
         m_swerve.setDesiredState(desiredSwerveState);
     }
@@ -154,13 +155,4 @@ public class DriveToAprilTag extends Command {
             return null;
         }
     }
-
-    private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
-
-    // desired pose
-    private final NetworkTable desired = inst.getTable("desired pose");
-    private final DoublePublisher desiredXPublisher = desired.getDoubleTopic("x").publish();
-    private final DoublePublisher desiredYPublisher = desired.getDoubleTopic("y").publish();
-    private final DoublePublisher desiredRotPublisher = desired.getDoubleTopic("theta").publish();
-
 }

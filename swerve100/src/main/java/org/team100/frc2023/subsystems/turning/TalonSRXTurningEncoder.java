@@ -2,36 +2,34 @@ package org.team100.frc2023.subsystems.turning;
 
 import org.team100.lib.encoder.turning.TurningEncoder;
 import org.team100.lib.motor.turning.CANTurningMotor;
+import org.team100.lib.telemetry.Telemetry;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class TalonSRXTurningEncoder implements TurningEncoder, Sendable{
+public class TalonSRXTurningEncoder implements TurningEncoder {
+    private static final int ticksPerRevolution = 1666;
+
+    private final Telemetry t = Telemetry.get();
     private final WPI_TalonSRX m_motor;
+    private final String m_name;
 
     public TalonSRXTurningEncoder(String name, CANTurningMotor motor) {
         m_motor = motor.getMotor();
-        SmartDashboard.putData(String.format("TalonSRXEncoder %s", name), this);
+        m_name = String.format("/TalonSRXEncoder %s", name);
     }
 
     @Override
     public double getAngle() {
-        return MathUtil.angleModulus(m_motor.getSelectedSensorPosition()/1666*2*Math.PI);
+        double angleRad = MathUtil.angleModulus(m_motor.getSelectedSensorPosition() / ticksPerRevolution * 2 * Math.PI);
+        t.log(m_name + "/Angle rad", angleRad);
+        return angleRad;
     }
 
     @Override
     public void reset() {
         m_motor.setSelectedSensorPosition(0);
-        return;
-    }
-    @Override
-    public void initSendable(SendableBuilder builder) {
-        builder.setSmartDashboardType("TalonSRXTurningEncoder");
-        builder.addDoubleProperty("Angle", () -> this.getAngle(), null);
     }
 
     @Override

@@ -42,4 +42,6 @@ public class Cameras2023 {
         }
     }
 
+    private Cameras2023() {}
+
 }

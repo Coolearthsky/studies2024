@@ -1,13 +1,11 @@
 package org.team100.frc2023.subsystems;
 
 import org.team100.lib.config.Identity;
-import org.team100.lib.motor.FRCTalonSRX;
-import org.team100.lib.motor.FRCTalonSRX.FRCTalonSRXBuilder;
+import org.team100.lib.telemetry.Telemetry;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
-import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
 public class Manipulator extends Subsystem implements ManipulatorInterface {
@@ -27,7 +25,6 @@ public class Manipulator extends Subsystem implements ManipulatorInterface {
             return 0;
         }
 
-       
     }
 
     public static class Factory {
@@ -47,35 +44,31 @@ public class Manipulator extends Subsystem implements ManipulatorInterface {
         }
     }
 
-    private final FRCTalonSRX m_motor;
-   
+    private final Telemetry t = Telemetry.get();
+    private final WPI_TalonSRX m_motor;
+
     private Manipulator() {
-        m_motor = new FRCTalonSRXBuilder(10)
-                .withInverted(false)
-                .withSensorPhase(false)
-                .withPeakOutputForward(1)
-                .withPeakOutputReverse(-1)
-                .withNeutralMode(NeutralMode.Brake)
-                .withCurrentLimitEnabled(true)
-                .build();
+        m_motor = new WPI_TalonSRX(10);
+        m_motor.configFactoryDefault();
+        m_motor.setSafetyEnabled(false);
+        m_motor.enableCurrentLimit(true);
+        m_motor.configContinuousCurrentLimit(0);
+        m_motor.setNeutralMode(NeutralMode.Brake);
+        m_motor.configPeakOutputForward(1);
+        m_motor.configPeakOutputReverse(-1);
         m_motor.configPeakCurrentLimit(30);
         m_motor.configPeakCurrentDuration(1000);
-        SmartDashboard.putData("Manipulator", this);
     }
 
     public void set(double speed1_1, int currentLimit) {
         m_motor.configPeakCurrentLimit(currentLimit);
         m_motor.set(speed1_1);
+        t.log("/Manipulator/Output Current amps", m_motor.getStatorCurrent());
+        t.log("/Manipulator/Input Current amps", m_motor.getSupplyCurrent());
     }
 
     public double getStatorCurrent() {
         return m_motor.getStatorCurrent();
-    }
-
-    public void initSendable(SendableBuilder builder) {
-        super.initSendable(builder);
-        builder.addDoubleProperty("Output Current", () -> m_motor.getStatorCurrent(), null);
-        builder.addDoubleProperty("Input Current", () -> m_motor.getSupplyCurrent(), null);
     }
 
     @Override

@@ -1,14 +1,14 @@
 package org.team100.lib.encoder.drive;
 
 import org.team100.lib.motor.drive.FalconDriveMotor;
+import org.team100.lib.telemetry.Telemetry;
 
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+public class FalconDriveEncoder implements DriveEncoder {
+    private final Telemetry t = Telemetry.get();
 
-public class FalconDriveEncoder implements DriveEncoder, Sendable {
     private final FalconDriveMotor m_motor;
     private final double m_distancePerPulse;
+    private final String m_name;
 
     /** @param distancePerTurn in meters */
     public FalconDriveEncoder(String name,
@@ -16,7 +16,7 @@ public class FalconDriveEncoder implements DriveEncoder, Sendable {
             double distancePerTurn) {
         this.m_motor = motor;
         this.m_distancePerPulse = distancePerTurn / 2048;
-        SmartDashboard.putData(String.format("Falcon Drive Encoder %s", name), this);
+        m_name = String.format("/Falcon Drive Encoder %s", name);
     }
 
     @Override
@@ -27,18 +27,13 @@ public class FalconDriveEncoder implements DriveEncoder, Sendable {
     @Override
     public double getRate() {
         // sensor velocity is 1/2048ths of a turn per 100ms
-        return m_motor.getVelocity() * 10 * m_distancePerPulse;
+        double result = m_motor.getVelocity2048_100() * 10 * m_distancePerPulse;
+        t.log(m_name + "/Speed m_s", result);
+        return result;
     }
 
     @Override
     public void reset() {
         m_motor.resetPosition();
     }
-
-    @Override
-    public void initSendable(SendableBuilder builder) {
-        builder.setSmartDashboardType("FalconDriveEncoder");
-        builder.addDoubleProperty("Speed Ms", this::getRate, null);
-    }
-
 }

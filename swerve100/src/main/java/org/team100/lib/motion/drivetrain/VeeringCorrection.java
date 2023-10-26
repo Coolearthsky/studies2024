@@ -17,6 +17,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
  * 
  * This issue is discussed in this CD thread:
  * https://www.chiefdelphi.com/t/field-relative-swervedrive-drift-even-with-simulated-perfect-modules/413892
+ * 
+ * TODO: WPILib supports veering correction now; try their version of it.
  */
 public class VeeringCorrection {
     public static class Config {

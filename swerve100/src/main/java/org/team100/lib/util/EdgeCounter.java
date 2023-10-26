@@ -23,5 +23,4 @@ public class EdgeCounter {
         m_value = value;
         return m_count;
     }
-
 }

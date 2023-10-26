@@ -4,9 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.team254.lib.geometry.State;
-import com.team254.lib.util.CSVWritable;
 
-public class Trajectory<S extends State<S>, T extends State<T>> implements CSVWritable {
+public class Trajectory<S extends State<S>, T extends State<T>>  {
     protected final List<TrajectoryPoint<S, T>> points_;
     protected final IndexView index_view_ = new IndexView();
     protected double default_velocity_;
@@ -93,19 +92,6 @@ public class Trajectory<S extends State<S>, T extends State<T>> implements CSVWr
             builder.append(": ");
             builder.append(getPoint(i).state());
             builder.append(getPoint(i).heading());
-            builder.append(System.lineSeparator());
-        }
-        return builder.toString();
-    }
-
-    @Override
-    public String toCSV() {
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < length(); ++i) {
-            builder.append(i);
-            builder.append(",");
-            builder.append(getPoint(i).state().toCSV());
-            builder.append(getPoint(i).heading().toCSV());
             builder.append(System.lineSeparator());
         }
         return builder.toString();

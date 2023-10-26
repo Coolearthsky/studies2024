@@ -7,19 +7,19 @@ import java.util.function.Supplier;
 import org.team100.frc2023.commands.SwerveControllerCommand;
 import org.team100.lib.motion.drivetrain.SwerveDriveSubsystem;
 import org.team100.lib.sensors.RedundantGyro;
+import org.team100.lib.telemetry.Telemetry;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryUtil;
-import edu.wpi.first.networktables.DoublePublisher;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class VasiliWaypointTrajectory extends Command {
+    private final Telemetry t = Telemetry.get();
+
     private final SwerveControllerCommand m_swerveController;
 
     public VasiliWaypointTrajectory(
@@ -46,7 +46,7 @@ public class VasiliWaypointTrajectory extends Command {
     @Override
     public void execute() {
         m_swerveController.execute();
-        running.set(5);
+        setRunning(5);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class VasiliWaypointTrajectory extends Command {
     @Override
     public void end(boolean interrupted) {
         m_swerveController.end(interrupted);
-        running.set(0);
+        setRunning(0);
     }
 
     //////////////////////////////////////////////////////////
@@ -72,7 +72,7 @@ public class VasiliWaypointTrajectory extends Command {
         return new Trajectory();
     }
 
-    private final NetworkTableInstance inst = NetworkTableInstance.getDefault();
-    private final NetworkTable table = inst.getTable("waypoint");
-    private final DoublePublisher running = table.getDoubleTopic("running").publish();
+    private void setRunning(double x) {
+        t.log("/waypoint/running", x);
+    }
 }
