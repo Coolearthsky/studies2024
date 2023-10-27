@@ -14,7 +14,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
-import com.team254.lib.swerve.SwerveSetpoint;
+import org.team100.lib.swerve.SwerveSetpoint;
 import edu.wpi.first.math.geometry.Translation2d;
 
 /**
@@ -39,7 +39,7 @@ public class SwerveLocal {
     private final AsymSwerveSetpointGenerator m_SwerveSetpointGenerator = new AsymSwerveSetpointGenerator(
             m_DriveKinematics2.as254());
     private AsymSwerveSetpointGenerator.KinematicLimits limits = new AsymSwerveSetpointGenerator.KinematicLimits();
-    com.team254.lib.swerve.ChassisSpeeds c254 = new com.team254.lib.swerve.ChassisSpeeds();
+    org.team100.lib.swerve.ChassisSpeeds c254 = new org.team100.lib.swerve.ChassisSpeeds();
     com.team254.lib.swerve.SwerveModuleState[] s254 = new com.team254.lib.swerve.SwerveModuleState[] {
             new com.team254.lib.swerve.SwerveModuleState(0, 0, com.team254.lib.geometry.Rotation2d.kIdentity),
             new com.team254.lib.swerve.SwerveModuleState(0, 0, com.team254.lib.geometry.Rotation2d.kIdentity),
@@ -80,11 +80,11 @@ public class SwerveLocal {
         }
     }
 
-    public void setChassisSpeeds254(com.team254.lib.swerve.ChassisSpeeds targetChassisSpeeds) {
+    public void setChassisSpeeds254(org.team100.lib.swerve.ChassisSpeeds targetChassisSpeeds) {
         setChassisSpeedsNormally254(targetChassisSpeeds);
     }
 
-    private void setChassisSpeedsNormally254(com.team254.lib.swerve.ChassisSpeeds targetChassisSpeeds) {
+    private void setChassisSpeedsNormally254(org.team100.lib.swerve.ChassisSpeeds targetChassisSpeeds) {
         t.log("/desired speed/x254", targetChassisSpeeds.vxMetersPerSecond);
         t.log("/desired speed/y254", targetChassisSpeeds.vyMetersPerSecond);
         t.log("/desired speed/theta254", targetChassisSpeeds.omegaRadiansPerSecond);
@@ -131,7 +131,7 @@ public class SwerveLocal {
         // desiredChassisSpeeds2
         // : new com.team254.lib.swerve.ChassisSpeeds(twist.dx, twist.dy, twist.dtheta);
 
-        com.team254.lib.swerve.ChassisSpeeds targetChassisSpeeds = new com.team254.lib.swerve.ChassisSpeeds(
+        org.team100.lib.swerve.ChassisSpeeds targetChassisSpeeds = new org.team100.lib.swerve.ChassisSpeeds(
                 targetChassisSpeeds2.vxMetersPerSecond, targetChassisSpeeds2.vyMetersPerSecond,
                 targetChassisSpeeds2.omegaRadiansPerSecond);
 

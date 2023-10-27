@@ -3,13 +3,13 @@ package org.team100.lib.trajectory;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.team100.lib.swerve.ChassisSpeeds;
 
 import com.team254.frc2022.planners.DriveMotionPlanner;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
-import com.team254.lib.swerve.ChassisSpeeds;
 import com.team254.lib.trajectory.TimedView;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.TrajectoryIterator;

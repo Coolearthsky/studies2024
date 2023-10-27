@@ -4,13 +4,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.motion.drivetrain.kinematics.SwerveKinematics;
+import org.team100.lib.swerve.AsymSwerveSetpointGenerator;
 
-import com.team254.lib.swerve.SwerveSetpoint;
-import com.team254.lib.swerve.SwerveSetpointGenerator;
+import org.team100.lib.swerve.SwerveSetpoint;
 
 import edu.wpi.first.math.geometry.Translation2d;
 
-public class SwerveSetpointGeneratorTest {
+public class AsymSwerveSetpointGeneratorTest {
     private static final double kDelta = 0.001;
 
     @Test
@@ -22,13 +22,13 @@ public class SwerveSetpointGeneratorTest {
                 new Translation2d(kWheelBase / 2, -kTrackWidth / 2),
                 new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
                 new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
-        com.team254.lib.swerve.SwerveDriveKinematics kinematics254 = k.as254();
-        SwerveSetpointGenerator swerveSetpointGenerator = new SwerveSetpointGenerator(kinematics254);
-        SwerveSetpointGenerator.KinematicLimits limits = new SwerveSetpointGenerator.KinematicLimits();
+        org.team100.lib.swerve.SwerveDriveKinematics kinematics254 = k.as254();
+        AsymSwerveSetpointGenerator swerveSetpointGenerator = new AsymSwerveSetpointGenerator(kinematics254);
+        AsymSwerveSetpointGenerator.KinematicLimits limits = new AsymSwerveSetpointGenerator.KinematicLimits();
         limits.kMaxDriveVelocity = 5;
         limits.kMaxDriveAcceleration = 10;
         limits.kMaxSteeringVelocity = 5;
-        com.team254.lib.swerve.ChassisSpeeds c254 = new com.team254.lib.swerve.ChassisSpeeds();
+        org.team100.lib.swerve.ChassisSpeeds c254 = new org.team100.lib.swerve.ChassisSpeeds();
         c254.vxMetersPerSecond = 0;
         c254.vyMetersPerSecond = 0;
         c254.omegaRadiansPerSecond = 0;
@@ -39,7 +39,7 @@ public class SwerveSetpointGeneratorTest {
                 new com.team254.lib.swerve.SwerveModuleState(0, 0, com.team254.lib.geometry.Rotation2d.kIdentity)
         };
         SwerveSetpoint setpoint = new SwerveSetpoint(c254, s254);
-        com.team254.lib.swerve.ChassisSpeeds cDesired254 = new com.team254.lib.swerve.ChassisSpeeds();
+        org.team100.lib.swerve.ChassisSpeeds cDesired254 = new org.team100.lib.swerve.ChassisSpeeds();
         cDesired254.vxMetersPerSecond = 10;
         cDesired254.vyMetersPerSecond = 10;
         cDesired254.omegaRadiansPerSecond = 10;

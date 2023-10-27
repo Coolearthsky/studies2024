@@ -7,10 +7,9 @@ import java.util.Optional;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.geometry.Twist2d;
-import com.team254.lib.swerve.ChassisSpeeds;
-import com.team254.lib.swerve.SwerveDriveKinematics;
 import com.team254.lib.swerve.SwerveModuleState;
-import com.team254.lib.swerve.SwerveSetpoint;
+
+import org.team100.lib.swerve.SwerveSetpoint;
 import com.team254.lib.util.Util;
 
 /**

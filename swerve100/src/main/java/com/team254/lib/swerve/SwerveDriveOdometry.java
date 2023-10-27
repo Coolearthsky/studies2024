@@ -4,6 +4,9 @@
 
 package com.team254.lib.swerve;
 
+import org.team100.lib.swerve.ChassisSpeeds;
+import org.team100.lib.swerve.SwerveDriveKinematics;
+
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Twist2d;

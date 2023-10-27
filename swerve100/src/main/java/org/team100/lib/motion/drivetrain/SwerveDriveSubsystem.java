@@ -151,7 +151,7 @@ public class SwerveDriveSubsystem extends Subsystem implements SwerveDriveSubsys
         m_swerveLocal.setChassisSpeeds(targetChassisSpeeds);
     }
 
-    public void setChassisSpeeds(com.team254.lib.swerve.ChassisSpeeds speeds) {
+    public void setChassisSpeeds(org.team100.lib.swerve.ChassisSpeeds speeds) {
         m_swerveLocal.setChassisSpeeds254(speeds);
     }
 

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.team100.lib.swerve.ChassisSpeeds;
+
 import com.team254.frc2022.Constants;
 import com.team254.lib.control.Lookahead;
 import com.team254.lib.geometry.Pose2d;
@@ -12,7 +14,6 @@ import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.geometry.Twist2d;
 import com.team254.lib.physics.SwerveDrive;
-import com.team254.lib.swerve.ChassisSpeeds;
 import com.team254.lib.trajectory.DistanceView;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.TrajectoryIterator;
