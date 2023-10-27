@@ -17,28 +17,28 @@ public class TestSE2Math {
     @Test
     public void testRotation2d() {
         // Test constructors
-        Rotation2dState rot1 = new Rotation2dState();
+        Rotation2d rot1 = new Rotation2d();
         assertEquals(1, rot1.getCos(), kTestEpsilon);
         assertEquals(0, rot1.getSin(), kTestEpsilon);
         assertEquals(0, rot1.getTan(), kTestEpsilon);
         assertEquals(0, rot1.getDegrees(), kTestEpsilon);
         assertEquals(0, rot1.getRadians(), kTestEpsilon);
 
-        rot1 = new Rotation2dState(1, 1);
+        rot1 = new Rotation2d(1, 1);
         assertEquals(Math.sqrt(2) / 2, rot1.getCos(), kTestEpsilon);
         assertEquals(Math.sqrt(2) / 2, rot1.getSin(), kTestEpsilon);
         assertEquals(1, rot1.getTan(), kTestEpsilon);
         assertEquals(45, rot1.getDegrees(), kTestEpsilon);
         assertEquals(Math.PI / 4, rot1.getRadians(), kTestEpsilon);
 
-        rot1 = Rotation2dState.fromRadians(Math.PI / 2);
+        rot1 = Rotation2d.fromRadians(Math.PI / 2);
         assertEquals(0, rot1.getCos(), kTestEpsilon);
         assertEquals(1, rot1.getSin(), kTestEpsilon);
         assertTrue(1 / kTestEpsilon < rot1.getTan());
         assertEquals(90, rot1.getDegrees(), kTestEpsilon);
         assertEquals(Math.PI / 2, rot1.getRadians(), kTestEpsilon);
 
-        rot1 = Rotation2dState.fromDegrees(270);
+        rot1 = Rotation2d.fromDegrees(270);
         assertEquals(0, rot1.getCos(), kTestEpsilon);
         assertEquals(-1, rot1.getSin(), kTestEpsilon);
         System.out.println(rot1.getTan());
@@ -51,8 +51,8 @@ public class TestSE2Math {
         assertEquals(3 * Math.PI / 2, rot1.getRadians(), kTestEpsilon);
 
         // Test inversion
-        rot1 = Rotation2dState.fromDegrees(270);
-        Rotation2dState rot2 = rot1.unaryMinus();
+        rot1 = Rotation2d.fromDegrees(270);
+        Rotation2d rot2 = rot1.unaryMinus();
         assertEquals(0, rot2.getCos(), kTestEpsilon);
         assertEquals(1, rot2.getSin(), kTestEpsilon);
         // this test is silly
@@ -62,15 +62,15 @@ public class TestSE2Math {
         assertEquals(-270, rot2.getDegrees(), kTestEpsilon);
         assertEquals(-3*Math.PI / 2, rot2.getRadians(), kTestEpsilon);
 
-        rot1 = Rotation2dState.fromDegrees(1);
+        rot1 = Rotation2d.fromDegrees(1);
         rot2 = rot1.unaryMinus();
         assertEquals(rot1.getCos(), rot2.getCos(), kTestEpsilon);
         assertEquals(-rot1.getSin(), rot2.getSin(), kTestEpsilon);
         assertEquals(-1, rot2.getDegrees(), kTestEpsilon);
 
         // Test rotateBy
-        rot1 = Rotation2dState.fromDegrees(45);
-        rot2 = Rotation2dState.fromDegrees(45);
+        rot1 = Rotation2d.fromDegrees(45);
+        rot2 = Rotation2d.fromDegrees(45);
         Rotation2d rot3 = rot1.rotateBy(rot2);
         assertEquals(0, rot3.getCos(), kTestEpsilon);
         assertEquals(1, rot3.getSin(), kTestEpsilon);
@@ -78,8 +78,8 @@ public class TestSE2Math {
         assertEquals(90, rot3.getDegrees(), kTestEpsilon);
         assertEquals(Math.PI / 2, rot3.getRadians(), kTestEpsilon);
 
-        rot1 = Rotation2dState.fromDegrees(45);
-        rot2 = Rotation2dState.fromDegrees(-45);
+        rot1 = Rotation2d.fromDegrees(45);
+        rot2 = Rotation2d.fromDegrees(-45);
         rot3 = rot1.rotateBy(rot2);
         assertEquals(1, rot3.getCos(), kTestEpsilon);
         assertEquals(0, rot3.getSin(), kTestEpsilon);
@@ -89,49 +89,49 @@ public class TestSE2Math {
 
         // A rotation times its inverse should be the identity
         Rotation2dState identity = new Rotation2dState();
-        rot1 = Rotation2dState.fromDegrees(21.45);
+        rot1 = Rotation2d.fromDegrees(21.45);
         rot2 = rot1.rotateBy(rot1.unaryMinus());
         assertEquals(identity.getCos(), rot2.getCos(), kTestEpsilon);
         assertEquals(identity.getSin(), rot2.getSin(), kTestEpsilon);
         assertEquals(identity.getDegrees(), rot2.getDegrees(), kTestEpsilon);
 
         // Test interpolation
-        rot1 = Rotation2dState.fromDegrees(45);
-        rot2 = Rotation2dState.fromDegrees(135);
-        rot3 = rot1.interpolate2(rot2, .5);
+        rot1 = Rotation2d.fromDegrees(45);
+        rot2 = Rotation2d.fromDegrees(135);
+        rot3 = rot1.interpolate(rot2, .5);
         assertEquals(90, rot3.getDegrees(), kTestEpsilon);
 
-        rot1 = Rotation2dState.fromDegrees(45);
-        rot2 = Rotation2dState.fromDegrees(135);
-        rot3 = rot1.interpolate2(rot2, .75);
+        rot1 = Rotation2d.fromDegrees(45);
+        rot2 = Rotation2d.fromDegrees(135);
+        rot3 = rot1.interpolate(rot2, .75);
         assertEquals(112.5, rot3.getDegrees(), kTestEpsilon);
 
-        rot1 = Rotation2dState.fromDegrees(45);
-        rot2 = Rotation2dState.fromDegrees(-45);
-        rot3 = rot1.interpolate2(rot2, .5);
+        rot1 = Rotation2d.fromDegrees(45);
+        rot2 = Rotation2d.fromDegrees(-45);
+        rot3 = rot1.interpolate(rot2, .5);
         assertEquals(0, rot3.getDegrees(), kTestEpsilon);
 
-        rot1 = Rotation2dState.fromDegrees(45);
-        rot2 = Rotation2dState.fromDegrees(45);
-        rot3 = rot1.interpolate2(rot2, .5);
+        rot1 = Rotation2d.fromDegrees(45);
+        rot2 = Rotation2d.fromDegrees(45);
+        rot3 = rot1.interpolate(rot2, .5);
         assertEquals(45, rot3.getDegrees(), kTestEpsilon);
 
-        rot1 = Rotation2dState.fromDegrees(45);
-        rot2 = Rotation2dState.fromDegrees(45);
-        rot3 = rot1.interpolate2(rot2, .5);
+        rot1 = Rotation2d.fromDegrees(45);
+        rot2 = Rotation2d.fromDegrees(45);
+        rot3 = rot1.interpolate(rot2, .5);
         assertEquals(45, rot3.getDegrees(), kTestEpsilon);
 
         // Test parallel.
-        rot1 = Rotation2dState.fromDegrees(45);
-        rot2 = Rotation2dState.fromDegrees(45);
+        rot1 = Rotation2d.fromDegrees(45);
+        rot2 = Rotation2d.fromDegrees(45);
         assertTrue(rot1.isParallel(rot2));
 
-        rot1 = Rotation2dState.fromDegrees(45);
-        rot2 = Rotation2dState.fromDegrees(-45);
+        rot1 = Rotation2d.fromDegrees(45);
+        rot2 = Rotation2d.fromDegrees(-45);
         assertFalse(rot1.isParallel(rot2));
 
-        rot1 = Rotation2dState.fromDegrees(45);
-        rot2 = Rotation2dState.fromDegrees(-135);
+        rot1 = Rotation2d.fromDegrees(45);
+        rot2 = Rotation2d.fromDegrees(-135);
         assertTrue(rot1.isParallel(rot2));
     }
 
@@ -157,14 +157,14 @@ public class TestSE2Math {
 
         // Test rotateBy
         pos1 = new Translation2d(2, 0);
-        Rotation2dState rot1 = Rotation2dState.fromDegrees(90);
+        Rotation2d rot1 = Rotation2d.fromDegrees(90);
         pos2 = pos1.rotateBy(rot1);
         assertEquals(0, pos2.getX(), kTestEpsilon);
         assertEquals(2, pos2.getY(), kTestEpsilon);
         assertEquals(pos1.getNorm(), pos2.getNorm(), kTestEpsilon);
 
         pos1 = new Translation2d(2, 0);
-        rot1 = Rotation2dState.fromDegrees(-45);
+        rot1 = Rotation2d.fromDegrees(-45);
         pos2 = pos1.rotateBy(rot1);
         assertEquals(Math.sqrt(2), pos2.getX(), kTestEpsilon);
         assertEquals(-Math.sqrt(2), pos2.getY(), kTestEpsilon);
@@ -203,26 +203,26 @@ public class TestSE2Math {
     @Test
     public void testPose2d() {
         // Test constructors
-        Pose2dState pose1 = new Pose2dState();
+        Pose2d pose1 = new Pose2d();
         assertEquals(0, pose1.getTranslation().getX(), kTestEpsilon);
         assertEquals(0, pose1.getTranslation().getY(), kTestEpsilon);
         assertEquals(0, pose1.getRotation().getDegrees(), kTestEpsilon);
 
-        pose1 = new Pose2dState(new Translation2dState(3, 4), Rotation2dState.fromDegrees(45));
+        pose1 = new Pose2d(new Translation2dState(3, 4), Rotation2dState.fromDegrees(45));
         assertEquals(3, pose1.getTranslation().getX(), kTestEpsilon);
         assertEquals(4, pose1.getTranslation().getY(), kTestEpsilon);
         assertEquals(45, pose1.getRotation().getDegrees(), kTestEpsilon);
 
         // Test transformation
-        pose1 = new Pose2dState(new Translation2dState(3, 4), Rotation2dState.fromDegrees(90));
+        pose1 = new Pose2d(new Translation2dState(3, 4), Rotation2dState.fromDegrees(90));
         Pose2dState pose2 = new Pose2dState(new Translation2dState(1, 0), Rotation2dState.fromDegrees(0));
         Pose2dState pose3 = pose1.transformBy(pose2);
         assertEquals(3, pose3.getTranslation().getX(), kTestEpsilon);
         assertEquals(5, pose3.getTranslation().getY(), kTestEpsilon);
         assertEquals(90, pose3.getRotation().getDegrees(), kTestEpsilon);
 
-        pose1 = new Pose2dState(new Translation2dState(3, 4), Rotation2dState.fromDegrees(90));
-        pose2 = new Pose2dState(new Translation2dState(1, 0), Rotation2dState.fromDegrees(-90));
+        pose1 = new Pose2d(new Translation2dState(3, 4), Rotation2dState.fromDegrees(90));
+        pose2 = new Pose2d(new Translation2dState(1, 0), Rotation2dState.fromDegrees(-90));
         pose3 = pose1.transformBy(pose2);
         assertEquals(3, pose3.getTranslation().getX(), kTestEpsilon);
         assertEquals(5, pose3.getTranslation().getY(), kTestEpsilon);
@@ -230,7 +230,7 @@ public class TestSE2Math {
 
         // A pose times its inverse should be the identity
         Pose2dState identity = new Pose2dState();
-        pose1 = new Pose2dState(new Translation2dState(3.51512152, 4.23), Rotation2dState.fromDegrees(91.6));
+        pose1 = new Pose2dState(new Translation2dState(3.51512152, 4.23), Rotation2d.fromDegrees(91.6));
         pose2 = pose1.transformBy(pose1.inverse());
         assertEquals(identity.getTranslation().getX(), pose2.getTranslation().getX(), kTestEpsilon);
         assertEquals(identity.getTranslation().getY(), pose2.getTranslation().getY(), kTestEpsilon);
@@ -239,8 +239,8 @@ public class TestSE2Math {
         // Test interpolation
         // Movement from pose1 to pose2 is along a circle with radius of 10 units
         // centered at (3, -6)
-        pose1 = new Pose2dState(new Translation2dState(3, 4), Rotation2dState.fromDegrees(90));
-        pose2 = new Pose2dState(new Translation2dState(13, -6), Rotation2dState.fromDegrees(0.0));
+        pose1 = new Pose2d(new Translation2d(3, 4), Rotation2d.fromDegrees(90));
+        pose2 = new Pose2d(new Translation2d(13, -6), Rotation2d.fromDegrees(0.0));
         pose3 = pose1.interpolate2(pose2, .5);
         double expected_angle_rads = Math.PI / 4;
         assertEquals(3.0 + 10.0 * Math.cos(expected_angle_rads), pose3.getTranslation().getX(), kTestEpsilon);

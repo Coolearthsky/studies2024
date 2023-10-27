@@ -4,21 +4,27 @@ import com.team254.lib.util.Util;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 
-public class Rotation2dState extends Rotation2d implements State<Rotation2dState> {
+public class Rotation2dState implements State<Rotation2dState> {
+    final Rotation2d rotation2d;
+
+    public Rotation2d get() {
+        return rotation2d;
+    }
+
     public Rotation2dState() {
-        super();
+        this(new Rotation2d());
     }
 
     public Rotation2dState(double radians) {
-        super(radians);
+        this(new Rotation2d(radians));
     }
 
     public Rotation2dState(double x, double y) {
-        super(x, y);
+        this(new Rotation2d(x,y));
     }
 
     public Rotation2dState(final Rotation2d other) {
-        super(other.getRadians());
+        this.rotation2d = other;
     }
 
     public static Rotation2dState fromRadians(double angle_radians) {
@@ -30,40 +36,40 @@ public class Rotation2dState extends Rotation2d implements State<Rotation2dState
     }
 
     public Rotation2dState unaryMinus() {
-        return new Rotation2dState(super.unaryMinus());
+        return new Rotation2dState(rotation2d.unaryMinus());
     }
 
     public Rotation2dState times(double scalar) {
-        return new Rotation2dState(super.times(scalar));
+        return new Rotation2dState(rotation2d.times(scalar));
     }
 
     public Rotation2dState rotateBy(final Rotation2dState other) {
-        return new Rotation2dState(super.rotateBy(other));
+        return new Rotation2dState(rotation2d.rotateBy(other.rotation2d));
+    }
+
+    public Rotation2dState rotateBy(final Rotation2d other) {
+        return new Rotation2dState(rotation2d.rotateBy(other));
     }
 
     public Rotation2dState normal() {
-        return new Rotation2dState(getRadians() - Math.PI / 2.0);
+        return new Rotation2dState(rotation2d.getRadians() - Math.PI / 2.0);
     }
 
     public Rotation2dState flip() {
-        return new Rotation2dState(getRadians() + Math.PI);
+        return new Rotation2dState(rotation2d.getRadians() + Math.PI);
     }
 
     public boolean isParallel(final Rotation2dState other) {
         if (hasRadians() && other.hasRadians()) {
-            return Util.epsilonEquals(getRadians(), other.getRadians())
-                    || Util.epsilonEquals(getRadians(), WrapRadians(other.getRadians() + Math.PI));
+            return Util.epsilonEquals(rotation2d.getRadians(), other.rotation2d.getRadians())
+                    || Util.epsilonEquals(rotation2d.getRadians(), WrapRadians(other.rotation2d.getRadians() + Math.PI));
         } else if (hasTrig() && other.hasTrig()) {
-            return Util.epsilonEquals(getSin(), other.getSin()) && Util.epsilonEquals(getCos(), other.getCos());
+            return Util.epsilonEquals(rotation2d.getSin(), other.rotation2d.getSin()) && Util.epsilonEquals(rotation2d.getCos(), other.rotation2d.getCos());
         } else {
             // Use public, checked version.
-            return Util.epsilonEquals(getRadians(), other.getRadians())
-                    || Util.epsilonEquals(getRadians(), WrapRadians(other.getRadians() + Math.PI));
+            return Util.epsilonEquals(rotation2d.getRadians(), other.rotation2d.getRadians())
+                    || Util.epsilonEquals(rotation2d.getRadians(), WrapRadians(other.rotation2d.getRadians() + Math.PI));
         }
-    }
-
-    public Translation2dState toTranslation() {
-        return new Translation2dState(getCos(), getSin());
     }
 
     protected double WrapRadians(double radians) {
@@ -76,28 +82,28 @@ public class Rotation2dState extends Rotation2d implements State<Rotation2dState
     }
 
     private synchronized boolean hasTrig() {
-        return !Double.isNaN(getSin()) && !Double.isNaN(getCos());
+        return !Double.isNaN(rotation2d.getSin()) && !Double.isNaN(rotation2d.getCos());
     }
 
     private synchronized boolean hasRadians() {
-        return !Double.isNaN(getRadians());
+        return !Double.isNaN(rotation2d.getRadians());
     }
 
     @Override
     public Rotation2dState interpolate2(final Rotation2dState other,
             double x) {
         if (x <= 0.0) {
-            return new Rotation2dState(this);
+            return new Rotation2dState(this.rotation2d);
         } else if (x >= 1.0) {
-            return new Rotation2dState(other);
+            return new Rotation2dState(other.rotation2d);
         }
-        double angle_diff = unaryMinus().rotateBy(other).getRadians();
+        double angle_diff = unaryMinus().rotateBy(other).rotation2d.getRadians();
         return this.rotateBy(Rotation2dState.fromRadians(angle_diff * x));
     }
 
     @Override
     public double distance(final Rotation2dState other) {
-        return unaryMinus().rotateBy(other).getRadians();
+        return unaryMinus().rotateBy(other).rotation2d.getRadians();
     }
 
     @Override

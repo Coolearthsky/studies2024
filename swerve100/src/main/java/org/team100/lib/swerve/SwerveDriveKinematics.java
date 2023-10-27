@@ -168,8 +168,8 @@ public class SwerveDriveKinematics {
 
         for (int i = 0; i < m_numModules; i++) {
             var module = wheelStates[i];
-            moduleStatesMatrix.set(i * 2, 0, module.speedMetersPerSecond * module.angle.getCos());
-            moduleStatesMatrix.set(i * 2 + 1, module.speedMetersPerSecond * module.angle.getSin());
+            moduleStatesMatrix.set(i * 2, 0, module.speedMetersPerSecond * module.angle.get().getCos());
+            moduleStatesMatrix.set(i * 2 + 1, module.speedMetersPerSecond * module.angle.get().getSin());
         }
 
         var chassisSpeedsVector = m_forwardKinematics.mult(moduleStatesMatrix);
@@ -195,13 +195,13 @@ public class SwerveDriveKinematics {
 
             //System.out.println(module);
             constraintsMatrix.setRow(i*2, 0,
-                    module.angle.getCos(),
-                    module.angle.getSin(),
-                    -m_modules[i].get().getNorm()*beta.getCos());
+                    module.angle.get().getCos(),
+                    module.angle.get().getSin(),
+                    -m_modules[i].get().getNorm()*beta.get().getCos());
             constraintsMatrix.setRow(i*2 + 1, 0,
-                    -module.angle.getSin(),
-                    module.angle.getCos(),
-                    m_modules[i].get().getNorm()*beta.getSin());
+                    -module.angle.get().getSin(),
+                    module.angle.get().getCos(),
+                    m_modules[i].get().getNorm()*beta.get().getSin());
         }
         //System.out.println(constraintsMatrix);
 

@@ -94,8 +94,8 @@ public class SwerveDriveOdometry {
     }
 
     public Pose2dState getPoseMetersPolar() {
-        return new Pose2dState(Math.sqrt(Math.pow(m_poseMeters.getTranslation().getX(), 2) + Math.pow(m_poseMeters.getTranslation().getY(), 2)),
-                Math.toDegrees(Math.atan2(m_poseMeters.getTranslation().getY(), m_poseMeters.getTranslation().getX())), m_poseMeters.getRotation());
+        return new Pose2dState(Math.sqrt(Math.pow(m_poseMeters.get().getTranslation().getX(), 2) + Math.pow(m_poseMeters.get().getTranslation().getY(), 2)),
+                Math.toDegrees(Math.atan2(m_poseMeters.get().getTranslation().getY(), m_poseMeters.get().getTranslation().getX())), m_poseMeters.get().getRotation());
     }
 
     /**
@@ -124,9 +124,9 @@ public class SwerveDriveOdometry {
                         new Twist2dWrapper(
                                 chassisState.vxMetersPerSecond * period,
                                 chassisState.vyMetersPerSecond * period,
-                                angle.rotateBy(m_previousAngle.unaryMinus()).getRadians()));
+                                angle.rotateBy(m_previousAngle.unaryMinus()).get().getRadians()));
         m_previousAngle = angle;
-        m_poseMeters = new Pose2dState(m_poseMeters.transformBy(newPose).getTranslation(), angle);
+        m_poseMeters = new Pose2dState(m_poseMeters.transformBy(newPose).get().getTranslation(), angle);
         return m_poseMeters;
     }
 
@@ -144,7 +144,7 @@ public class SwerveDriveOdometry {
         // Project along ideal angles.
         double average = 0.0;
         for (int i = 0 ;i < moduleStates.length; ++i) {
-            double ratio = moduleStates[i].angle.rotateBy(idealStates[i].angle.unaryMinus()).getCos()*
+            double ratio = moduleStates[i].angle.rotateBy(idealStates[i].angle.unaryMinus()).get().getCos()*
                     (moduleStates[i].distanceMeters - m_previousDistances[i])
                     / (idealStates[i].speedMetersPerSecond * period);
             if (Double.isNaN(ratio) || Double.isInfinite(ratio) ||
@@ -168,7 +168,7 @@ public class SwerveDriveOdometry {
         //System.out.println("Translation: " + newPose);
         m_velocity = chassisState;
         // m_velocity.omegaRadiansPerSecond = m_previousAngle.inverse().rotateBy(gyroAngle).getRadians() / period;
-        m_poseMeters = new Pose2dState(m_poseMeters.transformBy(newPose).getTranslation(), angle);
+        m_poseMeters = new Pose2dState(m_poseMeters.transformBy(newPose).get().getTranslation(), angle);
         m_previousAngle = angle;
         //System.out.println(m_poseMeters);
         return m_poseMeters;
