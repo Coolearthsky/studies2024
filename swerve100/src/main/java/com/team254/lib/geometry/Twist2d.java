@@ -10,21 +10,26 @@ import java.text.DecimalFormat;
  * <p>
  * A Twist can be used to represent a difference between two poses, a velocity, an acceleration, etc.
  */
-public class Twist2d {
+public class Twist2d extends edu.wpi.first.math.geometry.Twist2d {
     protected static final Twist2d kIdentity = new Twist2d(0.0, 0.0, 0.0);
 
     public static Twist2d identity() {
         return kIdentity;
     }
 
-    public final double dx;
-    public final double dy;
-    public final double dtheta; // Radians!
+    // public final double dx;
+    // public final double dy;
+    // public final double dtheta; // Radians!
 
     public Twist2d(double dx, double dy, double dtheta) {
-        this.dx = dx;
-        this.dy = dy;
-        this.dtheta = dtheta;
+        super(dx,dy,dtheta);
+        // this.dx = dx;
+        // this.dy = dy;
+        // this.dtheta = dtheta;
+    }
+
+    public Twist2d(edu.wpi.first.math.geometry.Twist2d other) {
+        super(other.dx, other.dy, other.dtheta);
     }
 
     public Twist2d scaled(double scale) {

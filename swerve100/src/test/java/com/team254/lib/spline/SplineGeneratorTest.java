@@ -32,7 +32,7 @@ public class SplineGeneratorTest {
         Pose2dWithCurvature cur_pose = samples.get(0).state();
         for (TrajectoryPoint<Pose2dWithCurvature, Rotation2d> point : samples) {
             Pose2dWithCurvature sample = point.state();
-            final Twist2d t = Pose2d.log(cur_pose.getPose().inverse().transformBy(sample.getPose()));
+            final Twist2d t = Pose2d.slog(cur_pose.getPose().inverse().transformBy(sample.getPose()));
             arclength += t.dx;
             cur_pose = sample;
             cur_heading = point.heading();

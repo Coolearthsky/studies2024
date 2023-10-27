@@ -72,7 +72,7 @@ public class SplineGenerator {
         Rotation2d r0 = s.getHeading(t0);
         Rotation2d r1 = s.getHeading(t1);
         Pose2d transformation = new Pose2d(new Translation2d(p0, p1).rotateBy(r0.unaryMinus()), r1.rotateBy(r0.unaryMinus()));
-        Twist2d twist = Pose2d.log(transformation);
+        Twist2d twist = Pose2d.slog(transformation);
 
         if (twist.dy > maxDy || twist.dx > maxDx || twist.dtheta > maxDTheta) {
             getSegmentArc(s, headings, rv, t0, (t0 + t1) / 2, maxDx, maxDy, maxDTheta, totalTime);

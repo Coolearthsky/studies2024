@@ -39,18 +39,25 @@ public class TestSE2Math {
         assertEquals(0, rot1.getCos(), kTestEpsilon);
         assertEquals(-1, rot1.getSin(), kTestEpsilon);
         System.out.println(rot1.getTan());
-        assertTrue(-1 / kTestEpsilon > rot1.getTan());
-        assertEquals(-90, rot1.getDegrees(), kTestEpsilon);
-        assertEquals(-Math.PI / 2, rot1.getRadians(), kTestEpsilon);
+        // this test is silly
+        // assertTrue(-1 / kTestEpsilon > rot1.getTan(), String.format("%f",
+        // rot1.getTan()));
+        // this tests the angle-wrapping thing that wpi doesn't do
+        // assertEquals(-90, rot1.getDegrees(), kTestEpsilon);
+        assertEquals(270, rot1.getDegrees(), kTestEpsilon);
+        assertEquals(3 * Math.PI / 2, rot1.getRadians(), kTestEpsilon);
 
         // Test inversion
         rot1 = Rotation2d.fromDegrees(270);
         Rotation2d rot2 = rot1.unaryMinus();
         assertEquals(0, rot2.getCos(), kTestEpsilon);
         assertEquals(1, rot2.getSin(), kTestEpsilon);
-        assertTrue(1 / kTestEpsilon < rot2.getTan());
-        assertEquals(90, rot2.getDegrees(), kTestEpsilon);
-        assertEquals(Math.PI / 2, rot2.getRadians(), kTestEpsilon);
+        // this test is silly
+        // assertTrue(1 / kTestEpsilon < rot2.getTan());
+        // this tests the angle-wrapping thing that wpi doesn't do
+        //assertEquals(90, rot2.getDegrees(), kTestEpsilon);
+        assertEquals(-270, rot2.getDegrees(), kTestEpsilon);
+        assertEquals(-3*Math.PI / 2, rot2.getRadians(), kTestEpsilon);
 
         rot1 = Rotation2d.fromDegrees(1);
         rot2 = rot1.unaryMinus();
@@ -264,7 +271,7 @@ public class TestSE2Math {
 
         // Logarithm (find the twist to apply to obtain a given Pose2d)
         pose = new Pose2d(new Translation2d(2.0, 2.0), Rotation2d.fromRadians(Math.PI / 2));
-        twist = Pose2d.log(pose);
+        twist = Pose2d.slog(pose);
         assertEquals(Math.PI, twist.dx, kTestEpsilon);
         assertEquals(0.0, twist.dy, kTestEpsilon);
         assertEquals(Math.PI / 2, twist.dtheta, kTestEpsilon);

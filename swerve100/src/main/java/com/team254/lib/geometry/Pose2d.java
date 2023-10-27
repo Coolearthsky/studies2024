@@ -89,19 +89,21 @@ public class Pose2d extends edu.wpi.first.math.geometry.Pose2d implements State<
     /**
      * Logical inverse of the above.
      */
-    public static Twist2d log(final Pose2d transform) {
-        final double dtheta = transform.getRotation().getRadians();
-        final double half_dtheta = 0.5 * dtheta;
-        final double cos_minus_one = transform.getRotation().getCos() - 1.0;
-        double halftheta_by_tan_of_halfdtheta;
-        if (Math.abs(cos_minus_one) < kEps) {
-            halftheta_by_tan_of_halfdtheta = 1.0 - 1.0 / 12.0 * dtheta * dtheta;
-        } else {
-            halftheta_by_tan_of_halfdtheta = -(half_dtheta * transform.getRotation().getSin()) / cos_minus_one;
-        }
-        final edu.wpi.first.math.geometry.Translation2d translation_part = transform.getTranslation()
-                .rotateBy(new edu.wpi.first.math.geometry.Rotation2d(halftheta_by_tan_of_halfdtheta, -half_dtheta));
-        return new Twist2d(translation_part.getX(), translation_part.getY(), dtheta);
+    public static Twist2d slog(final Pose2d transform) {
+        Pose2d base = new Pose2d();
+        return new Twist2d(base.log(transform));
+        // final double dtheta = transform.getRotation().getRadians();
+        // final double half_dtheta = 0.5 * dtheta;
+        // final double cos_minus_one = transform.getRotation().getCos() - 1.0;
+        // double halftheta_by_tan_of_halfdtheta;
+        // if (Math.abs(cos_minus_one) < kEps) {
+        //     halftheta_by_tan_of_halfdtheta = 1.0 - 1.0 / 12.0 * dtheta * dtheta;
+        // } else {
+        //     halftheta_by_tan_of_halfdtheta = -(half_dtheta * transform.getRotation().getSin()) / cos_minus_one;
+        // }
+        // final Translation2d translation_part = transform.getTranslation()
+        //         .rotateBy(new Rotation2d(halftheta_by_tan_of_halfdtheta, -half_dtheta));
+        // return new Twist2d(translation_part.getX(), translation_part.getY(), dtheta);
     }
 
     public Translation2d getTranslation() {
@@ -190,7 +192,7 @@ public class Pose2d extends edu.wpi.first.math.geometry.Pose2d implements State<
     public boolean isColinear(final Pose2d other) {
         if (!getRotation().isParallel(other.getRotation()))
             return false;
-        final Twist2d twist = log(inverse().transformBy(other));
+        final Twist2d twist = slog(inverse().transformBy(other));
         return (Util.epsilonEquals(twist.dy, 0.0) && Util.epsilonEquals(twist.dtheta, 0.0));
     }
 
@@ -219,13 +221,14 @@ public class Pose2d extends edu.wpi.first.math.geometry.Pose2d implements State<
      */
     @Override
     public Pose2d interpolate2(final Pose2d other, double x) {
-        if (x <= 0) {
-            return new Pose2d(this);
-        } else if (x >= 1) {
-            return new Pose2d(other);
-        }
-        final Twist2d twist = Pose2d.log(inverse().transformBy(other));
-        return transformBy(Pose2d.exp(twist.scaled(x)));
+        return new Pose2d(super.interpolate(other,x));
+        // if (x <= 0) {
+        //     return new Pose2d(this);
+        // } else if (x >= 1) {
+        //     return new Pose2d(other);
+        // }
+        // final Twist2d twist = Pose2d.log(inverse().transformBy(other));
+        // return transformBy(Pose2d.exp(twist.scaled(x)));
     }
 
     // @Override
@@ -240,7 +243,7 @@ public class Pose2d extends edu.wpi.first.math.geometry.Pose2d implements State<
 
     @Override
     public double distance(final Pose2d other) {
-        return Pose2d.log(inverse().transformBy(other)).norm();
+        return Pose2d.slog(inverse().transformBy(other)).norm();
     }
 
     // @Override
