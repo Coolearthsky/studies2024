@@ -15,25 +15,26 @@ public class Pose2dWithCurvature extends PoseWithCurvature implements State<Pose
 
     // protected final Pose2d pose_;
     // protected final double curvature_;
-    // protected final double dcurvature_ds_;
+    protected final double dcurvature_ds_;
 
     public Pose2dWithCurvature() {
         super();
         // pose_ = new Pose2d();
         // curvature_ = 0.0;
-        // dcurvature_ds_ = 0.0;
+        dcurvature_ds_ = 0.0;
     }
 
     public Pose2dWithCurvature(final Pose2d pose, double curvature) {
         super(pose, curvature);
         // pose_ = pose;
         // curvature_ = curvature;
-        // dcurvature_ds_ = 0.0;
+        dcurvature_ds_ = 0.0;
     }
 
     public Pose2dWithCurvature(final Pose2d pose, double curvature, double dcurvature_ds) {
-        pose_ = pose;
-        curvature_ = curvature;
+        super(pose, curvature);
+        // pose_ = pose;
+        // curvature_ = curvature;
         dcurvature_ds_ = dcurvature_ds;
     }
 
@@ -62,7 +63,8 @@ public class Pose2dWithCurvature extends PoseWithCurvature implements State<Pose
     }
 
     public double getCurvature() {
-        return curvature_;
+        return super.curvatureRadPerMeter;
+        // return curvature_;
     }
 
     public double getDCurvatureDs() {

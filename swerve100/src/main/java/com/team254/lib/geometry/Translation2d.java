@@ -41,6 +41,12 @@ public class Translation2d extends edu.wpi.first.math.geometry.Translation2d imp
         // y_ = end.y_ - start.y_;
     }
 
+    public Translation2d(final edu.wpi.first.math.geometry.Translation2d start, final edu.wpi.first.math.geometry.Translation2d end) {
+        super(end.getX()-start.getX(),end.getY()-start.getY());
+        // x_ = end.x_ - start.x_;
+        // y_ = end.y_ - start.y_;
+    }
+
     public Translation2d(final edu.wpi.first.math.geometry.Translation2d other) {
         super(other.getX(), other.getY());
         // x_= other.getX();
@@ -149,6 +155,9 @@ public class Translation2d extends edu.wpi.first.math.geometry.Translation2d imp
         return Util.epsilonEquals(getX(), other.getX(), epsilon) && Util.epsilonEquals(getY(), other.getY(), epsilon);
     }
 
+    // public boolean epsilonEquals(final edu.wpi.first.math.geometry.Translation2d other, double epsilon) {
+    //     return Util.epsilonEquals(getX(), other.getX(), epsilon) && Util.epsilonEquals(getY(), other.getY(), epsilon);
+    // }
     // @Override
     // public String toString() {
     //     final DecimalFormat format = new DecimalFormat("#0.000");

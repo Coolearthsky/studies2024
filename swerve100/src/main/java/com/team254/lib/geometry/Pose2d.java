@@ -104,9 +104,10 @@ public class Pose2d extends edu.wpi.first.math.geometry.Pose2d implements State<
         return new Twist2d(translation_part.getX(), translation_part.getY(), dtheta);
     }
 
-    // public Translation2d getTranslation() {
-    //     return translation_;
-    // }
+    public Translation2d getTranslation() {
+        return new Translation2d(super.getTranslation());
+        // return translation_;
+    }
 
     @Override
     public Rotation2d getRotation() {
@@ -114,9 +115,9 @@ public class Pose2d extends edu.wpi.first.math.geometry.Pose2d implements State<
         //return rotation_;
     }
 
-    // public Pose2d rotateBy(Rotation2d other) {
-    //     return this.transformBy(new Pose2d(Translation2d.identity(), other));
-    // }
+    public Pose2d rotateBy(Rotation2d other) {
+        return this.transformBy(new Pose2d(Translation2d.identity(), other));
+    }
 
     @Override
     public Pose2d add(Pose2d other) {
