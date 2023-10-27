@@ -17,11 +17,11 @@ public class SwerveKinematics {
 
     public SwerveKinematics(Translation2d... wheelsMeters) {
         kWPI = new edu.wpi.first.math.kinematics.SwerveDriveKinematics(wheelsMeters);
-        com.team254.lib.geometry.Translation2d[] w254 = new com.team254.lib.geometry.Translation2d[wheelsMeters.length];
+        com.team254.lib.geometry.Translation2dState[] w254 = new com.team254.lib.geometry.Translation2dState[wheelsMeters.length];
 
         for (int i = 0; i < wheelsMeters.length; ++i) {
             Translation2d t = wheelsMeters[i];
-            w254[i] = new com.team254.lib.geometry.Translation2d(t.getX(), t.getY());
+            w254[i] = new com.team254.lib.geometry.Translation2dState(t.getX(), t.getY());
         }
         k254 = new org.team100.lib.swerve.SwerveDriveKinematics(w254);
 

@@ -1,7 +1,7 @@
 package org.team100.lib.swerve;
 
-import com.team254.lib.geometry.Rotation2d;
-import com.team254.lib.geometry.Translation2d;
+import com.team254.lib.geometry.Rotation2dState;
+import com.team254.lib.geometry.Translation2dState;
 import com.team254.lib.swerve.SwerveModuleState;
 
 import java.util.Arrays;
@@ -34,10 +34,10 @@ public class SwerveDriveKinematics {
     private final SimpleMatrix m_forwardKinematics;
 
     private final int m_numModules;
-    private final Translation2d[] m_modules;
-    private Translation2d m_prevCoR = new Translation2d();
-    private final Rotation2d[] m_rotations;
-    private final Rotation2d[] m_moduleHeadings;
+    private final Translation2dState[] m_modules;
+    private Translation2dState m_prevCoR = new Translation2dState();
+    private final Rotation2dState[] m_rotations;
+    private final Rotation2dState[] m_moduleHeadings;
 
     /**
      * Constructs a swerve drive kinematics object. This takes in a variable number of wheel locations
@@ -47,21 +47,21 @@ public class SwerveDriveKinematics {
      *
      * @param wheelsMeters The locations of the wheels relative to the physical center of the robot.
      */
-    public SwerveDriveKinematics(Translation2d... wheelsMeters) {
+    public SwerveDriveKinematics(Translation2dState... wheelsMeters) {
         if (wheelsMeters.length < 2) {
             throw new IllegalArgumentException("A swerve drive requires at least two modules");
         }
         m_numModules = wheelsMeters.length;
         m_modules = Arrays.copyOf(wheelsMeters, m_numModules);
-        m_moduleHeadings = new Rotation2d[m_numModules];
+        m_moduleHeadings = new Rotation2dState[m_numModules];
         m_inverseKinematics = new SimpleMatrix(m_numModules * 2, 3);
-        m_rotations = new Rotation2d[m_numModules];
+        m_rotations = new Rotation2dState[m_numModules];
 
         for (int i = 0; i < m_numModules; i++) {
-            m_moduleHeadings[i] = new Rotation2d();
-            m_inverseKinematics.setRow(i * 2 + 0, 0, /* Start Data */ 1, 0, -m_modules[i].getY());
-            m_inverseKinematics.setRow(i * 2 + 1, 0, /* Start Data */ 0, 1, +m_modules[i].getX());
-            m_rotations[i] = new Rotation2d(m_modules[i].getX(), m_modules[i].getY());
+            m_moduleHeadings[i] = new Rotation2dState();
+            m_inverseKinematics.setRow(i * 2 + 0, 0, /* Start Data */ 1, 0, -m_modules[i].get().getY());
+            m_inverseKinematics.setRow(i * 2 + 1, 0, /* Start Data */ 0, 1, +m_modules[i].get().getX());
+            m_rotations[i] = new Rotation2dState(m_modules[i].get().getX(), m_modules[i].get().getY());
         }
         m_forwardKinematics = m_inverseKinematics.pseudoInverse();
     }
@@ -86,7 +86,7 @@ public class SwerveDriveKinematics {
      */
     @SuppressWarnings("LocalVariableName")
     public SwerveModuleState[] toSwerveModuleStates(
-            ChassisSpeeds chassisSpeeds, Translation2d centerOfRotationMeters) {
+            ChassisSpeeds chassisSpeeds, Translation2dState centerOfRotationMeters) {
         SwerveModuleState[] moduleStates = new SwerveModuleState[m_numModules];
         if (Math.abs(chassisSpeeds.vxMetersPerSecond) < 0.01
             && Math.abs(chassisSpeeds.vyMetersPerSecond) < 0.01
@@ -103,13 +103,13 @@ public class SwerveDriveKinematics {
                         0, /* Start Data */
                         1,
                         0,
-                        -m_modules[i].getY() + centerOfRotationMeters.getY());
+                        -m_modules[i].get().getY() + centerOfRotationMeters.get().getY());
                 m_inverseKinematics.setRow(
                         i * 2 + 1,
                         0, /* Start Data */
                         0,
                         1,
-                        +m_modules[i].getX() - centerOfRotationMeters.getX());
+                        +m_modules[i].get().getX() - centerOfRotationMeters.get().getX());
             }
             m_prevCoR = centerOfRotationMeters;
         }
@@ -129,7 +129,7 @@ public class SwerveDriveKinematics {
             double y = moduleStatesMatrix.get(i * 2 + 1, 0);
 
             double speed = Math.hypot(x, y);
-            Rotation2d angle = new Rotation2d(x, y);
+            Rotation2dState angle = new Rotation2dState(x, y);
 
             moduleStates[i] = new SwerveModuleState(speed, angle);
         }
@@ -138,14 +138,14 @@ public class SwerveDriveKinematics {
     }
 
     /**
-     * Performs inverse kinematics. See {@link #toSwerveModuleStates(ChassisSpeeds, Translation2d)}
+     * Performs inverse kinematics. See {@link #toSwerveModuleStates(ChassisSpeeds, Translation2dState)}
      * toSwerveModuleStates for more information.
      *
      * @param chassisSpeeds The desired chassis speed.
      * @return An array containing the module states.
      */
     public SwerveModuleState[] toSwerveModuleStates(ChassisSpeeds chassisSpeeds) {
-        return toSwerveModuleStates(chassisSpeeds, new Translation2d());
+        return toSwerveModuleStates(chassisSpeeds, new Translation2dState());
     }
 
     /**
@@ -191,17 +191,17 @@ public class SwerveDriveKinematics {
 
             var beta =
                     module.angle.rotateBy(
-                            m_rotations[i].unaryMinus()).rotateBy(Rotation2d.fromRadians(Math.PI / 2.0));
+                            m_rotations[i].unaryMinus()).rotateBy(Rotation2dState.fromRadians(Math.PI / 2.0));
 
             //System.out.println(module);
             constraintsMatrix.setRow(i*2, 0,
                     module.angle.getCos(),
                     module.angle.getSin(),
-                    -m_modules[i].getNorm()*beta.getCos());
+                    -m_modules[i].get().getNorm()*beta.getCos());
             constraintsMatrix.setRow(i*2 + 1, 0,
                     -module.angle.getSin(),
                     module.angle.getCos(),
-                    m_modules[i].getNorm()*beta.getSin());
+                    m_modules[i].get().getNorm()*beta.getSin());
         }
         //System.out.println(constraintsMatrix);
 
@@ -244,7 +244,7 @@ public class SwerveDriveKinematics {
         }
     }
 
-    public final Translation2d[] getModuleLocations() {
+    public final Translation2dState[] getModuleLocations() {
         return m_modules;
     }
 

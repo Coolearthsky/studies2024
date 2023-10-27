@@ -1,7 +1,7 @@
 package com.team254.lib.physics;
 
-import com.team254.lib.geometry.Rotation2d;
-import com.team254.lib.geometry.Translation2d;
+import com.team254.lib.geometry.Rotation2dState;
+import com.team254.lib.geometry.Translation2dState;
 import java.text.DecimalFormat;
 
 import org.team100.lib.geometry.GeometryUtil;
@@ -24,15 +24,15 @@ public class SwerveDrive {
 
     // Can refer to velocity or acceleration depending on context.
     public static class ChassisState {
-        public Translation2d movement;
-        public Rotation2d heading;
+        public Translation2dState movement;
+        public Rotation2dState heading;
 
-        public ChassisState(Translation2d movement, Rotation2d heading) {
+        public ChassisState(Translation2dState movement, Rotation2dState heading) {
             this.heading = heading;
             this.movement = movement;
         }
 
-        public ChassisState(Translation2d movement) {
+        public ChassisState(Translation2dState movement) {
             this.movement = movement;
             this.heading = GeometryUtil.kRotationIdentity;
         }
@@ -46,7 +46,7 @@ public class SwerveDrive {
         @Override
         public String toString() {
             DecimalFormat fmt = new DecimalFormat("#0.000");
-            return fmt.format(movement.getNorm())/* + ", " + fmt.format(heading.getRadians())*/;
+            return fmt.format(movement.get().getNorm())/* + ", " + fmt.format(heading.getRadians())*/;
         }
     }
 }

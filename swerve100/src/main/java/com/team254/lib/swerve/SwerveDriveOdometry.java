@@ -7,9 +7,9 @@ package com.team254.lib.swerve;
 import org.team100.lib.swerve.ChassisSpeeds;
 import org.team100.lib.swerve.SwerveDriveKinematics;
 
-import com.team254.lib.geometry.Pose2d;
-import com.team254.lib.geometry.Rotation2d;
-import com.team254.lib.geometry.Twist2d;
+import com.team254.lib.geometry.Pose2dState;
+import com.team254.lib.geometry.Rotation2dState;
+import com.team254.lib.geometry.Twist2dWrapper;
 
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -24,11 +24,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class SwerveDriveOdometry {
     private final SwerveDriveKinematics m_kinematics;
-    private Pose2d m_poseMeters;
+    private Pose2dState m_poseMeters;
     private ChassisSpeeds m_velocity;
     private double m_prevTimeSeconds = -1;
 
-    private Rotation2d m_previousAngle;
+    private Rotation2dState m_previousAngle;
     private double[] m_previousDistances;
 
     /**
@@ -38,7 +38,7 @@ public class SwerveDriveOdometry {
      * @param initialPose The starting position of the robot on the field.
      */
     public SwerveDriveOdometry(
-            SwerveDriveKinematics kinematics, Pose2d initialPose, double... previousDistances) {
+            SwerveDriveKinematics kinematics, Pose2dState initialPose, double... previousDistances) {
         m_kinematics = kinematics;
         m_velocity = new ChassisSpeeds();
         m_poseMeters = initialPose;
@@ -48,7 +48,7 @@ public class SwerveDriveOdometry {
 
 
     public SwerveDriveOdometry(
-            SwerveDriveKinematics kinematics, Pose2d initialPose) {
+            SwerveDriveKinematics kinematics, Pose2dState initialPose) {
         this(kinematics, initialPose, new double[kinematics.getNumModules()]);
     }
 
@@ -58,7 +58,7 @@ public class SwerveDriveOdometry {
      * @param kinematics The swerve drive kinematics for your drivetrain.
      */
     public SwerveDriveOdometry(SwerveDriveKinematics kinematics) {
-        this(kinematics, new Pose2d(), new double[kinematics.getNumModules()]);
+        this(kinematics, new Pose2dState(), new double[kinematics.getNumModules()]);
     }
 
     /**
@@ -69,12 +69,12 @@ public class SwerveDriveOdometry {
      *
      * @param pose The position on the field that your robot is at.
      */
-    public void resetPosition(Pose2d pose, double... previousDistances) {
+    public void resetPosition(Pose2dState pose, double... previousDistances) {
         m_previousDistances = previousDistances;
         resetPosition(pose);
     }
 
-    public void resetPosition(Pose2d pose) {
+    public void resetPosition(Pose2dState pose) {
         m_velocity = new ChassisSpeeds();
         m_poseMeters = pose;
         m_previousAngle = pose.getRotation();
@@ -85,7 +85,7 @@ public class SwerveDriveOdometry {
      *
      * @return The pose of the robot (x and y are in meters).
      */
-    public Pose2d getPoseMeters() {
+    public Pose2dState getPoseMeters() {
         return m_poseMeters;
     }
 
@@ -93,8 +93,8 @@ public class SwerveDriveOdometry {
         return m_velocity;
     }
 
-    public Pose2d getPoseMetersPolar() {
-        return new Pose2d(Math.sqrt(Math.pow(m_poseMeters.getTranslation().getX(), 2) + Math.pow(m_poseMeters.getTranslation().getY(), 2)),
+    public Pose2dState getPoseMetersPolar() {
+        return new Pose2dState(Math.sqrt(Math.pow(m_poseMeters.getTranslation().getX(), 2) + Math.pow(m_poseMeters.getTranslation().getY(), 2)),
                 Math.toDegrees(Math.atan2(m_poseMeters.getTranslation().getY(), m_poseMeters.getTranslation().getX())), m_poseMeters.getRotation());
     }
 
@@ -111,8 +111,8 @@ public class SwerveDriveOdometry {
      *     same order in which you instantiated your SwerveDriveKinematics.
      * @return The new pose of the robot.
      */
-    public Pose2d updateWithTime(
-            double currentTimeSeconds, Rotation2d gyroAngle, SwerveModuleState... moduleStates) {
+    public Pose2dState updateWithTime(
+            double currentTimeSeconds, Rotation2dState gyroAngle, SwerveModuleState... moduleStates) {
         double period = m_prevTimeSeconds >= 0 ? currentTimeSeconds - m_prevTimeSeconds : 0.0;
         m_prevTimeSeconds = currentTimeSeconds;
 
@@ -120,18 +120,18 @@ public class SwerveDriveOdometry {
 
         var chassisState = m_kinematics.toChassisSpeeds(moduleStates);
         var newPose =
-                Pose2d.sexp(
-                        new Twist2d(
+                Pose2dState.sexp(
+                        new Twist2dWrapper(
                                 chassisState.vxMetersPerSecond * period,
                                 chassisState.vyMetersPerSecond * period,
                                 angle.rotateBy(m_previousAngle.unaryMinus()).getRadians()));
         m_previousAngle = angle;
-        m_poseMeters = new Pose2d(m_poseMeters.transformBy(newPose).getTranslation(), angle);
+        m_poseMeters = new Pose2dState(m_poseMeters.transformBy(newPose).getTranslation(), angle);
         return m_poseMeters;
     }
 
-    public Pose2d updateWithWheelConstraints(
-            double currentTimeSeconds, Rotation2d gyroAngle, SwerveModuleState... moduleStates) {
+    public Pose2dState updateWithWheelConstraints(
+            double currentTimeSeconds, Rotation2dState gyroAngle, SwerveModuleState... moduleStates) {
         double period = m_prevTimeSeconds >= 0 ? currentTimeSeconds - m_prevTimeSeconds : 0.0;
         //System.out.println("Time: " + currentTimeSeconds);
         m_prevTimeSeconds = currentTimeSeconds;
@@ -160,15 +160,15 @@ public class SwerveDriveOdometry {
         SmartDashboard.putNumber("average", average);
 
         var newPose =
-                Pose2d.sexp(
-                        new Twist2d(
+                Pose2dState.sexp(
+                        new Twist2dWrapper(
                                 chassisState.vxMetersPerSecond * period * average,
                                 chassisState.vyMetersPerSecond * period * average,
                                 chassisState.omegaRadiansPerSecond * period * average));
         //System.out.println("Translation: " + newPose);
         m_velocity = chassisState;
         // m_velocity.omegaRadiansPerSecond = m_previousAngle.inverse().rotateBy(gyroAngle).getRadians() / period;
-        m_poseMeters = new Pose2d(m_poseMeters.transformBy(newPose).getTranslation(), angle);
+        m_poseMeters = new Pose2dState(m_poseMeters.transformBy(newPose).getTranslation(), angle);
         m_previousAngle = angle;
         //System.out.println(m_poseMeters);
         return m_poseMeters;
@@ -186,7 +186,7 @@ public class SwerveDriveOdometry {
      *     same order in which you instantiated your SwerveDriveKinematics.
      * @return The new pose of the robot.
      */
-    public Pose2d update(Rotation2d gyroAngle, SwerveModuleState[] moduleStates) {
+    public Pose2dState update(Rotation2dState gyroAngle, SwerveModuleState[] moduleStates) {
         return updateWithWheelConstraints(WPIUtilJNI.now() * 1.0e-6, gyroAngle, moduleStates);
     }
 }

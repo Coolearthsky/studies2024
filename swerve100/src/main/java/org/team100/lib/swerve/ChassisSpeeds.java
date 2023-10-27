@@ -1,7 +1,7 @@
 package org.team100.lib.swerve;
 
-import com.team254.lib.geometry.Rotation2d;
-import com.team254.lib.geometry.Twist2d;
+import com.team254.lib.geometry.Rotation2dState;
+import com.team254.lib.geometry.Twist2dWrapper;
 
 /**
  * Represents the speed of a robot chassis. Although this struct contains similar members compared
@@ -60,7 +60,7 @@ public class ChassisSpeeds {
             double vxMetersPerSecond,
             double vyMetersPerSecond,
             double omegaRadiansPerSecond,
-            Rotation2d robotAngle) {
+            Rotation2dState robotAngle) {
         return new ChassisSpeeds(
                 vxMetersPerSecond * robotAngle.getCos() + vyMetersPerSecond * robotAngle.getSin(),
                 -vxMetersPerSecond * robotAngle.getSin() + vyMetersPerSecond * robotAngle.getCos(),
@@ -74,8 +74,8 @@ public class ChassisSpeeds {
         return new ChassisSpeeds(vxMetersPerSecond, vyMetersPerSecond, omegaRadiansPerSecond);
     }
 
-    public Twist2d toTwist2d() {
-        return new Twist2d(vxMetersPerSecond, vyMetersPerSecond, omegaRadiansPerSecond);
+    public Twist2dWrapper toTwist2d() {
+        return new Twist2dWrapper(vxMetersPerSecond, vyMetersPerSecond, omegaRadiansPerSecond);
     }
 
     @Override

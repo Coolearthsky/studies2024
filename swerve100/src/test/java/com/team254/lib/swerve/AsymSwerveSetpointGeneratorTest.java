@@ -8,8 +8,8 @@ import org.team100.lib.swerve.ChassisSpeeds;
 import org.team100.lib.swerve.SwerveDriveKinematics;
 import org.team100.lib.swerve.SwerveSetpoint;
 
-import com.team254.lib.geometry.Rotation2d;
-import com.team254.lib.geometry.Translation2d;
+import com.team254.lib.geometry.Rotation2dState;
+import com.team254.lib.geometry.Translation2dState;
 import com.team254.lib.util.Util;
 
 public class AsymSwerveSetpointGeneratorTest {
@@ -17,13 +17,13 @@ public class AsymSwerveSetpointGeneratorTest {
     protected final static double kRobotSide = 0.616; // m
     protected final static SwerveDriveKinematics kKinematics = new SwerveDriveKinematics(
             // Front left
-            new Translation2d(kRobotSide / 2.0, kRobotSide / 2.0),
+            new Translation2dState(kRobotSide / 2.0, kRobotSide / 2.0),
             // Front right
-            new Translation2d(kRobotSide / 2.0, -kRobotSide / 2.0),
+            new Translation2dState(kRobotSide / 2.0, -kRobotSide / 2.0),
             // Back left
-            new Translation2d(-kRobotSide / 2.0, kRobotSide / 2.0),
+            new Translation2dState(-kRobotSide / 2.0, kRobotSide / 2.0),
             // Back right
-            new Translation2d(-kRobotSide / 2.0, -kRobotSide / 2.0));
+            new Translation2dState(-kRobotSide / 2.0, -kRobotSide / 2.0));
     protected final static AsymSwerveSetpointGenerator.KinematicLimits kKinematicLimits = new AsymSwerveSetpointGenerator.KinematicLimits();
     static {
         kKinematicLimits.kMaxDriveVelocity = 5.0; // m/s
@@ -39,7 +39,7 @@ public class AsymSwerveSetpointGeneratorTest {
         for (int i = 0; i < prev.mModuleStates.length; ++i) {
             final var prevModule = prev.mModuleStates[i];
             final var nextModule = next.mModuleStates[i];
-            Rotation2d diffRotation = prevModule.angle.unaryMinus().rotateBy(nextModule.angle);
+            Rotation2dState diffRotation = prevModule.angle.unaryMinus().rotateBy(nextModule.angle);
             assertTrue(
                     Math.abs(diffRotation.getRadians()) < kKinematicLimits.kMaxSteeringVelocity
                             + kMaxSteeringVelocityError,

@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.team254.lib.geometry.Rotation2d;
-import com.team254.lib.geometry.Translation2d;
-import com.team254.lib.geometry.Twist2d;
+import com.team254.lib.geometry.Rotation2dState;
+import com.team254.lib.geometry.Translation2dState;
+import com.team254.lib.geometry.Twist2dWrapper;
 import com.team254.lib.swerve.SwerveModuleState;
 
 import org.team100.lib.geometry.GeometryUtil;
@@ -46,7 +46,7 @@ public class AsymSwerveSetpointGenerator {
      * @return True if the shortest path to achieve this rotation involves flipping
      *         the drive direction.
      */
-    private boolean flipHeading(Rotation2d prevToGoal) {
+    private boolean flipHeading(Rotation2dState prevToGoal) {
         return Math.abs(prevToGoal.getRadians()) > Math.PI / 2.0;
     }
 
@@ -169,7 +169,7 @@ public class AsymSwerveSetpointGenerator {
      */
     public SwerveSetpoint generateSetpoint(final KinematicLimits limits, final SwerveSetpoint prevSetpoint,
             ChassisSpeeds desiredState, double dt) {
-        final Translation2d[] modules = mKinematics.getModuleLocations();
+        final Translation2dState[] modules = mKinematics.getModuleLocations();
 
         SwerveModuleState[] desiredModuleState = mKinematics.toSwerveModuleStates(desiredState);
         // Make sure desiredState respects velocity limits.
@@ -192,10 +192,10 @@ public class AsymSwerveSetpointGenerator {
         // For each module, compute local Vx and Vy vectors.
         double[] prev_vx = new double[modules.length];
         double[] prev_vy = new double[modules.length];
-        Rotation2d[] prev_heading = new Rotation2d[modules.length];
+        Rotation2dState[] prev_heading = new Rotation2dState[modules.length];
         double[] desired_vx = new double[modules.length];
         double[] desired_vy = new double[modules.length];
-        Rotation2d[] desired_heading = new Rotation2d[modules.length];
+        Rotation2dState[] desired_heading = new Rotation2dState[modules.length];
         boolean all_modules_should_flip = true;
         for (int i = 0; i < modules.length; ++i) {
             prev_vx[i] = prevSetpoint.mModuleStates[i].angle.getCos() * prevSetpoint.mModuleStates[i].speedMetersPerSecond;
@@ -243,7 +243,7 @@ public class AsymSwerveSetpointGenerator {
         // steering angle to command (since
         // inverse kinematics doesn't care about angle, we can be opportunistically
         // lazy).
-        List<Optional<Rotation2d>> overrideSteering = new ArrayList<>(modules.length);
+        List<Optional<Rotation2dState>> overrideSteering = new ArrayList<>(modules.length);
         // Enforce steering velocity limits. We do this by taking the derivative of
         // steering angle at the current angle,
         // and then backing out the maximum interpolant between start and goal states.
@@ -282,7 +282,7 @@ public class AsymSwerveSetpointGenerator {
                 } else {
                     // Adjust steering by max_theta_step.
                     overrideSteering.set(i, Optional.of(prevSetpoint.mModuleStates[i].angle.rotateBy(
-                            Rotation2d.fromRadians(Math.signum(necessaryRotation.getRadians()) * max_theta_step))));
+                            Rotation2dState.fromRadians(Math.signum(necessaryRotation.getRadians()) * max_theta_step))));
                     min_s = 0.0;
                     continue;
                 }

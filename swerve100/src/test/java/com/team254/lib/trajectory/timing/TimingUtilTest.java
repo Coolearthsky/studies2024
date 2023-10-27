@@ -10,9 +10,9 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.team254.lib.geometry.Rotation2d;
+import com.team254.lib.geometry.Rotation2dState;
 import com.team254.lib.geometry.State;
-import com.team254.lib.geometry.Translation2d;
+import com.team254.lib.geometry.Translation2dState;
 import com.team254.lib.trajectory.DistanceView;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.timing.TimingConstraint.MinMaxAcceleration;
@@ -22,17 +22,17 @@ public class TimingUtilTest {
 
     public static final double kTestEpsilon = Util.kEpsilon;
 
-    public static final List<Translation2d> kWaypoints = Arrays.asList(
-            new Translation2d(0.0, 0.0),
-            new Translation2d(24.0, 0.0),
-            new Translation2d(36.0, 12.0),
-            new Translation2d(60.0, 12.0));
+    public static final List<Translation2dState> kWaypoints = Arrays.asList(
+            new Translation2dState(0.0, 0.0),
+            new Translation2dState(24.0, 0.0),
+            new Translation2dState(36.0, 12.0),
+            new Translation2dState(60.0, 12.0));
 
-    public static final List<Rotation2d> kHeadings = List.of(
-            Rotation2d.fromDegrees(0),
-            Rotation2d.fromDegrees(0),
-            Rotation2d.fromDegrees(0),
-            Rotation2d.fromDegrees(0));
+    public static final List<Rotation2dState> kHeadings = List.of(
+            Rotation2dState.fromDegrees(0),
+            Rotation2dState.fromDegrees(0),
+            Rotation2dState.fromDegrees(0),
+            Rotation2dState.fromDegrees(0));
 
     public <S extends State<S>, T extends State<T>> Trajectory<TimedState<S>, TimedState<T>> buildAndCheckTrajectory(
             final DistanceView<S, T> dist_view,
@@ -81,33 +81,33 @@ public class TimingUtilTest {
 
     @Test
     public void testNoConstraints() {
-        Trajectory<Translation2d, Rotation2d> traj = new Trajectory<>(kWaypoints, kHeadings);
-        DistanceView<Translation2d, Rotation2d> dist_view = new DistanceView<>(traj);
+        Trajectory<Translation2dState, Rotation2dState> traj = new Trajectory<>(kWaypoints, kHeadings);
+        DistanceView<Translation2dState, Rotation2dState> dist_view = new DistanceView<>(traj);
 
         // Triangle profile.
-        Trajectory<TimedState<Translation2d>, TimedState<Rotation2d>> timed_traj = buildAndCheckTrajectory(dist_view,
+        Trajectory<TimedState<Translation2dState>, TimedState<Rotation2dState>> timed_traj = buildAndCheckTrajectory(dist_view,
                 1.0,
-                new ArrayList<TimingConstraint<Translation2d>>(), 0.0, 0.0, 20.0, 5.0);
+                new ArrayList<TimingConstraint<Translation2dState>>(), 0.0, 0.0, 20.0, 5.0);
         System.out.println(timed_traj);
 
         // Trapezoidal profile.
-        timed_traj = buildAndCheckTrajectory(dist_view, 1.0, new ArrayList<TimingConstraint<Translation2d>>(), 0.0, 0.0,
+        timed_traj = buildAndCheckTrajectory(dist_view, 1.0, new ArrayList<TimingConstraint<Translation2dState>>(), 0.0, 0.0,
                 10.0, 5.0);
 
         // Trapezoidal profile with start and end velocities.
-        timed_traj = buildAndCheckTrajectory(dist_view, 1.0, new ArrayList<TimingConstraint<Translation2d>>(), 5.0, 2.0,
+        timed_traj = buildAndCheckTrajectory(dist_view, 1.0, new ArrayList<TimingConstraint<Translation2dState>>(), 5.0, 2.0,
                 10.0, 5.0);
     }
 
     @Test
     public void testConditionalVelocityConstraint() {
-        Trajectory<Translation2d, Rotation2d> traj = new Trajectory<>(kWaypoints, kHeadings);
-        DistanceView<Translation2d, Rotation2d> dist_view = new DistanceView<>(traj);
+        Trajectory<Translation2dState, Rotation2dState> traj = new Trajectory<>(kWaypoints, kHeadings);
+        DistanceView<Translation2dState, Rotation2dState> dist_view = new DistanceView<>(traj);
 
-        class ConditionalTimingConstraint<S extends Translation2d> implements TimingConstraint<Translation2d> {
+        class ConditionalTimingConstraint<S extends Translation2dState> implements TimingConstraint<Translation2dState> {
             @Override
-            public double getMaxVelocity(Translation2d state) {
-                if (state.getTranslation().getX() >= 24.0) {
+            public double getMaxVelocity(Translation2dState state) {
+                if (state.getTranslation().get().getX() >= 24.0) {
                     return 5.0;
                 } else {
                     return Double.POSITIVE_INFINITY;
@@ -115,14 +115,14 @@ public class TimingUtilTest {
             }
 
             @Override
-            public TimingConstraint.MinMaxAcceleration getMinMaxAcceleration(Translation2d state,
+            public TimingConstraint.MinMaxAcceleration getMinMaxAcceleration(Translation2dState state,
                     double velocity) {
                 return new TimingConstraint.MinMaxAcceleration(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
             }
         }
 
         // Trapezoidal profile.
-        Trajectory<TimedState<Translation2d>, TimedState<Rotation2d>> timed_traj = buildAndCheckTrajectory(dist_view,
+        Trajectory<TimedState<Translation2dState>, TimedState<Rotation2dState>> timed_traj = buildAndCheckTrajectory(dist_view,
                 1.0,
                 Arrays.asList(new ConditionalTimingConstraint<>()), 0.0, 0.0, 10.0, 5.0);
         System.out.println(timed_traj);
@@ -131,8 +131,8 @@ public class TimingUtilTest {
 
     @Test
     public void testConditionalAccelerationConstraint() {
-        Trajectory<Translation2d, Rotation2d> traj = new Trajectory<>(kWaypoints, kHeadings);
-        DistanceView<Translation2d, Rotation2d> dist_view = new DistanceView<>(traj);
+        Trajectory<Translation2dState, Rotation2dState> traj = new Trajectory<>(kWaypoints, kHeadings);
+        DistanceView<Translation2dState, Rotation2dState> dist_view = new DistanceView<>(traj);
 
         class ConditionalTimingConstraint<S extends State<S>> implements TimingConstraint<S> {
             @Override
@@ -148,7 +148,7 @@ public class TimingUtilTest {
         }
 
         // Trapezoidal profile.
-        Trajectory<TimedState<Translation2d>, TimedState<Rotation2d>> timed_traj = buildAndCheckTrajectory(dist_view,
+        Trajectory<TimedState<Translation2dState>, TimedState<Rotation2dState>> timed_traj = buildAndCheckTrajectory(dist_view,
                 1.0,
                 Arrays.asList(new ConditionalTimingConstraint<>()), 0.0, 0.0, 10.0, 5.0);
         System.out.println(timed_traj);

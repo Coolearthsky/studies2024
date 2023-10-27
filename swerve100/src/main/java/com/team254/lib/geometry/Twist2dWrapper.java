@@ -2,19 +2,21 @@ package com.team254.lib.geometry;
 
 import com.team254.lib.util.Util;
 
+import edu.wpi.first.math.geometry.Twist2d;
+
 import java.text.DecimalFormat;
 
-public class Twist2d extends edu.wpi.first.math.geometry.Twist2d {
-    public Twist2d(double dx, double dy, double dtheta) {
+public class Twist2dWrapper extends Twist2d {
+    public Twist2dWrapper(double dx, double dy, double dtheta) {
         super(dx, dy, dtheta);
     }
 
-    public Twist2d(edu.wpi.first.math.geometry.Twist2d other) {
+    public Twist2dWrapper(edu.wpi.first.math.geometry.Twist2d other) {
         super(other.dx, other.dy, other.dtheta);
     }
 
-    public Twist2d scaled(double scale) {
-        return new Twist2d(dx * scale, dy * scale, dtheta * scale);
+    public Twist2dWrapper scaled(double scale) {
+        return new Twist2dWrapper(dx * scale, dy * scale, dtheta * scale);
     }
 
     public double norm() {
@@ -30,7 +32,7 @@ public class Twist2d extends edu.wpi.first.math.geometry.Twist2d {
         return dtheta / norm();
     }
 
-    public boolean epsilonEquals(final Twist2d other, double epsilon) {
+    public boolean epsilonEquals(final Twist2dWrapper other, double epsilon) {
         return Util.epsilonEquals(dx, other.dx, epsilon) &&
                 Util.epsilonEquals(dy, other.dy, epsilon) &&
                 Util.epsilonEquals(dtheta, other.dtheta, epsilon);

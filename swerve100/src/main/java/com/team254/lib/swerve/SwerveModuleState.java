@@ -1,6 +1,6 @@
 package com.team254.lib.swerve;
 
-import com.team254.lib.geometry.Rotation2d;
+import com.team254.lib.geometry.Rotation2dState;
 
 import java.util.Objects;
 
@@ -14,7 +14,7 @@ public class SwerveModuleState implements Comparable<SwerveModuleState> {
     public double distanceMeters;
 
     /** Angle of the module. */
-    public Rotation2d angle = Rotation2d.fromDegrees(0);
+    public Rotation2dState angle = Rotation2dState.fromDegrees(0);
 
     /** Constructs a SwerveModuleState with zeros for speed and angle. */
     public SwerveModuleState() {}
@@ -25,12 +25,12 @@ public class SwerveModuleState implements Comparable<SwerveModuleState> {
      * @param speedMetersPerSecond The speed of the wheel of the module.
      * @param angle The angle of the module.
      */
-    public SwerveModuleState(double speedMetersPerSecond, Rotation2d angle) {
+    public SwerveModuleState(double speedMetersPerSecond, Rotation2dState angle) {
         this.speedMetersPerSecond = speedMetersPerSecond;
         this.angle = angle;
     }
 
-    public SwerveModuleState(double speedMetersPerSecond, double distanceMeters, Rotation2d angle) {
+    public SwerveModuleState(double speedMetersPerSecond, double distanceMeters, Rotation2dState angle) {
         this.speedMetersPerSecond = speedMetersPerSecond;
         this.distanceMeters = distanceMeters;
         this.angle = angle;
@@ -78,12 +78,12 @@ public class SwerveModuleState implements Comparable<SwerveModuleState> {
      * @return Optimized swerve module state.
      */
     public static SwerveModuleState optimize(
-            SwerveModuleState desiredState, Rotation2d currentAngle) {
+            SwerveModuleState desiredState, Rotation2dState currentAngle) {
         var delta = desiredState.angle.rotateBy(currentAngle.unaryMinus());    // todo check math
         if (Math.abs(delta.getDegrees()) > 90.0) {
             return new SwerveModuleState(
                     -desiredState.speedMetersPerSecond,
-                    desiredState.angle.rotateBy(Rotation2d.fromDegrees(180.0)));
+                    desiredState.angle.rotateBy(Rotation2dState.fromDegrees(180.0)));
         } else {
             return new SwerveModuleState(desiredState.speedMetersPerSecond, desiredState.angle);
         }

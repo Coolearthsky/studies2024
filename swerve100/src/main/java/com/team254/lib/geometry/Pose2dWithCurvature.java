@@ -12,20 +12,20 @@ public class Pose2dWithCurvature extends PoseWithCurvature implements State<Pose
         dcurvature_ds_ = 0.0;
     }
 
-    public Pose2dWithCurvature(final Pose2d pose, double curvature) {
+    public Pose2dWithCurvature(final Pose2dState pose, double curvature) {
         this(pose, curvature, 0.0);
     }
 
-    public Pose2dWithCurvature(final Pose2d pose, double curvature, double dcurvature_ds) {
+    public Pose2dWithCurvature(final Pose2dState pose, double curvature, double dcurvature_ds) {
         super(pose, curvature);
         dcurvature_ds_ = dcurvature_ds;
     }
 
-    public final Pose2d getPose() {
-        return new Pose2d(poseMeters);
+    public final Pose2dState getPose() {
+        return new Pose2dState(poseMeters);
     }
 
-    public Pose2dWithCurvature transformBy(Pose2d transform) {
+    public Pose2dWithCurvature transformBy(Pose2dState transform) {
         return new Pose2dWithCurvature(getPose().transformBy(transform), getCurvature(), getDCurvatureDs());
     }
 
@@ -41,11 +41,11 @@ public class Pose2dWithCurvature extends PoseWithCurvature implements State<Pose
         return dcurvature_ds_;
     }
 
-    public final Translation2d getTranslation() {
-        return new Translation2d(getPose().getTranslation());
+    public final Translation2dState getTranslation() {
+        return new Translation2dState(getPose().getTranslation());
     }
 
-    public final Rotation2d getRotation() {
+    public final Rotation2dState getRotation() {
         return getPose().getRotation();
     }
 
@@ -70,12 +70,12 @@ public class Pose2dWithCurvature extends PoseWithCurvature implements State<Pose
         return getPose().equals(p2dwc.getPose()) && Util.epsilonEquals(getCurvature(), p2dwc.getCurvature()) && Util.epsilonEquals(getDCurvatureDs(), p2dwc.getDCurvatureDs());
     }
 
-    public Pose2dWithCurvature rotateBy(Rotation2d other) {
+    public Pose2dWithCurvature rotateBy(Rotation2dState other) {
         return new Pose2dWithCurvature(getPose().rotateBy(other), getCurvature(), getDCurvatureDs());
     }
 
     @Override
     public Pose2dWithCurvature add(Pose2dWithCurvature other) {
-        return this.transformBy(new Pose2d(other.poseMeters));   // todo make work
+        return this.transformBy(new Pose2dState(other.poseMeters));   // todo make work
     }
 }
