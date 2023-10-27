@@ -1,7 +1,5 @@
 package com.team254.lib.geometry;
 
-import javax.net.ssl.TrustManagerFactory;
-
 import com.team254.lib.util.Util;
 
 import edu.wpi.first.math.geometry.Translation2d;

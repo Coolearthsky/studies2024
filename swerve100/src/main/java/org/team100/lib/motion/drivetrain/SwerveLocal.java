@@ -1,21 +1,18 @@
 package org.team100.lib.motion.drivetrain;
 
-import java.io.FileWriter;
-
 import org.team100.lib.experiments.Experiment;
 import org.team100.lib.experiments.Experiments;
 import org.team100.lib.motion.drivetrain.kinematics.SwerveKinematics;
 import org.team100.lib.swerve.AsymSwerveSetpointGenerator;
+import org.team100.lib.swerve.SwerveSetpoint;
 import org.team100.lib.telemetry.Telemetry;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-
-import org.team100.lib.swerve.SwerveSetpoint;
-import edu.wpi.first.math.geometry.Translation2d;
 
 /**
  * The swerve drive in local, or robot, reference frame. This class knows
@@ -184,8 +181,8 @@ public class SwerveLocal {
         m_modules.stop();
     }
 
-    void test(double[][] desiredOutputs, FileWriter writer) {
-        m_modules.test(desiredOutputs, writer);
+    void test(double[][] desiredOutputs) {
+        m_modules.test(desiredOutputs);
     }
 
     ///////////////////////////////////////////////////////////
