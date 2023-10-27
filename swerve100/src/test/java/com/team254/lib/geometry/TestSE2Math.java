@@ -138,64 +138,64 @@ public class TestSE2Math {
     @Test
     public void testTranslation2d() {
         // Test constructors
-        Translation2dState pos1 = new Translation2dState();
-        assertEquals(0, pos1.get().getX(), kTestEpsilon);
-        assertEquals(0, pos1.get().getY(), kTestEpsilon);
-        assertEquals(0, pos1.get().getNorm(), kTestEpsilon);
+        Translation2d pos1 = new Translation2d();
+        assertEquals(0, pos1.getX(), kTestEpsilon);
+        assertEquals(0, pos1.getY(), kTestEpsilon);
+        assertEquals(0, pos1.getNorm(), kTestEpsilon);
 
-        pos1 = new Translation2dState(3, 4);
-        assertEquals(3, pos1.get().getX(), kTestEpsilon);
-        assertEquals(4, pos1.get().getY(), kTestEpsilon);
-        assertEquals(5, pos1.get().getNorm(), kTestEpsilon);
+        pos1 = new Translation2d(3, 4);
+        assertEquals(3, pos1.getX(), kTestEpsilon);
+        assertEquals(4, pos1.getY(), kTestEpsilon);
+        assertEquals(5, pos1.getNorm(), kTestEpsilon);
 
         // Test inversion
-        pos1 = new Translation2dState(3.152, 4.1666);
-        Translation2dState pos2 = pos1.unaryMinus();
-        assertEquals(-pos1.get().getX(), pos2.get().getX(), kTestEpsilon);
-        assertEquals(-pos1.get().getY(), pos2.get().getY(), kTestEpsilon);
-        assertEquals(pos1.get().getNorm(), pos2.get().getNorm(), kTestEpsilon);
+        pos1 = new Translation2d(3.152, 4.1666);
+        Translation2d pos2 = pos1.unaryMinus();
+        assertEquals(-pos1.getX(), pos2.getX(), kTestEpsilon);
+        assertEquals(-pos1.getY(), pos2.getY(), kTestEpsilon);
+        assertEquals(pos1.getNorm(), pos2.getNorm(), kTestEpsilon);
 
         // Test rotateBy
-        pos1 = new Translation2dState(2, 0);
+        pos1 = new Translation2d(2, 0);
         Rotation2dState rot1 = Rotation2dState.fromDegrees(90);
         pos2 = pos1.rotateBy(rot1);
-        assertEquals(0, pos2.get().getX(), kTestEpsilon);
-        assertEquals(2, pos2.get().getY(), kTestEpsilon);
-        assertEquals(pos1.get().getNorm(), pos2.get().getNorm(), kTestEpsilon);
+        assertEquals(0, pos2.getX(), kTestEpsilon);
+        assertEquals(2, pos2.getY(), kTestEpsilon);
+        assertEquals(pos1.getNorm(), pos2.getNorm(), kTestEpsilon);
 
-        pos1 = new Translation2dState(2, 0);
+        pos1 = new Translation2d(2, 0);
         rot1 = Rotation2dState.fromDegrees(-45);
         pos2 = pos1.rotateBy(rot1);
-        assertEquals(Math.sqrt(2), pos2.get().getX(), kTestEpsilon);
-        assertEquals(-Math.sqrt(2), pos2.get().getY(), kTestEpsilon);
-        assertEquals(pos1.get().getNorm(), pos2.get().getNorm(), kTestEpsilon);
+        assertEquals(Math.sqrt(2), pos2.getX(), kTestEpsilon);
+        assertEquals(-Math.sqrt(2), pos2.getY(), kTestEpsilon);
+        assertEquals(pos1.getNorm(), pos2.getNorm(), kTestEpsilon);
 
         // Test translateBy
-        pos1 = new Translation2dState(2, 0);
-        pos2 = new Translation2dState(-2, 1);
-        Translation2d pos3 = pos1.plus(pos2).get();
+        pos1 = new Translation2d(2, 0);
+        pos2 = new Translation2d(-2, 1);
+        Translation2d pos3 = pos1.plus(pos2);
         assertEquals(0, pos3.getX(), kTestEpsilon);
         assertEquals(1, pos3.getY(), kTestEpsilon);
         assertEquals(1, pos3.getNorm(), kTestEpsilon);
 
         // A translation times its inverse should be the identity
         Translation2dState identity = new Translation2dState();
-        pos1 = new Translation2dState(2.16612, -23.55);
+        pos1 = new Translation2d(2.16612, -23.55);
         pos2 = pos1.plus(pos1.unaryMinus());
-        assertEquals(identity.get().getX(), pos2.get().getX(), kTestEpsilon);
-        assertEquals(identity.get().getY(), pos2.get().getY(), kTestEpsilon);
-        assertEquals(identity.get().getNorm(), pos2.get().getNorm(), kTestEpsilon);
+        assertEquals(identity.get().getX(), pos2.getX(), kTestEpsilon);
+        assertEquals(identity.get().getY(), pos2.getY(), kTestEpsilon);
+        assertEquals(identity.get().getNorm(), pos2.getNorm(), kTestEpsilon);
 
         // Test interpolation
-        pos1 = new Translation2dState(0, 1);
-        pos2 = new Translation2dState(10, -1);
-        pos3 = pos1.interpolate2(pos2, .5).get();
+        pos1 = new Translation2d(0, 1);
+        pos2 = new Translation2d(10, -1);
+        pos3 = pos1.interpolate(pos2, .5);
         assertEquals(5, pos3.getX(), kTestEpsilon);
         assertEquals(0, pos3.getY(), kTestEpsilon);
 
-        pos1 = new Translation2dState(0, 1);
-        pos2 = new Translation2dState(10, -1);
-        pos3 = pos1.interpolate2(pos2, .75).get();
+        pos1 = new Translation2d(0, 1);
+        pos2 = new Translation2d(10, -1);
+        pos3 = pos1.interpolate(pos2, .75);
         assertEquals(7.5, pos3.getX(), kTestEpsilon);
         assertEquals(-.5, pos3.getY(), kTestEpsilon);
     }

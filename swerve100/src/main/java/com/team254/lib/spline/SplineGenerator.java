@@ -71,7 +71,7 @@ public class SplineGenerator {
         Translation2dState p1 = s.getPoint(t1);
         Rotation2dState r0 = s.getHeading(t0);
         Rotation2dState r1 = s.getHeading(t1);
-        Pose2dState transformation = new Pose2dState(new Translation2dState(p0, p1).rotateBy(r0.unaryMinus()), r1.rotateBy(r0.unaryMinus()));
+        Pose2dState transformation = new Pose2dState(new Translation2dState(p0, p1).get().rotateBy(r0.unaryMinus()), r1.rotateBy(r0.unaryMinus()));
         Twist2dWrapper twist = Pose2dState.slog(transformation);
 
         if (twist.dy > maxDy || twist.dx > maxDx || twist.dtheta > maxDTheta) {

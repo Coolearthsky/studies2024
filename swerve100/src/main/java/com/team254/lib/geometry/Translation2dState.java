@@ -35,22 +35,6 @@ public class Translation2dState implements State<Translation2dState> {
         return translation2d;
     }
 
-    public Translation2dState plus(Translation2dState other) {
-        return new Translation2dState(translation2d.plus(other.translation2d));
-    }
-
-    public Translation2dState unaryMinus() {
-        return new Translation2dState(translation2d.unaryMinus());
-    }
-
-    public Translation2dState rotateBy(final Rotation2dState rotation) {
-        return new Translation2dState(translation2d.rotateBy(rotation));
-    }
-
-    public Rotation2dState direction() {
-        return new Rotation2dState(translation2d.getX(), translation2d.getY());
-    }
-
     @Override
     public Translation2dState interpolate2(final Translation2dState other, double x) {
         if (x <= 0) {
@@ -65,10 +49,6 @@ public class Translation2dState implements State<Translation2dState> {
         return new Translation2dState(x * (other.translation2d.getX() - translation2d.getX()) + translation2d.getX(), x * (other.translation2d.getY() - translation2d.getY()) + translation2d.getY());
     }
 
-    public Translation2dState scale(double s) {
-        return new Translation2dState(translation2d.getX() * s, translation2d.getY() * s);
-    }
-
     public boolean epsilonEquals(final Translation2dState other, double epsilon) {
         return Util.epsilonEquals(translation2d.getX(), other.translation2d.getX(), epsilon) && Util.epsilonEquals(translation2d.getY(), other.translation2d.getY(), epsilon);
     }
@@ -80,10 +60,6 @@ public class Translation2dState implements State<Translation2dState> {
 
     @Override
     public Translation2dState add(Translation2dState other) {
-        return new Translation2dState(plus(other));
-    }
-
-    public Translation2dState getTranslation() {
-        return this;
+        return new Translation2dState(translation2d.plus(other.get()));
     }
 }

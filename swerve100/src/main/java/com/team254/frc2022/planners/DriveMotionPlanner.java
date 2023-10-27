@@ -249,7 +249,7 @@ public class DriveMotionPlanner {
                 lookahead_state.state().getTranslation());
 
         // Set the steering direction as the direction of the vector
-        Rotation2dState steeringDirection = lookaheadTranslation.direction();
+        Rotation2dState steeringDirection = new Rotation2dState(lookaheadTranslation.get().getAngle());
         SmartDashboard.putString("Steering Direction", steeringDirection.toString());
 
         // Convert from field-relative steering direction to robot-relative
@@ -349,7 +349,7 @@ public class DriveMotionPlanner {
                 var chassis_v = new Translation2dState(rotation.getCos() * velocity_m,
                         rotation.getSin() * velocity_m);
                 // Convert to robot frame
-                chassis_v = chassis_v.rotateBy(mHeadingSetpoint.state().getRotation().unaryMinus());
+                chassis_v = new Translation2dState(chassis_v.get().rotateBy(mHeadingSetpoint.state().getRotation().unaryMinus()));
 
                 var chassis_twist = new Twist2dWrapper(
                         chassis_v.get().getX(),
@@ -451,7 +451,7 @@ public class DriveMotionPlanner {
                 var chassis_v = new Translation2dState(rotation.getCos() * velocity_m,
                         rotation.getSin() * velocity_m);
                 // Convert to robot frame
-                chassis_v = chassis_v.rotateBy(mHeadingSetpoint.state().getRotation().unaryMinus());
+                chassis_v = new Translation2dState(chassis_v.get().rotateBy(mHeadingSetpoint.state().getRotation().unaryMinus()));
 
                 var chassis_twist = new Twist2dWrapper(
                         chassis_v.get().getX(),
