@@ -120,7 +120,7 @@ public class SwerveDriveOdometry {
 
         var chassisState = m_kinematics.toChassisSpeeds(moduleStates);
         var newPose =
-                Pose2d.exp(
+                Pose2d.sexp(
                         new Twist2d(
                                 chassisState.vxMetersPerSecond * period,
                                 chassisState.vyMetersPerSecond * period,
@@ -160,7 +160,7 @@ public class SwerveDriveOdometry {
         SmartDashboard.putNumber("average", average);
 
         var newPose =
-                Pose2d.exp(
+                Pose2d.sexp(
                         new Twist2d(
                                 chassisState.vxMetersPerSecond * period * average,
                                 chassisState.vyMetersPerSecond * period * average,

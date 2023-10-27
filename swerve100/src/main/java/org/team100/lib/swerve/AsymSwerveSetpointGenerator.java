@@ -9,6 +9,7 @@ import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.geometry.Twist2d;
 import com.team254.lib.swerve.SwerveModuleState;
 
+import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.swerve.SwerveSetpoint;
 import com.team254.lib.util.Util;
 
@@ -180,7 +181,7 @@ public class AsymSwerveSetpointGenerator {
         // Special case: desiredState is a complete stop. In this case, module angle is
         // arbitrary, so just use the previous angle.
         boolean need_to_steer = true;
-        if (desiredState.toTwist2d().epsilonEquals(Twist2d.identity(), Util.kEpsilon)) {
+        if (desiredState.toTwist2d().epsilonEquals(GeometryUtil.kTwist2dIdentity, Util.kEpsilon)) {
             need_to_steer = false;
             for (int i = 0; i < modules.length; ++i) {
                 desiredModuleState[i].angle = prevSetpoint.mModuleStates[i].angle;
@@ -218,8 +219,8 @@ public class AsymSwerveSetpointGenerator {
             }
         }
         if (all_modules_should_flip &&
-                !prevSetpoint.mChassisSpeeds.toTwist2d().epsilonEquals(Twist2d.identity(), Util.kEpsilon) &&
-                !desiredState.toTwist2d().epsilonEquals(Twist2d.identity(), Util.kEpsilon)) {
+                !prevSetpoint.mChassisSpeeds.toTwist2d().epsilonEquals(GeometryUtil.kTwist2dIdentity, Util.kEpsilon) &&
+                !desiredState.toTwist2d().epsilonEquals(GeometryUtil.kTwist2dIdentity, Util.kEpsilon)) {
             // It will (likely) be faster to stop the robot, rotate the modules in place to
             // the complement of the desired
             // angle, and accelerate again.
@@ -268,7 +269,7 @@ public class AsymSwerveSetpointGenerator {
                 var necessaryRotation = prevSetpoint.mModuleStates[i].angle.unaryMinus().rotateBy(
                         desiredModuleState[i].angle);
                 if (flipHeading(necessaryRotation)) {
-                    necessaryRotation = necessaryRotation.rotateBy(Rotation2d.kPi);
+                    necessaryRotation = necessaryRotation.rotateBy(GeometryUtil.kPi);
                 }
                 // getRadians() bounds to +/- Pi.
                 final double numStepsNeeded = Math.abs(necessaryRotation.getRadians()) / max_theta_step;

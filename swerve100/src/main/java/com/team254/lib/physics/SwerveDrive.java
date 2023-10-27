@@ -4,6 +4,8 @@ import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 import java.text.DecimalFormat;
 
+import org.team100.lib.geometry.GeometryUtil;
+
 public class SwerveDrive {
     // All units must be SI!
 
@@ -32,13 +34,13 @@ public class SwerveDrive {
 
         public ChassisState(Translation2d movement) {
             this.movement = movement;
-            this.heading = Rotation2d.identity();
+            this.heading = GeometryUtil.kRotationIdentity;
         }
 
 
         public ChassisState() {
-            this.movement = Translation2d.identity();
-            this.heading = Rotation2d.identity();
+            this.movement = GeometryUtil.kTranslation2dIdentity;
+            this.heading = GeometryUtil.kRotationIdentity;
         }
 
         @Override

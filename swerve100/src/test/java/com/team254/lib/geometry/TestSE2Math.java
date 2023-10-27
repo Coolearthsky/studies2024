@@ -257,14 +257,14 @@ public class TestSE2Math {
     public void testTwist() {
         // Exponentiation (integrate twist to obtain a Pose2d)
         Twist2d twist = new Twist2d(1.0, 0.0, 0.0);
-        Pose2d pose = Pose2d.exp(twist);
+        Pose2d pose = Pose2d.sexp(twist);
         assertEquals(1.0, pose.getTranslation().getX(), kTestEpsilon);
         assertEquals(0.0, pose.getTranslation().getY(), kTestEpsilon);
         assertEquals(0.0, pose.getRotation().getDegrees(), kTestEpsilon);
 
         // Scaled.
         twist = new Twist2d(1.0, 0.0, 0.0);
-        pose = Pose2d.exp(twist.scaled(2.5));
+        pose = Pose2d.sexp(twist.scaled(2.5));
         assertEquals(2.5, pose.getTranslation().getX(), kTestEpsilon);
         assertEquals(0.0, pose.getTranslation().getY(), kTestEpsilon);
         assertEquals(0.0, pose.getRotation().getDegrees(), kTestEpsilon);
@@ -277,7 +277,7 @@ public class TestSE2Math {
         assertEquals(Math.PI / 2, twist.dtheta, kTestEpsilon);
 
         // Logarithm is the inverse of exponentiation.
-        Pose2d new_pose = Pose2d.exp(twist);
+        Pose2d new_pose = Pose2d.sexp(twist);
         assertEquals(new_pose.getTranslation().getX(), pose.getTranslation().getX(), kTestEpsilon);
         assertEquals(new_pose.getTranslation().getY(), pose.getTranslation().getY(), kTestEpsilon);
         assertEquals(new_pose.getRotation().getDegrees(), pose.getRotation().getDegrees(), kTestEpsilon);

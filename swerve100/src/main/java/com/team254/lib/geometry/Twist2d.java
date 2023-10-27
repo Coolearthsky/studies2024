@@ -4,28 +4,9 @@ import com.team254.lib.util.Util;
 
 import java.text.DecimalFormat;
 
-/**
- * A movement along an arc at constant curvature and velocity. We can use ideas from "differential calculus" to create
- * new RigidTransform2d's from a Twist2d and visa versa.
- * <p>
- * A Twist can be used to represent a difference between two poses, a velocity, an acceleration, etc.
- */
 public class Twist2d extends edu.wpi.first.math.geometry.Twist2d {
-    protected static final Twist2d kIdentity = new Twist2d(0.0, 0.0, 0.0);
-
-    public static Twist2d identity() {
-        return kIdentity;
-    }
-
-    // public final double dx;
-    // public final double dy;
-    // public final double dtheta; // Radians!
-
     public Twist2d(double dx, double dy, double dtheta) {
-        super(dx,dy,dtheta);
-        // this.dx = dx;
-        // this.dy = dy;
-        // this.dtheta = dtheta;
+        super(dx, dy, dtheta);
     }
 
     public Twist2d(edu.wpi.first.math.geometry.Twist2d other) {
@@ -51,8 +32,8 @@ public class Twist2d extends edu.wpi.first.math.geometry.Twist2d {
 
     public boolean epsilonEquals(final Twist2d other, double epsilon) {
         return Util.epsilonEquals(dx, other.dx, epsilon) &&
-               Util.epsilonEquals(dy, other.dy, epsilon) &&
-               Util.epsilonEquals(dtheta, other.dtheta, epsilon);
+                Util.epsilonEquals(dy, other.dy, epsilon) &&
+                Util.epsilonEquals(dtheta, other.dtheta, epsilon);
     }
 
     @Override

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.team100.lib.geometry.GeometryUtil;
 
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
@@ -28,7 +29,7 @@ public class SplineGeneratorTest {
         List<TrajectoryPoint<Pose2dWithCurvature, Rotation2d>> samples = SplineGenerator.parameterizeSpline(s, headings);
 
         double arclength = 0;
-        Rotation2d cur_heading = Rotation2d.identity();
+        Rotation2d cur_heading = GeometryUtil.kRotationIdentity;
         Pose2dWithCurvature cur_pose = samples.get(0).state();
         for (TrajectoryPoint<Pose2dWithCurvature, Rotation2d> point : samples) {
             Pose2dWithCurvature sample = point.state();

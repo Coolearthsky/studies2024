@@ -3,6 +3,7 @@ package org.team100.lib.trajectory;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.swerve.ChassisSpeeds;
 
 import com.team254.frc2022.planners.DriveMotionPlanner;
@@ -102,7 +103,7 @@ public class FancyTrajectoryTest {
         mMotionPlanner.setTrajectory(iter);
 
         // in the drive loop, this happens:
-        Pose2d actualPose = Pose2d.identity();
+        Pose2d actualPose = GeometryUtil.kPose2dIdentity;
         double fpgatime = 0;
         final double now = Timer.getFPGATimestamp();
         // this stuff doesn't work, and i don't want to break the build so i'm

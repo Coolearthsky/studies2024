@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.swerve.ChassisSpeeds;
 
 import com.team254.frc2022.Constants;
@@ -54,18 +55,18 @@ public class DriveMotionPlanner {
     boolean mIsReversed = false;
     double mLastTime = Double.POSITIVE_INFINITY;
     public TimedState<Pose2dWithCurvature> mLastPathSetpoint = null;
-    public TimedState<Pose2dWithCurvature> mPathSetpoint = new TimedState<>(Pose2dWithCurvature.identity());
+    public TimedState<Pose2dWithCurvature> mPathSetpoint = new TimedState<>(GeometryUtil.kPose2dWithCurvatureIdentity);
     public TimedState<Rotation2d> mHeadingSetpoint = null;
-    public TimedState<Rotation2d> mLastHeadingSetpoint = new TimedState<>(Rotation2d.identity());
+    public TimedState<Rotation2d> mLastHeadingSetpoint = new TimedState<>(GeometryUtil.kRotationIdentity);
 
     public double mVelocitym = 0;
-    Pose2d mError = Pose2d.identity();
+    Pose2d mError = GeometryUtil.kPose2dIdentity;
 
-    Translation2d mTranslationalError = Translation2d.identity();
-    Rotation2d mHeadingError = Rotation2d.identity();
-    Rotation2d mInitialHeading = Rotation2d.identity();
-    Rotation2d mRotationDiff = Rotation2d.identity();
-    Pose2d mCurrentState = Pose2d.identity();
+    Translation2d mTranslationalError = GeometryUtil.kTranslation2dIdentity;
+    Rotation2d mHeadingError = GeometryUtil.kRotationIdentity;
+    Rotation2d mInitialHeading = GeometryUtil.kRotationIdentity;
+    Rotation2d mRotationDiff = GeometryUtil.kRotationIdentity;
+    Pose2d mCurrentState = GeometryUtil.kPose2dIdentity;
 
     double mCurrentTrajectoryLength = 0.0;
     double mTotalTime = Double.POSITIVE_INFINITY;
@@ -118,8 +119,8 @@ public class DriveMotionPlanner {
     }
 
     public void reset() {
-        mTranslationalError = Translation2d.identity();
-        mHeadingError = Rotation2d.identity();
+        mTranslationalError = GeometryUtil.kTranslation2dIdentity;
+        mHeadingError = GeometryUtil.kRotationIdentity;
         mLastHeadingSetpoint = null;
         mLastPathSetpoint = null;
         mOutput = new ChassisSpeeds();

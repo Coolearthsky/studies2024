@@ -41,10 +41,10 @@ public class SwerveLocal {
     private AsymSwerveSetpointGenerator.KinematicLimits limits = new AsymSwerveSetpointGenerator.KinematicLimits();
     org.team100.lib.swerve.ChassisSpeeds c254 = new org.team100.lib.swerve.ChassisSpeeds();
     com.team254.lib.swerve.SwerveModuleState[] s254 = new com.team254.lib.swerve.SwerveModuleState[] {
-            new com.team254.lib.swerve.SwerveModuleState(0, 0, com.team254.lib.geometry.Rotation2d.kIdentity),
-            new com.team254.lib.swerve.SwerveModuleState(0, 0, com.team254.lib.geometry.Rotation2d.kIdentity),
-            new com.team254.lib.swerve.SwerveModuleState(0, 0, com.team254.lib.geometry.Rotation2d.kIdentity),
-            new com.team254.lib.swerve.SwerveModuleState(0, 0, com.team254.lib.geometry.Rotation2d.kIdentity)
+            new com.team254.lib.swerve.SwerveModuleState(0, 0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity),
+            new com.team254.lib.swerve.SwerveModuleState(0, 0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity),
+            new com.team254.lib.swerve.SwerveModuleState(0, 0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity),
+            new com.team254.lib.swerve.SwerveModuleState(0, 0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity)
     };
     private SwerveSetpoint prevSetpoint = new SwerveSetpoint(c254, s254);
 
