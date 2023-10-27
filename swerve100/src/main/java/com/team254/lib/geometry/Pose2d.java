@@ -4,6 +4,8 @@ import org.team100.lib.geometry.GeometryUtil;
 
 import com.team254.lib.util.Util;
 
+import edu.wpi.first.math.geometry.Transform2d;
+
 public class Pose2d extends edu.wpi.first.math.geometry.Pose2d implements State<Pose2d> {
     public Pose2d() {
     }
