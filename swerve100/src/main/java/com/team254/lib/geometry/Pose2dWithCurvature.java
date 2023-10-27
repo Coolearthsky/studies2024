@@ -4,7 +4,7 @@ import com.team254.lib.util.Util;
 
 import java.text.DecimalFormat;
 
-public class Pose2dWithCurvature implements IPose2d<Pose2dWithCurvature>, ICurvature<Pose2dWithCurvature> {
+public class Pose2dWithCurvature implements State<Pose2dWithCurvature> {
     protected static final Pose2dWithCurvature kIdentity = new Pose2dWithCurvature();
 
     public static Pose2dWithCurvature identity() {
@@ -45,37 +45,30 @@ public class Pose2dWithCurvature implements IPose2d<Pose2dWithCurvature>, ICurva
         dcurvature_ds_ = dcurvature_ds;
     }
 
-    @Override
     public final Pose2d getPose() {
         return pose_;
     }
 
-    @Override
     public Pose2dWithCurvature transformBy(Pose2d transform) {
         return new Pose2dWithCurvature(getPose().transformBy(transform), getCurvature(), getDCurvatureDs());
     }
 
-    @Override
     public Pose2dWithCurvature mirror() {
         return new Pose2dWithCurvature(getPose().mirror().getPose(), -getCurvature(), -getDCurvatureDs());
     }
 
-    @Override
     public double getCurvature() {
         return curvature_;
     }
 
-    @Override
     public double getDCurvatureDs() {
         return dcurvature_ds_;
     }
 
-    @Override
     public final Translation2d getTranslation() {
         return getPose().getTranslation();
     }
 
-    @Override
     public final Rotation2d getRotation() {
         return getPose().getRotation();
     }
@@ -114,7 +107,6 @@ public class Pose2dWithCurvature implements IPose2d<Pose2dWithCurvature>, ICurva
         return getPose().toCSV() + "," + fmt.format(getCurvature()) + "," + fmt.format(getDCurvatureDs());
     }
 
-    @Override
     public Pose2dWithCurvature rotateBy(Rotation2d other) {
         return new Pose2dWithCurvature(getPose().rotateBy(other), getCurvature(), getDCurvatureDs());
     }

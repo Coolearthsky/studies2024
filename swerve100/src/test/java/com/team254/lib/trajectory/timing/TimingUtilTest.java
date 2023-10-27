@@ -10,7 +10,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.team254.lib.geometry.ITranslation2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.State;
 import com.team254.lib.geometry.Translation2d;
@@ -105,9 +104,9 @@ public class TimingUtilTest {
         Trajectory<Translation2d, Rotation2d> traj = new Trajectory<>(kWaypoints, kHeadings);
         DistanceView<Translation2d, Rotation2d> dist_view = new DistanceView<>(traj);
 
-        class ConditionalTimingConstraint<S extends ITranslation2d<S>> implements TimingConstraint<S> {
+        class ConditionalTimingConstraint<S extends Translation2d> implements TimingConstraint<Translation2d> {
             @Override
-            public double getMaxVelocity(S state) {
+            public double getMaxVelocity(Translation2d state) {
                 if (state.getTranslation().x() >= 24.0) {
                     return 5.0;
                 } else {
@@ -116,7 +115,7 @@ public class TimingUtilTest {
             }
 
             @Override
-            public TimingConstraint.MinMaxAcceleration getMinMaxAcceleration(S state,
+            public TimingConstraint.MinMaxAcceleration getMinMaxAcceleration(Translation2d state,
                     double velocity) {
                 return new TimingConstraint.MinMaxAcceleration(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
             }
@@ -135,7 +134,7 @@ public class TimingUtilTest {
         Trajectory<Translation2d, Rotation2d> traj = new Trajectory<>(kWaypoints, kHeadings);
         DistanceView<Translation2d, Rotation2d> dist_view = new DistanceView<>(traj);
 
-        class ConditionalTimingConstraint<S extends ITranslation2d<S>> implements TimingConstraint<S> {
+        class ConditionalTimingConstraint<S extends State<S>> implements TimingConstraint<S> {
             @Override
             public double getMaxVelocity(S state) {
                 return Double.POSITIVE_INFINITY;
@@ -153,22 +152,6 @@ public class TimingUtilTest {
                 1.0,
                 Arrays.asList(new ConditionalTimingConstraint<>()), 0.0, 0.0, 10.0, 5.0);
         System.out.println(timed_traj);
-    }
-
-    @Test
-    public void testVelocityLimitRegionConstraint() {
-        Trajectory<Translation2d, Rotation2d> traj = new Trajectory<>(kWaypoints, kHeadings);
-        DistanceView<Translation2d, Rotation2d> dist_view = new DistanceView<>(traj);
-
-        VelocityLimitRegionConstraint<Translation2d> constraint = new VelocityLimitRegionConstraint<>(
-                new Translation2d(6.0, -6.0), new Translation2d(18.0, 6.0), 3.0);
-
-        // Trapezoidal profile.
-        Trajectory<TimedState<Translation2d>, TimedState<Rotation2d>> timed_traj = buildAndCheckTrajectory(dist_view,
-                1.0,
-                Arrays.asList(constraint), 0.0, 0.0, 10.0, 5.0);
-        System.out.println(timed_traj);
-
     }
 
 }

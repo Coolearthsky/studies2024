@@ -7,7 +7,7 @@ import java.text.DecimalFormat;
 /**
  * A translation in a 2d coordinate frame. Translations are simply shifts in an (x, y) plane.
  */
-public class Translation2d implements ITranslation2d<Translation2d> {
+public class Translation2d implements State<Translation2d> {
     protected static final Translation2d kIdentity = new Translation2d();
 
     public static Translation2d identity() {
@@ -182,7 +182,6 @@ public class Translation2d implements ITranslation2d<Translation2d> {
         return distance((Translation2d) other) < Util.kEpsilon;
     }
 
-    @Override
     public Translation2d getTranslation() {
         return this;
     }

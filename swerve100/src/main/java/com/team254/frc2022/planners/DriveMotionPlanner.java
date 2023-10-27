@@ -28,7 +28,7 @@ import com.team254.lib.util.Util;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class DriveMotionPlanner  {
+public class DriveMotionPlanner {
     private static final double kMaxDx = 2.0;
     private static final double kMaxDy = 0.25;
     private static final double kMaxDTheta = Math.toRadians(1.0);
@@ -80,8 +80,7 @@ public class DriveMotionPlanner  {
     public DriveMotionPlanner() {
         mModel = new SwerveDrive(
                 0.0942 / 2,
-                0.464 / 2.0 * Constants.kTrackScrubFactor
-        );
+                0.464 / 2.0 * Constants.kTrackScrubFactor);
 
         SmartDashboard.putString("Steering Direction", "");
         SmartDashboard.putString("Last Pose", "");
@@ -90,13 +89,12 @@ public class DriveMotionPlanner  {
         SmartDashboard.putNumber("Adaptive Lookahead", -1.0);
     }
 
-    public void setTrajectory(final TrajectoryIterator<TimedState<Pose2dWithCurvature>, TimedState<Rotation2d>> trajectory) {
+    public void setTrajectory(
+            final TrajectoryIterator<TimedState<Pose2dWithCurvature>, TimedState<Rotation2d>> trajectory) {
 
-        
-        
         mCurrentTrajectory = trajectory;
 
-        if(mCurrentTrajectory == null){
+        if (mCurrentTrajectory == null) {
             System.out.println("YOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
         }
         mPathSetpoint = trajectory.getState();
@@ -104,7 +102,9 @@ public class DriveMotionPlanner  {
         mLastHeadingSetpoint = null;
         mLastPathSetpoint = null;
         useDefaultCook = true;
-        mSpeedLookahead = new Lookahead(Constants.kAdaptivePathMinLookaheadDistance, Constants.kAdaptivePathMaxLookaheadDistance, 0.0, Units.meters_to_inches(Constants.kMaxVelocityMetersPerSecond));
+        mSpeedLookahead = new Lookahead(Constants.kAdaptivePathMinLookaheadDistance,
+                Constants.kAdaptivePathMaxLookaheadDistance, 0.0,
+                Units.meters_to_inches(Constants.kMaxVelocityMetersPerSecond));
         mCurrentTrajectoryLength = mCurrentTrajectory.trajectory().getLastPoint().state().t();
         for (int i = 0; i < trajectory.trajectory().length(); ++i) {
             if (trajectory.trajectory().getPoint(i).state().velocity() > Util.kEpsilon) {
@@ -131,10 +131,11 @@ public class DriveMotionPlanner  {
             final List<Pose2d> waypoints,
             final List<Rotation2d> headings,
             final List<TimingConstraint<Pose2dWithCurvature>> constraints,
-            double max_vel,  // inches/s
-            double max_accel,  // inches/s^2
+            double max_vel, // inches/s
+            double max_accel, // inches/s^2
             double max_voltage) {
-        return generateTrajectory(reversed, waypoints, headings, constraints, 0.0, 0.0, max_vel, max_accel, max_voltage);
+        return generateTrajectory(reversed, waypoints, headings, constraints, 0.0, 0.0, max_vel, max_accel,
+                max_voltage);
     }
 
     public Trajectory<TimedState<Pose2dWithCurvature>, TimedState<Rotation2d>> generateTrajectory(
@@ -144,8 +145,8 @@ public class DriveMotionPlanner  {
             final List<TimingConstraint<Pose2dWithCurvature>> constraints,
             double start_vel,
             double end_vel,
-            double max_vel,  // inches/s
-            double max_accel,  // inches/s^2
+            double max_vel, // inches/s
+            double max_accel, // inches/s^2
             double max_voltage) {
         List<Pose2d> waypoints_maybe_flipped = waypoints;
         List<Rotation2d> headings_maybe_flipped = headings;
@@ -168,17 +169,20 @@ public class DriveMotionPlanner  {
             List<Pose2dWithCurvature> flipped_points = new ArrayList<>(trajectory.length());
             List<Rotation2d> flipped_headings = new ArrayList<>(trajectory.length());
             for (int i = 0; i < trajectory.length(); ++i) {
-                flipped_points.add(new Pose2dWithCurvature(trajectory.getPoint(i).state().getPose().transformBy(flip), -trajectory
-                        .getPoint(i).state().getCurvature(), trajectory.getPoint(i).state().getDCurvatureDs()));
+                flipped_points
+                        .add(new Pose2dWithCurvature(trajectory.getPoint(i).state().getPose().transformBy(flip),
+                                -trajectory
+                                        .getPoint(i).state().getCurvature(),
+                                trajectory.getPoint(i).state().getDCurvatureDs()));
                 flipped_headings.add(new Rotation2d(trajectory.getPoint(i).heading().rotateBy(flip.getRotation())));
             }
             trajectory = new Trajectory<>(flipped_points, flipped_headings);
         }
 
-        // Create the constraint that the robot must be able to traverse the trajectory without ever applying more
+        // Create the constraint that the robot must be able to traverse the trajectory
+        // without ever applying more
         // than the specified voltage.
-        final SwerveDriveDynamicsConstraint<Pose2dWithCurvature> drive_constraints = new
-                SwerveDriveDynamicsConstraint<>(mModel, max_voltage);
+        final SwerveDriveDynamicsConstraint drive_constraints = new SwerveDriveDynamicsConstraint(mModel, max_voltage);
         List<TimingConstraint<Pose2dWithCurvature>> all_constraints = new ArrayList<>();
         all_constraints.add(drive_constraints);
         if (constraints != null) {
@@ -186,26 +190,25 @@ public class DriveMotionPlanner  {
         }
 
         // Generate the timed trajectory.
-        Trajectory<TimedState<Pose2dWithCurvature>, TimedState<Rotation2d>> timed_trajectory = TimingUtil.timeParameterizeTrajectory
-                (reversed, new
-                        DistanceView<>(trajectory), kMaxDx, Arrays.asList(), start_vel, end_vel, max_vel, max_accel);
+        Trajectory<TimedState<Pose2dWithCurvature>, TimedState<Rotation2d>> timed_trajectory = TimingUtil
+                .timeParameterizeTrajectory(reversed, new DistanceView<>(trajectory), kMaxDx, Arrays.asList(),
+                        start_vel, end_vel, max_vel, max_accel);
         return timed_trajectory;
     }
 
-
-
     protected ChassisSpeeds updatePIDChassis(ChassisSpeeds chassisSpeeds) {
         // Feedback on longitudinal error (distance).
-        final double kPathk = 0.6/* * Math.hypot(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond)*/;//0.15;
+        final double kPathk = 0.6/*
+                                  * * Math.hypot(chassisSpeeds.vxMetersPerSecond,
+                                  * chassisSpeeds.vyMetersPerSecond)
+                                  */;// 0.15;
         final double kPathKTheta = 0.3;
-        chassisSpeeds.vxMetersPerSecond =
-                chassisSpeeds.vxMetersPerSecond + kPathk * Units.inches_to_meters(
-                        mError.getTranslation().x());
-        chassisSpeeds.vyMetersPerSecond =
-                chassisSpeeds.vyMetersPerSecond + kPathk * Units.inches_to_meters(
-                        mError.getTranslation().y());
-        chassisSpeeds.omegaRadiansPerSecond =
-                chassisSpeeds.omegaRadiansPerSecond + kPathKTheta * mError.getRotation().getRadians();
+        chassisSpeeds.vxMetersPerSecond = chassisSpeeds.vxMetersPerSecond + kPathk * Units.inches_to_meters(
+                mError.getTranslation().x());
+        chassisSpeeds.vyMetersPerSecond = chassisSpeeds.vyMetersPerSecond + kPathk * Units.inches_to_meters(
+                mError.getTranslation().y());
+        chassisSpeeds.omegaRadiansPerSecond = chassisSpeeds.omegaRadiansPerSecond
+                + kPathKTheta * mError.getRotation().getRadians();
         return chassisSpeeds;
     }
 
@@ -214,9 +217,10 @@ public class DriveMotionPlanner  {
         final double kLookaheadSearchDt = 0.01;
         TimedState<Pose2dWithCurvature> lookahead_state = mCurrentTrajectory.preview(lookahead_time).state();
         double actual_lookahead_distance = mPathSetpoint.state().distance(lookahead_state.state());
-        double adaptive_lookahead_distance = mSpeedLookahead.getLookaheadForSpeed(mPathSetpoint.velocity()) + Constants.kAdaptiveErrorLookaheadCoefficient * mError.getTranslation().norm();
+        double adaptive_lookahead_distance = mSpeedLookahead.getLookaheadForSpeed(mPathSetpoint.velocity())
+                + Constants.kAdaptiveErrorLookaheadCoefficient * mError.getTranslation().norm();
         SmartDashboard.putNumber("Adaptive Lookahead", adaptive_lookahead_distance);
-        //Find the Point on the Trajectory that is Lookahead Distance Away
+        // Find the Point on the Trajectory that is Lookahead Distance Away
         while (actual_lookahead_distance < adaptive_lookahead_distance &&
                 mCurrentTrajectory.getRemainingProgress() > lookahead_time) {
             lookahead_time += kLookaheadSearchDt;
@@ -224,60 +228,64 @@ public class DriveMotionPlanner  {
             actual_lookahead_distance = mPathSetpoint.state().distance(lookahead_state.state());
         }
 
-        //If the Lookahead Point's Distance is less than the Lookahead Distance transform it so it is the lookahead distance away
+        // If the Lookahead Point's Distance is less than the Lookahead Distance
+        // transform it so it is the lookahead distance away
         if (actual_lookahead_distance < adaptive_lookahead_distance) {
             lookahead_state = new TimedState<>(new Pose2dWithCurvature(lookahead_state.state()
                     .getPose().transformBy(Pose2d.fromTranslation(new Translation2d(
                             (mIsReversed ? -1.0 : 1.0) * (Constants.kPathMinLookaheadDistance -
-                                    actual_lookahead_distance), 0.0))), 0.0), lookahead_state.t()
-                    , lookahead_state.velocity(), lookahead_state.acceleration());
+                                    actual_lookahead_distance),
+                            0.0))),
+                    0.0), lookahead_state.t(), lookahead_state.velocity(), lookahead_state.acceleration());
         }
-        
 
         SmartDashboard.putNumber("Path X", lookahead_state.state().getTranslation().x());
         SmartDashboard.putNumber("Path Y", lookahead_state.state().getTranslation().y());
         SmartDashboard.putNumber("Path Velocity", lookahead_state.velocity());
 
-        //Find the vector between robot's current position and the lookahead state
-        Translation2d lookaheadTranslation = new Translation2d(current_state.getTranslation(), 
-        		lookahead_state.state().getTranslation());
+        // Find the vector between robot's current position and the lookahead state
+        Translation2d lookaheadTranslation = new Translation2d(current_state.getTranslation(),
+                lookahead_state.state().getTranslation());
 
-        //Set the steering direction as the direction of the vector
+        // Set the steering direction as the direction of the vector
         Rotation2d steeringDirection = lookaheadTranslation.direction();
         SmartDashboard.putString("Steering Direction", steeringDirection.toString());
-        
-        //Convert from field-relative steering direction to robot-relative
-        steeringDirection = steeringDirection.rotateBy(current_state.inverse().getRotation()); 
+
+        // Convert from field-relative steering direction to robot-relative
+        steeringDirection = steeringDirection.rotateBy(current_state.inverse().getRotation());
         SmartDashboard.putString("Steering Direction After Rotation", steeringDirection.toString());
 
-        //Use the Velocity Feedforward of the Closest Point on the Trajectory
-        double normalizedSpeed = Math.abs(mPathSetpoint.velocity()) / Units.meters_to_inches(Constants.kMaxVelocityMetersPerSecond);       
-        
-        //The Default Cook is the minimum speed to use. So if a feedforward speed is less than defaultCook, the robot will drive at the defaultCook speed
-        if(normalizedSpeed > defaultCook || mPathSetpoint.t() > (mCurrentTrajectoryLength / 2.0)){
+        // Use the Velocity Feedforward of the Closest Point on the Trajectory
+        double normalizedSpeed = Math.abs(mPathSetpoint.velocity())
+                / Units.meters_to_inches(Constants.kMaxVelocityMetersPerSecond);
+
+        // The Default Cook is the minimum speed to use. So if a feedforward speed is
+        // less than defaultCook, the robot will drive at the defaultCook speed
+        if (normalizedSpeed > defaultCook || mPathSetpoint.t() > (mCurrentTrajectoryLength / 2.0)) {
             useDefaultCook = false;
         }
-        if(useDefaultCook){
+        if (useDefaultCook) {
             normalizedSpeed = defaultCook;
         }
-        
-        //Convert the Polar Coordinate (speed, direction) into a Rectangular Coordinate (Vx, Vy) in Robot Frame
-        final Translation2d steeringVector = new Translation2d(steeringDirection.cos() * normalizedSpeed, steeringDirection.sin() * normalizedSpeed);
-        SmartDashboard.putString("Steering Vector", steeringVector.toString());
-        ChassisSpeeds chassisSpeeds = new ChassisSpeeds(steeringVector.x() * Constants.kMaxVelocityMetersPerSecond, steeringVector.y() * Constants.kMaxVelocityMetersPerSecond, feedforwardOmegaRadiansPerSecond);
-        
 
-        //Use the P-Controller for To Follow the Time-Parametrized Heading
+        // Convert the Polar Coordinate (speed, direction) into a Rectangular Coordinate
+        // (Vx, Vy) in Robot Frame
+        final Translation2d steeringVector = new Translation2d(steeringDirection.cos() * normalizedSpeed,
+                steeringDirection.sin() * normalizedSpeed);
+        SmartDashboard.putString("Steering Vector", steeringVector.toString());
+        ChassisSpeeds chassisSpeeds = new ChassisSpeeds(steeringVector.x() * Constants.kMaxVelocityMetersPerSecond,
+                steeringVector.y() * Constants.kMaxVelocityMetersPerSecond, feedforwardOmegaRadiansPerSecond);
+
+        // Use the P-Controller for To Follow the Time-Parametrized Heading
         final double kPathKTheta = 0.3;
 
-        chassisSpeeds.omegaRadiansPerSecond =
-                chassisSpeeds.omegaRadiansPerSecond + kPathKTheta * mError.getRotation().getRadians();
+        chassisSpeeds.omegaRadiansPerSecond = chassisSpeeds.omegaRadiansPerSecond
+                + kPathKTheta * mError.getRotation().getRadians();
         return chassisSpeeds;
     }
 
     public ChassisSpeeds update(double timestamp, Pose2d current_state) {
 
-        
         if (mCurrentTrajectory == null) {
             // System.out.println("YOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
             return null;
@@ -286,8 +294,7 @@ public class DriveMotionPlanner  {
         if (mCurrentTrajectory.getProgress() == 0.0 && !Double.isFinite(mLastTime)) {
             mLastTime = timestamp;
 
-            mInitialHeading =
-                    new Rotation2d(
+            mInitialHeading = new Rotation2d(
                     mCurrentTrajectory.trajectory().getPoint(0).heading().state());
             var finalHeading = mCurrentTrajectory.trajectory().getLastPoint().heading().state();
             mTotalTime = mCurrentTrajectory.trajectory().getLastPoint().state().t() -
@@ -295,7 +302,7 @@ public class DriveMotionPlanner  {
             // Interpolate heading
             mRotationDiff = finalHeading.rotateBy(mInitialHeading.inverse());
             if (mRotationDiff.getRadians() > Math.PI) {
-                mRotationDiff = mRotationDiff.inverse().rotateBy(Rotation2d.fromRadians( Math.PI));
+                mRotationDiff = mRotationDiff.inverse().rotateBy(Rotation2d.fromRadians(Math.PI));
             }
 
             mStartTime = timestamp;
@@ -327,7 +334,6 @@ public class DriveMotionPlanner  {
 
                 // System.out.println(mPathSetpoint.velocity());
 
-                
                 // Generate feedforward voltages.
                 // final double velocity_m = Units.inches_to_meters(mPathSetpoint.velocity());
 
@@ -335,11 +341,11 @@ public class DriveMotionPlanner  {
                 mVelocitym = velocity_m;
                 // final double velocity_m = mPathSetpoint.velocity();
 
-                // System.out.println("VELLLLLLLLLLLLLCOOOOOCIIITYYYYY   " + velocity_m);
+                // System.out.println("VELLLLLLLLLLLLLCOOOOOCIIITYYYYY " + velocity_m);
                 final Rotation2d rotation = mPathSetpoint.state().getRotation();
 
                 // In field frame
-                var chassis_v = new Translation2d( rotation.cos() * velocity_m,
+                var chassis_v = new Translation2d(rotation.cos() * velocity_m,
                         rotation.sin() * velocity_m);
                 // Convert to robot frame
                 chassis_v = chassis_v.rotateBy(mHeadingSetpoint.state().getRotation().inverse());
@@ -348,10 +354,8 @@ public class DriveMotionPlanner  {
                         chassis_v.x(),
                         chassis_v.y(), mDTheta);
 
-
                 // System.out.println(chassis_twist);
 
-        
                 var chassis_speeds = new ChassisSpeeds(
                         chassis_twist.dx, chassis_twist.dy, chassis_twist.dtheta);
                 // PID is in robot frame
@@ -364,12 +368,13 @@ public class DriveMotionPlanner  {
                 double forwardDistance = distance(current_state, previewQuantity + searchStepSize);
                 double reverseDistance = distance(current_state, previewQuantity - searchStepSize);
                 searchDirection = Math.signum(reverseDistance - forwardDistance);
-                while(searchStepSize > 0.001){
-                    if(Util.epsilonEquals(distance(current_state, previewQuantity), 0.0, 0.01)) break;
-                    while(/* next point is closer than current point */ distance(current_state, previewQuantity + searchStepSize*searchDirection) < 
-                            distance(current_state, previewQuantity)) {
+                while (searchStepSize > 0.001) {
+                    if (Util.epsilonEquals(distance(current_state, previewQuantity), 0.0, 0.01))
+                        break;
+                    while (/* next point is closer than current point */ distance(current_state, previewQuantity
+                            + searchStepSize * searchDirection) < distance(current_state, previewQuantity)) {
                         /* move to next point */
-                        previewQuantity += searchStepSize*searchDirection;
+                        previewQuantity += searchStepSize * searchDirection;
                     }
                     searchStepSize /= 10.0;
                     searchDirection *= -1;
@@ -377,11 +382,12 @@ public class DriveMotionPlanner  {
                 sample_point = mCurrentTrajectory.advance(previewQuantity);
                 mPathSetpoint = sample_point.state();
                 SmartDashboard.putString("Current Pose", mCurrentState.getPose().toString());
-                SmartDashboard.putString("Last Pose", mCurrentTrajectory.trajectory().getLastPoint().state().state().getPose().toString());
+                SmartDashboard.putString("Last Pose",
+                        mCurrentTrajectory.trajectory().getLastPoint().state().state().getPose().toString());
                 SmartDashboard.putNumber("Finished Traj?", mPathSetpoint.velocity());
 
                 mOutput = updatePurePursuit(current_state, mDTheta);
-                
+
             }
         } else {
             // TODO Possibly switch to a pose stabilizing controller?
@@ -390,7 +396,8 @@ public class DriveMotionPlanner  {
         return mOutput;
     }
 
-    public ChassisSpeeds update(TrajectoryIterator<TimedState<Pose2dWithCurvature>, TimedState<Rotation2d>> trajectory, double timestamp, Pose2d current_state) {
+    public ChassisSpeeds update(TrajectoryIterator<TimedState<Pose2dWithCurvature>, TimedState<Rotation2d>> trajectory,
+            double timestamp, Pose2d current_state) {
         if (trajectory == null) {
             // System.out.println("YOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
             return null;
@@ -399,8 +406,7 @@ public class DriveMotionPlanner  {
         if (trajectory.getProgress() == 0.0 && !Double.isFinite(mLastTime)) {
             mLastTime = timestamp;
 
-            mInitialHeading =
-                    new Rotation2d(
+            mInitialHeading = new Rotation2d(
                     trajectory.trajectory().getPoint(0).heading().state());
             var finalHeading = trajectory.trajectory().getLastPoint().heading().state();
             mTotalTime = trajectory.trajectory().getLastPoint().state().t() -
@@ -408,7 +414,7 @@ public class DriveMotionPlanner  {
             // Interpolate heading
             mRotationDiff = finalHeading.rotateBy(mInitialHeading.inverse());
             if (mRotationDiff.getRadians() > Math.PI) {
-                mRotationDiff = mRotationDiff.inverse().rotateBy(Rotation2d.fromRadians( Math.PI));
+                mRotationDiff = mRotationDiff.inverse().rotateBy(Rotation2d.fromRadians(Math.PI));
             }
 
             mStartTime = timestamp;
@@ -435,13 +441,13 @@ public class DriveMotionPlanner  {
 
             if (mFollowerType == FollowerType.PID) {
                 mPathSetpoint = sample_point.state();
-                
+
                 // Generate feedforward voltages.
                 final double velocity_m = Units.inches_to_meters(mPathSetpoint.velocity());
                 final Rotation2d rotation = mPathSetpoint.state().getRotation();
 
                 // In field frame
-                var chassis_v = new Translation2d( rotation.cos() * velocity_m,
+                var chassis_v = new Translation2d(rotation.cos() * velocity_m,
                         rotation.sin() * velocity_m);
                 // Convert to robot frame
                 chassis_v = chassis_v.rotateBy(mHeadingSetpoint.state().getRotation().inverse());
@@ -450,7 +456,6 @@ public class DriveMotionPlanner  {
                         chassis_v.x(),
                         chassis_v.y(), mDTheta);
 
-        
                 var chassis_speeds = new ChassisSpeeds(
                         chassis_twist.dx, chassis_twist.dy, chassis_twist.dtheta);
                 // PID is in robot frame
@@ -462,12 +467,13 @@ public class DriveMotionPlanner  {
                 double forwardDistance = distance(current_state, previewQuantity + searchStepSize);
                 double reverseDistance = distance(current_state, previewQuantity - searchStepSize);
                 searchDirection = Math.signum(reverseDistance - forwardDistance);
-                while(searchStepSize > 0.001){
-                    if(Util.epsilonEquals(distance(current_state, previewQuantity), 0.0, 0.01)) break;
-                    while(/* next point is closer than current point */ distance(current_state, previewQuantity + searchStepSize*searchDirection) < 
-                            distance(current_state, previewQuantity)) {
+                while (searchStepSize > 0.001) {
+                    if (Util.epsilonEquals(distance(current_state, previewQuantity), 0.0, 0.01))
+                        break;
+                    while (/* next point is closer than current point */ distance(current_state, previewQuantity
+                            + searchStepSize * searchDirection) < distance(current_state, previewQuantity)) {
                         /* move to next point */
-                        previewQuantity += searchStepSize*searchDirection;
+                        previewQuantity += searchStepSize * searchDirection;
                     }
                     searchStepSize /= 10.0;
                     searchDirection *= -1;
@@ -475,11 +481,12 @@ public class DriveMotionPlanner  {
                 sample_point = trajectory.advance(previewQuantity);
                 mPathSetpoint = sample_point.state();
                 SmartDashboard.putString("Current Pose", mCurrentState.getPose().toString());
-                SmartDashboard.putString("Last Pose", trajectory.trajectory().getLastPoint().state().state().getPose().toString());
+                SmartDashboard.putString("Last Pose",
+                        trajectory.trajectory().getLastPoint().state().state().getPose().toString());
                 SmartDashboard.putNumber("Finished Traj?", mPathSetpoint.velocity());
 
                 mOutput = updatePurePursuit(current_state, mDTheta);
-                
+
             }
         } else {
             // TODO Possibly switch to a pose stabilizing controller?
@@ -488,7 +495,7 @@ public class DriveMotionPlanner  {
         return mOutput;
     }
 
-    public double getVelocitySetpoint(){
+    public double getVelocitySetpoint() {
         return mVelocitym;
     }
 
@@ -506,8 +513,8 @@ public class DriveMotionPlanner  {
         return mError.getRotation();
     }
 
-    private double distance(Pose2d current_state, double additional_progress){
-    	return mCurrentTrajectory.preview(additional_progress).state().state().getPose().distance(current_state);
+    private double distance(Pose2d current_state, double additional_progress) {
+        return mCurrentTrajectory.preview(additional_progress).state().state().getPose().distance(current_state);
     }
 
     public synchronized TimedState<Pose2dWithCurvature> getPathSetpoint() {

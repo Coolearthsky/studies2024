@@ -12,7 +12,7 @@ import static com.team254.lib.util.Util.kEpsilon;
  * <p>
  * Inspired by Sophus (https://github.com/strasdat/Sophus/tree/master/sophus)
  */
-public class Rotation2d implements IRotation2d<Rotation2d> {
+public class Rotation2d implements State<Rotation2d> {
     public static final Rotation2d kIdentity = new Rotation2d();
     public static final Rotation2d kPi = new Rotation2d(Math.PI, false);
     public static final Rotation2d kHalfPi = new Rotation2d(Math.PI / 2.0, false);
@@ -163,7 +163,6 @@ public class Rotation2d implements IRotation2d<Rotation2d> {
         }
     }
 
-    @Override
     public Rotation2d mirror() {
         return Rotation2d.fromRadians(-radians_);
     }
@@ -291,7 +290,6 @@ public class Rotation2d implements IRotation2d<Rotation2d> {
         return distance((Rotation2d) other) < Util.kEpsilon;
     }
 
-    @Override
     public Rotation2d getRotation() {
         return this;
     }

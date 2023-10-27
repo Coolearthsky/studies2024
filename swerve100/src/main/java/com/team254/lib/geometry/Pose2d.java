@@ -7,7 +7,7 @@ import com.team254.lib.util.Util;
  * <p>
  * Inspired by Sophus (https://github.com/strasdat/Sophus/tree/master/sophus)
  */
-public class Pose2d implements IPose2d<Pose2d> {
+public class Pose2d implements State<Pose2d> {
     protected static final Pose2d kIdentity = new Pose2d();
 
     public static Pose2d identity() {
@@ -94,17 +94,14 @@ public class Pose2d implements IPose2d<Pose2d> {
         return new Twist2d(translation_part.x(), translation_part.y(), dtheta);
     }
 
-    @Override
     public Translation2d getTranslation() {
         return translation_;
     }
 
-    @Override
     public Rotation2d getRotation() {
         return rotation_;
     }
 
-    @Override
     public Pose2d rotateBy(Rotation2d other) {
         return this.transformBy(new Pose2d(Translation2d.identity(), other));
     }
@@ -121,7 +118,6 @@ public class Pose2d implements IPose2d<Pose2d> {
      * @param other The other transform.
      * @return This transform * other
      */
-    @Override
     public Pose2d transformBy(final Pose2d other) {
         return new Pose2d(translation_.translateBy(other.translation_.rotateBy(rotation_)),
                 rotation_.rotateBy(other.rotation_));
@@ -243,12 +239,10 @@ public class Pose2d implements IPose2d<Pose2d> {
         return epsilonEquals((Pose2d) other, Util.kEpsilon);
     }
 
-    @Override
     public Pose2d getPose() {
         return this;
     }
 
-    @Override
     public Pose2d mirror() {
         return new Pose2d(new Translation2d(getTranslation().x(), -getTranslation().y()), getRotation().inverse());
     }
