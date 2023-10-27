@@ -71,7 +71,7 @@ public class SplineGenerator {
         Translation2d p1 = s.getPoint(t1);
         Rotation2d r0 = s.getHeading(t0);
         Rotation2d r1 = s.getHeading(t1);
-        Pose2d transformation = new Pose2d(new Translation2d(p0, p1).rotateBy(r0.inverse()), r1.rotateBy(r0.inverse()));
+        Pose2d transformation = new Pose2d(new Translation2d(p0, p1).rotateBy(r0.unaryMinus()), r1.rotateBy(r0.unaryMinus()));
         Twist2d twist = Pose2d.log(transformation);
 
         if (twist.dy > maxDy || twist.dx > maxDx || twist.dtheta > maxDTheta) {
@@ -79,9 +79,9 @@ public class SplineGenerator {
             getSegmentArc(s, headings, rv, (t0 + t1) / 2, t1, maxDx, maxDy, maxDTheta, totalTime);
         } else {
             // Interpolate heading
-            Rotation2d diff = headings.get(1).rotateBy(headings.get(0).inverse());
+            Rotation2d diff = headings.get(1).rotateBy(headings.get(0).unaryMinus());
             if (diff.getRadians() > Math.PI) {
-                diff = diff.inverse().rotateBy(Rotation2d.fromRadians( Math.PI));
+                diff = diff.unaryMinus().rotateBy(Rotation2d.fromRadians( Math.PI));
             }
             Rotation2d interpolated_heading = headings.get(0).rotateBy(diff.times(t1 / totalTime));
 

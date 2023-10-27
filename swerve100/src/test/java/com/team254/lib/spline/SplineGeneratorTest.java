@@ -21,7 +21,7 @@ public class SplineGeneratorTest {
     public void test() {
         // Create the test spline
         Pose2d p1 = new Pose2d(new Translation2d(0, 0), new Rotation2d());
-        Pose2d p2 = new Pose2d(new Translation2d(15, 10), new Rotation2d(1, -5, true));
+        Pose2d p2 = new Pose2d(new Translation2d(15, 10), new Rotation2d(1, -5));
         Spline s = new QuinticHermiteSpline(p1, p2);
         List<Rotation2d> headings = List.of(Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(90));
 
@@ -38,8 +38,8 @@ public class SplineGeneratorTest {
             cur_heading = point.heading();
         }
 
-        assertEquals(cur_pose.getTranslation().x(), 15.0, kTestEpsilon);
-        assertEquals(cur_pose.getTranslation().y(), 10.0, kTestEpsilon);
+        assertEquals(cur_pose.getTranslation().getX(), 15.0, kTestEpsilon);
+        assertEquals(cur_pose.getTranslation().getY(), 10.0, kTestEpsilon);
         assertEquals(cur_pose.getRotation().getDegrees(), -78.69006752597981, kTestEpsilon);
         assertEquals(arclength, 23.17291953186379, kTestEpsilon);
         assertEquals(cur_heading.getRadians(), headings.get(1).getRadians(), kTestEpsilon);

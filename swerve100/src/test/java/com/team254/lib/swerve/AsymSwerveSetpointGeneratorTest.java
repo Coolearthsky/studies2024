@@ -39,7 +39,7 @@ public class AsymSwerveSetpointGeneratorTest {
         for (int i = 0; i < prev.mModuleStates.length; ++i) {
             final var prevModule = prev.mModuleStates[i];
             final var nextModule = next.mModuleStates[i];
-            Rotation2d diffRotation = prevModule.angle.inverse().rotateBy(nextModule.angle);
+            Rotation2d diffRotation = prevModule.angle.unaryMinus().rotateBy(nextModule.angle);
             assertTrue(
                     Math.abs(diffRotation.getRadians()) < kKinematicLimits.kMaxSteeringVelocity
                             + kMaxSteeringVelocityError,

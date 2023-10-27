@@ -107,7 +107,7 @@ public class TimingUtilTest {
         class ConditionalTimingConstraint<S extends Translation2d> implements TimingConstraint<Translation2d> {
             @Override
             public double getMaxVelocity(Translation2d state) {
-                if (state.getTranslation().x() >= 24.0) {
+                if (state.getTranslation().getX() >= 24.0) {
                     return 5.0;
                 } else {
                     return Double.POSITIVE_INFINITY;

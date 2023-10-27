@@ -2,29 +2,33 @@ package com.team254.lib.geometry;
 
 import com.team254.lib.util.Util;
 
+import edu.wpi.first.math.spline.PoseWithCurvature;
+
 import java.text.DecimalFormat;
 
-public class Pose2dWithCurvature implements State<Pose2dWithCurvature> {
+public class Pose2dWithCurvature extends PoseWithCurvature implements State<Pose2dWithCurvature> {
     protected static final Pose2dWithCurvature kIdentity = new Pose2dWithCurvature();
 
     public static Pose2dWithCurvature identity() {
         return kIdentity;
     }
 
-    protected final Pose2d pose_;
-    protected final double curvature_;
-    protected final double dcurvature_ds_;
+    // protected final Pose2d pose_;
+    // protected final double curvature_;
+    // protected final double dcurvature_ds_;
 
     public Pose2dWithCurvature() {
-        pose_ = new Pose2d();
-        curvature_ = 0.0;
-        dcurvature_ds_ = 0.0;
+        super();
+        // pose_ = new Pose2d();
+        // curvature_ = 0.0;
+        // dcurvature_ds_ = 0.0;
     }
 
     public Pose2dWithCurvature(final Pose2d pose, double curvature) {
-        pose_ = pose;
-        curvature_ = curvature;
-        dcurvature_ds_ = 0.0;
+        super(pose, curvature);
+        // pose_ = pose;
+        // curvature_ = curvature;
+        // dcurvature_ds_ = 0.0;
     }
 
     public Pose2dWithCurvature(final Pose2d pose, double curvature, double dcurvature_ds) {
@@ -33,20 +37,20 @@ public class Pose2dWithCurvature implements State<Pose2dWithCurvature> {
         dcurvature_ds_ = dcurvature_ds;
     }
 
-    public Pose2dWithCurvature(final Translation2d translation, final Rotation2d rotation, double curvature) {
-        pose_ = new Pose2d(translation, rotation);
-        curvature_ = curvature;
-        dcurvature_ds_ = 0.0;
-    }
+    // public Pose2dWithCurvature(final Translation2d translation, final Rotation2d rotation, double curvature) {
+    //     pose_ = new Pose2d(translation, rotation);
+    //     curvature_ = curvature;
+    //     dcurvature_ds_ = 0.0;
+    // }
 
-    public Pose2dWithCurvature(final Translation2d translation, final Rotation2d rotation, double curvature, double dcurvature_ds) {
-        pose_ = new Pose2d(translation, rotation);
-        curvature_ = curvature;
-        dcurvature_ds_ = dcurvature_ds;
-    }
+    // public Pose2dWithCurvature(final Translation2d translation, final Rotation2d rotation, double curvature, double dcurvature_ds) {
+    //     pose_ = new Pose2d(translation, rotation);
+    //     curvature_ = curvature;
+    //     dcurvature_ds_ = dcurvature_ds;
+    // }
 
     public final Pose2d getPose() {
-        return pose_;
+        return new Pose2d(poseMeters);
     }
 
     public Pose2dWithCurvature transformBy(Pose2d transform) {
@@ -66,7 +70,7 @@ public class Pose2dWithCurvature implements State<Pose2dWithCurvature> {
     }
 
     public final Translation2d getTranslation() {
-        return getPose().getTranslation();
+        return new Translation2d(getPose().getTranslation());
     }
 
     public final Rotation2d getRotation() {
@@ -74,8 +78,8 @@ public class Pose2dWithCurvature implements State<Pose2dWithCurvature> {
     }
 
     @Override
-    public Pose2dWithCurvature interpolate(final Pose2dWithCurvature other, double x) {
-        return new Pose2dWithCurvature(getPose().interpolate(other.getPose(), x),
+    public Pose2dWithCurvature interpolate2(final Pose2dWithCurvature other, double x) {
+        return new Pose2dWithCurvature(getPose().interpolate2(other.getPose(), x),
                 Util.interpolate(getCurvature(), other.getCurvature(), x),
                 Util.interpolate(getDCurvatureDs(), other.getDCurvatureDs(), x));
     }
@@ -95,17 +99,17 @@ public class Pose2dWithCurvature implements State<Pose2dWithCurvature> {
         return getPose().equals(p2dwc.getPose()) && Util.epsilonEquals(getCurvature(), p2dwc.getCurvature()) && Util.epsilonEquals(getDCurvatureDs(), p2dwc.getDCurvatureDs());
     }
 
-    @Override
-    public String toString() {
-        final DecimalFormat fmt = new DecimalFormat("#0.000");
-        return getPose().toString() + ", curvature: " + fmt.format(getCurvature()) + ", dcurvature_ds: " + fmt.format(getDCurvatureDs());
-    }
+    // @Override
+    // public String toString() {
+    //     final DecimalFormat fmt = new DecimalFormat("#0.000");
+    //     return getPose().toString() + ", curvature: " + fmt.format(getCurvature()) + ", dcurvature_ds: " + fmt.format(getDCurvatureDs());
+    // }
 
-    @Override
-    public String toCSV() {
-        final DecimalFormat fmt = new DecimalFormat("#0.000");
-        return getPose().toCSV() + "," + fmt.format(getCurvature()) + "," + fmt.format(getDCurvatureDs());
-    }
+    // @Override
+    // public String toCSV() {
+    //     final DecimalFormat fmt = new DecimalFormat("#0.000");
+    //     return getPose().toCSV() + "," + fmt.format(getCurvature()) + "," + fmt.format(getDCurvatureDs());
+    // }
 
     public Pose2dWithCurvature rotateBy(Rotation2d other) {
         return new Pose2dWithCurvature(getPose().rotateBy(other), getCurvature(), getDCurvatureDs());
@@ -114,6 +118,7 @@ public class Pose2dWithCurvature implements State<Pose2dWithCurvature> {
 
     @Override
     public Pose2dWithCurvature add(Pose2dWithCurvature other) {
-        return this.transformBy(other.getPose());   // todo make work
+        // return this.transformBy(other.getPose());   // todo make work
+        return this.transformBy(new Pose2d(other.poseMeters));   // todo make work
     }
 }

@@ -59,9 +59,9 @@ public class SwerveDriveKinematics {
 
         for (int i = 0; i < m_numModules; i++) {
             m_moduleHeadings[i] = new Rotation2d();
-            m_inverseKinematics.setRow(i * 2 + 0, 0, /* Start Data */ 1, 0, -m_modules[i].y());
-            m_inverseKinematics.setRow(i * 2 + 1, 0, /* Start Data */ 0, 1, +m_modules[i].x());
-            m_rotations[i] = new Rotation2d(m_modules[i].x(), m_modules[i].y(), true);
+            m_inverseKinematics.setRow(i * 2 + 0, 0, /* Start Data */ 1, 0, -m_modules[i].getY());
+            m_inverseKinematics.setRow(i * 2 + 1, 0, /* Start Data */ 0, 1, +m_modules[i].getX());
+            m_rotations[i] = new Rotation2d(m_modules[i].getX(), m_modules[i].getY());
         }
         m_forwardKinematics = m_inverseKinematics.pseudoInverse();
     }
@@ -103,13 +103,13 @@ public class SwerveDriveKinematics {
                         0, /* Start Data */
                         1,
                         0,
-                        -m_modules[i].y() + centerOfRotationMeters.y());
+                        -m_modules[i].getY() + centerOfRotationMeters.getY());
                 m_inverseKinematics.setRow(
                         i * 2 + 1,
                         0, /* Start Data */
                         0,
                         1,
-                        +m_modules[i].x() - centerOfRotationMeters.x());
+                        +m_modules[i].getX() - centerOfRotationMeters.getX());
             }
             m_prevCoR = centerOfRotationMeters;
         }
@@ -129,7 +129,7 @@ public class SwerveDriveKinematics {
             double y = moduleStatesMatrix.get(i * 2 + 1, 0);
 
             double speed = Math.hypot(x, y);
-            Rotation2d angle = new Rotation2d(x, y, true);
+            Rotation2d angle = new Rotation2d(x, y);
 
             moduleStates[i] = new SwerveModuleState(speed, angle);
         }
@@ -168,8 +168,8 @@ public class SwerveDriveKinematics {
 
         for (int i = 0; i < m_numModules; i++) {
             var module = wheelStates[i];
-            moduleStatesMatrix.set(i * 2, 0, module.speedMetersPerSecond * module.angle.cos());
-            moduleStatesMatrix.set(i * 2 + 1, module.speedMetersPerSecond * module.angle.sin());
+            moduleStatesMatrix.set(i * 2, 0, module.speedMetersPerSecond * module.angle.getCos());
+            moduleStatesMatrix.set(i * 2 + 1, module.speedMetersPerSecond * module.angle.getSin());
         }
 
         var chassisSpeedsVector = m_forwardKinematics.mult(moduleStatesMatrix);
@@ -191,17 +191,17 @@ public class SwerveDriveKinematics {
 
             var beta =
                     module.angle.rotateBy(
-                            m_rotations[i].inverse()).rotateBy(Rotation2d.fromRadians(Math.PI / 2.0));
+                            m_rotations[i].unaryMinus()).rotateBy(Rotation2d.fromRadians(Math.PI / 2.0));
 
             //System.out.println(module);
             constraintsMatrix.setRow(i*2, 0,
-                    module.angle.cos(),
-                    module.angle.sin(),
-                    -m_modules[i].norm()*beta.cos());
+                    module.angle.getCos(),
+                    module.angle.getSin(),
+                    -m_modules[i].getNorm()*beta.getCos());
             constraintsMatrix.setRow(i*2 + 1, 0,
-                    -module.angle.sin(),
-                    module.angle.cos(),
-                    m_modules[i].norm()*beta.sin());
+                    -module.angle.getSin(),
+                    module.angle.getCos(),
+                    m_modules[i].getNorm()*beta.getSin());
         }
         //System.out.println(constraintsMatrix);
 

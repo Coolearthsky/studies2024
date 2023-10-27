@@ -75,8 +75,8 @@ public class Trajectory<S extends State<S>, T extends State<T>>  {
         } else if (frac >= 1.0 - Double.MIN_VALUE) {
             return new TrajectorySamplePoint<>(getPoint(i + 1));
         } else {
-            return new TrajectorySamplePoint<>(getPoint(i).state().interpolate(getPoint(i + 1).state(), frac),
-                    getPoint(i).heading().interpolate(getPoint(i + 1).heading(), frac), i, i + 1);
+            return new TrajectorySamplePoint<>(getPoint(i).state().interpolate2(getPoint(i + 1).state(), frac),
+                    getPoint(i).heading().interpolate2(getPoint(i + 1).heading(), frac), i, i + 1);
         }
     }
 

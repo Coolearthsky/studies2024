@@ -7,7 +7,7 @@ import com.team254.lib.util.Util;
  * <p>
  * Inspired by Sophus (https://github.com/strasdat/Sophus/tree/master/sophus)
  */
-public class Pose2d implements State<Pose2d> {
+public class Pose2d extends edu.wpi.first.math.geometry.Pose2d implements State<Pose2d> {
     protected static final Pose2d kIdentity = new Pose2d();
 
     public static Pose2d identity() {
@@ -16,37 +16,47 @@ public class Pose2d implements State<Pose2d> {
 
     private final static double kEps = 1E-9;
 
-    protected final Translation2d translation_;
-    protected final Rotation2d rotation_;
+    // protected final Translation2d translation_;
+    // protected final Rotation2d rotation_;
 
     public Pose2d() {
-        translation_ = new Translation2d();
-        rotation_ = new Rotation2d();
+        // translation_ = new Translation2d();
+        // rotation_ = new Rotation2d();
     }
 
     public Pose2d(double x, double y, final Rotation2d rotation) {
-        translation_ = new Translation2d(x, y);
-        rotation_ = rotation;
+        super(x,y,rotation);
+        // translation_ = new Translation2d(x, y);
+        // rotation_ = rotation;
     }
 
     public Pose2d(final Translation2d translation, final Rotation2d rotation) {
-        translation_ = translation;
-        rotation_ = rotation;
+        super(translation, rotation);
+        // translation_ = translation;
+        // rotation_ = rotation;
+    }
+
+    public Pose2d(final edu.wpi.first.math.geometry.Translation2d translation, final edu.wpi.first.math.geometry.Rotation2d rotation) {
+        super(translation, rotation);
+        // translation_ = translation;
+        // rotation_ = rotation;
     }
 
     public Pose2d(final Pose2d other) {
-        translation_ = new Translation2d(other.translation_);
-        rotation_ = new Rotation2d(other.rotation_);
+        super(new Translation2d(other.getTranslation()), new Rotation2d(other.getRotation()));
+        // translation_ = new Translation2d(other.translation_);
+        // rotation_ = new Rotation2d(other.rotation_);
     }
 
-    public Pose2d(final Pose2dWithCurvature other) {
-        translation_ = new Translation2d(other.getTranslation());
-        rotation_ = new Rotation2d(other.getRotation());
-    }
+    // public Pose2d(final Pose2dWithCurvature other) {
+    //     translation_ = new Translation2d(other.getTranslation());
+    //     rotation_ = new Rotation2d(other.getRotation());
+    // }
 
     public Pose2d(final edu.wpi.first.math.geometry.Pose2d other) {
-        translation_ = new Translation2d(other.getTranslation());
-        rotation_ = new Rotation2d(other.getRotation());
+        super(new Translation2d(other.getTranslation()), new Rotation2d(other.getRotation()));
+        // translation_ = new Translation2d(other.getTranslation());
+        // rotation_ = new Rotation2d(other.getRotation());
     }
 
     public static Pose2d fromTranslation(final Translation2d translation) {
@@ -73,7 +83,7 @@ public class Pose2d implements State<Pose2d> {
             c = (1.0 - cos_theta) / delta.dtheta;
         }
         return new Pose2d(new Translation2d(delta.dx * s - delta.dy * c, delta.dx * c + delta.dy * s),
-                new Rotation2d(cos_theta, sin_theta, false));
+                new Rotation2d(cos_theta, sin_theta));
     }
 
     /**
@@ -82,29 +92,31 @@ public class Pose2d implements State<Pose2d> {
     public static Twist2d log(final Pose2d transform) {
         final double dtheta = transform.getRotation().getRadians();
         final double half_dtheta = 0.5 * dtheta;
-        final double cos_minus_one = transform.getRotation().cos() - 1.0;
+        final double cos_minus_one = transform.getRotation().getCos() - 1.0;
         double halftheta_by_tan_of_halfdtheta;
         if (Math.abs(cos_minus_one) < kEps) {
             halftheta_by_tan_of_halfdtheta = 1.0 - 1.0 / 12.0 * dtheta * dtheta;
         } else {
-            halftheta_by_tan_of_halfdtheta = -(half_dtheta * transform.getRotation().sin()) / cos_minus_one;
+            halftheta_by_tan_of_halfdtheta = -(half_dtheta * transform.getRotation().getSin()) / cos_minus_one;
         }
-        final Translation2d translation_part = transform.getTranslation()
-                .rotateBy(new Rotation2d(halftheta_by_tan_of_halfdtheta, -half_dtheta, false));
-        return new Twist2d(translation_part.x(), translation_part.y(), dtheta);
+        final edu.wpi.first.math.geometry.Translation2d translation_part = transform.getTranslation()
+                .rotateBy(new edu.wpi.first.math.geometry.Rotation2d(halftheta_by_tan_of_halfdtheta, -half_dtheta));
+        return new Twist2d(translation_part.getX(), translation_part.getY(), dtheta);
     }
 
-    public Translation2d getTranslation() {
-        return translation_;
-    }
+    // public Translation2d getTranslation() {
+    //     return translation_;
+    // }
 
+    @Override
     public Rotation2d getRotation() {
-        return rotation_;
+        return new Rotation2d(super.getRotation()); 
+        //return rotation_;
     }
 
-    public Pose2d rotateBy(Rotation2d other) {
-        return this.transformBy(new Pose2d(Translation2d.identity(), other));
-    }
+    // public Pose2d rotateBy(Rotation2d other) {
+    //     return this.transformBy(new Pose2d(Translation2d.identity(), other));
+    // }
 
     @Override
     public Pose2d add(Pose2d other) {
@@ -119,25 +131,25 @@ public class Pose2d implements State<Pose2d> {
      * @return This transform * other
      */
     public Pose2d transformBy(final Pose2d other) {
-        return new Pose2d(translation_.translateBy(other.translation_.rotateBy(rotation_)),
-                rotation_.rotateBy(other.rotation_));
+        return new Pose2d(getTranslation().plus(other.getTranslation().rotateBy(getRotation())),
+                getRotation().rotateBy(other.getRotation()));
     }
 
     public Pose2d transformBy(Transform2d other) {
         return new Pose2d(
-                translation_.plus(other.getTranslation().rotateBy(rotation_)),
-                rotation_.rotateBy(other.getRotation()));
+                getTranslation().plus(other.getTranslation().rotateBy(getRotation())),
+                getRotation().rotateBy(other.getRotation()));
     }
 
-    public Transform2d minus(Pose2d other) {
-        final var pose = this.relativeTo(other);
-        return new Transform2d(pose.getTranslation(), pose.getRotation());
-    }
+    // public Transform2d minus(Pose2d other) {
+    //     final var pose = this.relativeTo(other);
+    //     return new Transform2d(pose.getTranslation(), pose.getRotation());
+    // }
 
-    public Pose2d relativeTo(Pose2d other) {
-        var transform = new Transform2d(other, this);
-        return new Pose2d(transform.getTranslation(), transform.getRotation());
-    }
+    // public Pose2d relativeTo(Pose2d other) {
+    //     var transform = new Transform2d(other, this);
+    //     return new Pose2d(transform.getTranslation(), transform.getRotation());
+    // }
 
 
     /**
@@ -146,30 +158,30 @@ public class Pose2d implements State<Pose2d> {
      * @return The opposite of this transform.
      */
     public Pose2d inverse() {
-        Rotation2d rotation_inverted = rotation_.inverse();
-        return new Pose2d(translation_.inverse().rotateBy(rotation_inverted), rotation_inverted);
+        edu.wpi.first.math.geometry.Rotation2d rotation_inverted = getRotation().unaryMinus();
+        return new Pose2d(getTranslation().unaryMinus().rotateBy(rotation_inverted), rotation_inverted);
     }
 
-    public Pose2d normal() {
-        return new Pose2d(translation_, rotation_.normal());
-    }
+    // public Pose2d normal() {
+    //     return new Pose2d(translation_, rotation_.normal());
+    // }
 
-    /**
-     * Finds the point where the heading of this pose intersects the heading of another. Returns (+INF, +INF) if
-     * parallel.
-     */
-    public Translation2d intersection(final Pose2d other) {
-        final Rotation2d other_rotation = other.getRotation();
-        if (rotation_.isParallel(other_rotation)) {
-            // Lines are parallel.
-            return new Translation2d(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
-        }
-        if (Math.abs(rotation_.cos()) < Math.abs(other_rotation.cos())) {
-            return intersectionInternal(this, other);
-        } else {
-            return intersectionInternal(other, this);
-        }
-    }
+    // /**
+    //  * Finds the point where the heading of this pose intersects the heading of another. Returns (+INF, +INF) if
+    //  * parallel.
+    //  */
+    // public Translation2d intersection(final Pose2d other) {
+    //     final Rotation2d other_rotation = other.getRotation();
+    //     if (rotation_.isParallel(other_rotation)) {
+    //         // Lines are parallel.
+    //         return new Translation2d(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
+    //     }
+    //     if (Math.abs(rotation_.cos()) < Math.abs(other_rotation.cos())) {
+    //         return intersectionInternal(this, other);
+    //     } else {
+    //         return intersectionInternal(other, this);
+    //     }
+    // }
 
     /**
      * Return true if this pose is (nearly) colinear with the another.
@@ -186,26 +198,26 @@ public class Pose2d implements State<Pose2d> {
                 && getRotation().isParallel(other.getRotation());
     }
 
-    private static Translation2d intersectionInternal(final Pose2d a, final Pose2d b) {
-        final Rotation2d a_r = a.getRotation();
-        final Rotation2d b_r = b.getRotation();
-        final Translation2d a_t = a.getTranslation();
-        final Translation2d b_t = b.getTranslation();
+    // private static Translation2d intersectionInternal(final Pose2d a, final Pose2d b) {
+    //     final Rotation2d a_r = a.getRotation();
+    //     final Rotation2d b_r = b.getRotation();
+    //     final Translation2d a_t = a.getTranslation();
+    //     final Translation2d b_t = b.getTranslation();
 
-        final double tan_b = b_r.tan();
-        final double t = ((a_t.x() - b_t.x()) * tan_b + b_t.y() - a_t.y())
-                / (a_r.sin() - a_r.cos() * tan_b);
-        if (Double.isNaN(t)) {
-            return new Translation2d(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
-        }
-        return a_t.translateBy(a_r.toTranslation().scale(t));
-    }
+    //     final double tan_b = b_r.tan();
+    //     final double t = ((a_t.x() - b_t.x()) * tan_b + b_t.y() - a_t.y())
+    //             / (a_r.sin() - a_r.cos() * tan_b);
+    //     if (Double.isNaN(t)) {
+    //         return new Translation2d(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
+    //     }
+    //     return a_t.translateBy(a_r.toTranslation().scale(t));
+    // }
 
     /**
      * Do twist interpolation of this pose assuming constant curvature.
      */
     @Override
-    public Pose2d interpolate(final Pose2d other, double x) {
+    public Pose2d interpolate2(final Pose2d other, double x) {
         if (x <= 0) {
             return new Pose2d(this);
         } else if (x >= 1) {
@@ -215,35 +227,35 @@ public class Pose2d implements State<Pose2d> {
         return transformBy(Pose2d.exp(twist.scaled(x)));
     }
 
-    @Override
-    public String toString() {
-        return "T:" + translation_.toString() + ", R:" + rotation_.toString();
-    }
+    // @Override
+    // public String toString() {
+    //     return "T:" + translation_.toString() + ", R:" + rotation_.toString();
+    // }
 
-    @Override
-    public String toCSV() {
-        return translation_.toCSV() + "," + rotation_.toCSV();
-    }
+    // @Override
+    // public String toCSV() {
+    //     return translation_.toCSV() + "," + rotation_.toCSV();
+    // }
 
     @Override
     public double distance(final Pose2d other) {
         return Pose2d.log(inverse().transformBy(other)).norm();
     }
 
-    @Override
-    public boolean equals(final Object other) {
-        if (!(other instanceof Pose2d)) {
-            return false;
-        }
+    // @Override
+    // public boolean equals(final Object other) {
+    //     if (!(other instanceof Pose2d)) {
+    //         return false;
+    //     }
 
-        return epsilonEquals((Pose2d) other, Util.kEpsilon);
-    }
+    //     return epsilonEquals((Pose2d) other, Util.kEpsilon);
+    // }
 
     public Pose2d getPose() {
         return this;
     }
 
     public Pose2d mirror() {
-        return new Pose2d(new Translation2d(getTranslation().x(), -getTranslation().y()), getRotation().inverse());
+        return new Pose2d(new Translation2d(getTranslation().getX(), -getTranslation().getY()), getRotation().unaryMinus());
     }
 }

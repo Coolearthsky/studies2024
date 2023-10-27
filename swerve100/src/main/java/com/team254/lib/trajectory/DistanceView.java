@@ -30,9 +30,9 @@ public class DistanceView<S extends State<S>, T extends State<T>> implements Tra
                     return new TrajectorySamplePoint<>(s);
                 } else {
                     return new TrajectorySamplePoint<>(
-                            prev_s.state().interpolate(s.state(),
+                            prev_s.state().interpolate2(s.state(),
                                     (distance - distances_[i - 1]) / (distances_[i] - distances_[i - 1])),
-                            prev_s.heading().interpolate(s.heading(),
+                            prev_s.heading().interpolate2(s.heading(),
                                     (distance - distances_[i - 1]) / (distances_[i] - distances_[i - 1])), i - 1, i);
                 }
             }

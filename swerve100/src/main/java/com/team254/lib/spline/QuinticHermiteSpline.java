@@ -21,17 +21,17 @@ public class QuinticHermiteSpline extends Spline {
      * @param p1 The ending pose of the spline
      */
     public QuinticHermiteSpline(Pose2d p0, Pose2d p1) {
-        double scale = 1.2 * p0.getTranslation().distance(p1.getTranslation());
-        x0 = p0.getTranslation().x();
-        x1 = p1.getTranslation().x();
-        dx0 = p0.getRotation().cos() * scale;
-        dx1 = p1.getRotation().cos() * scale;
+        double scale = 1.2 * p0.getTranslation().getDistance(p1.getTranslation());
+        x0 = p0.getTranslation().getX();
+        x1 = p1.getTranslation().getX();
+        dx0 = p0.getRotation().getCos() * scale;
+        dx1 = p1.getRotation().getCos() * scale;
         ddx0 = 0;
         ddx1 = 0;
-        y0 = p0.getTranslation().y();
-        y1 = p1.getTranslation().y();
-        dy0 = p0.getRotation().sin() * scale;
-        dy1 = p1.getRotation().sin() * scale;
+        y0 = p0.getTranslation().getY();
+        y1 = p1.getTranslation().getY();
+        dy0 = p0.getRotation().getSin() * scale;
+        dy1 = p1.getRotation().getSin() * scale;
         ddy0 = 0;
         ddy1 = 0;
 
@@ -82,14 +82,14 @@ public class QuinticHermiteSpline extends Spline {
     public Pose2d getStartPose() {
         return new Pose2d(
                 new Translation2d(x0, y0),
-                new Rotation2d(dx0, dy0, true)
+                new Rotation2d(dx0, dy0)
         );
     }
 
     public Pose2d getEndPose() {
         return new Pose2d(
                 new Translation2d(x1, y1),
-                new Rotation2d(dx1, dy1, true)
+                new Rotation2d(dx1, dy1)
         );
     }
 
@@ -154,7 +154,7 @@ public class QuinticHermiteSpline extends Spline {
 
     @Override
     public Rotation2d getHeading(double t) {
-        return new Rotation2d(dx(t), dy(t), true);
+        return new Rotation2d(dx(t), dy(t));
     }
 
     /**
@@ -323,9 +323,9 @@ public class QuinticHermiteSpline extends Spline {
      * @return the x coordinate of the vertex of the parabola
      */
     private static double fitParabola(Translation2d p1, Translation2d p2, Translation2d p3) {
-        double A = (p3.x() * (p2.y() - p1.y()) + p2.x() * (p1.y() - p3.y()) + p1.x() * (p3.y() - p2.y()));
-        double B = (p3.x() * p3.x() * (p1.y() - p2.y()) + p2.x() * p2.x() * (p3.y() - p1.y()) + p1.x() * p1.x() *
-                (p2.y() - p3.y()));
+        double A = (p3.getX() * (p2.getY() - p1.getY()) + p2.getX() * (p1.getY() - p3.getY()) + p1.getX() * (p3.getY() - p2.getY()));
+        double B = (p3.getX() * p3.getX() * (p1.getY() - p2.getY()) + p2.getX() * p2.getX() * (p3.getY() - p1.getY()) + p1.getX() * p1.getX() *
+                (p2.getY() - p3.getY()));
         return -B / (2 * A);
     }
 }

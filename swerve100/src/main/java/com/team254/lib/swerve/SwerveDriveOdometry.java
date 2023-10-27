@@ -94,8 +94,8 @@ public class SwerveDriveOdometry {
     }
 
     public Pose2d getPoseMetersPolar() {
-        return new Pose2d(Math.sqrt(Math.pow(m_poseMeters.getTranslation().x(), 2) + Math.pow(m_poseMeters.getTranslation().y(), 2)),
-                Math.toDegrees(Math.atan2(m_poseMeters.getTranslation().y(), m_poseMeters.getTranslation().x())), m_poseMeters.getRotation());
+        return new Pose2d(Math.sqrt(Math.pow(m_poseMeters.getTranslation().getX(), 2) + Math.pow(m_poseMeters.getTranslation().getY(), 2)),
+                Math.toDegrees(Math.atan2(m_poseMeters.getTranslation().getY(), m_poseMeters.getTranslation().getX())), m_poseMeters.getRotation());
     }
 
     /**
@@ -124,7 +124,7 @@ public class SwerveDriveOdometry {
                         new Twist2d(
                                 chassisState.vxMetersPerSecond * period,
                                 chassisState.vyMetersPerSecond * period,
-                                angle.rotateBy(m_previousAngle.inverse()).getRadians()));
+                                angle.rotateBy(m_previousAngle.unaryMinus()).getRadians()));
         m_previousAngle = angle;
         m_poseMeters = new Pose2d(m_poseMeters.transformBy(newPose).getTranslation(), angle);
         return m_poseMeters;
@@ -144,7 +144,7 @@ public class SwerveDriveOdometry {
         // Project along ideal angles.
         double average = 0.0;
         for (int i = 0 ;i < moduleStates.length; ++i) {
-            double ratio = moduleStates[i].angle.rotateBy(idealStates[i].angle.inverse()).cos()*
+            double ratio = moduleStates[i].angle.rotateBy(idealStates[i].angle.unaryMinus()).getCos()*
                     (moduleStates[i].distanceMeters - m_previousDistances[i])
                     / (idealStates[i].speedMetersPerSecond * period);
             if (Double.isNaN(ratio) || Double.isInfinite(ratio) ||

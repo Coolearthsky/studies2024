@@ -87,8 +87,8 @@ public class FancyTrajectory extends Command {
 
         ChassisSpeeds output = mMotionPlanner.update(now, currentPose);
 
-        t.log("/Fancy TrajectoryPose Error X",  mMotionPlanner.getTranslationalError().x());
-        t.log("/Fancy Trajectory/Pose Error Y", mMotionPlanner.getTranslationalError().y());
+        t.log("/Fancy TrajectoryPose Error X",  mMotionPlanner.getTranslationalError().getX());
+        t.log("/Fancy Trajectory/Pose Error Y", mMotionPlanner.getTranslationalError().getY());
         t.log("/Fancy Trajectory/Velocity Setpoint", mMotionPlanner.getVelocitySetpoint());
 
         m_robotDrive.setChassisSpeeds(output);

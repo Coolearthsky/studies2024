@@ -41,9 +41,9 @@ public class TimedView<S extends State<S>, T extends State<T>> implements Trajec
                     return new TrajectorySamplePoint<>(s);
                 }
                 return new TrajectorySamplePoint<>(
-                        prev_s.state().interpolate(s.state(),
+                        prev_s.state().interpolate2(s.state(),
                                 (t - prev_s.state().t()) / (s.state().t() - prev_s.state().t())),
-                        prev_s.heading().interpolate(s.heading(),
+                        prev_s.heading().interpolate2(s.heading(),
                                 (t - prev_s.heading().t()) / (s.heading().t() - prev_s.heading().t())),
                         i - 1, i);
             }

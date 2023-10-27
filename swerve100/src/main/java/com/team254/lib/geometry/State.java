@@ -7,9 +7,9 @@ public interface State<S> {
 
     boolean equals(final Object other);
 
-    String toString();
+    // String toString();
 
-    String toCSV();
+    // String toCSV();
 
         /**
      * Interpolates between this value and an other value according to a given parameter. If x is 0, the method should
@@ -20,5 +20,5 @@ public interface State<S> {
      * @param x     The requested value. Should be between 0 and 1.
      * @return Interpolable<T> The estimated average between the surrounding data
      */
-    S interpolate(S other, double x);
+    S interpolate2(S other, double x);
 }

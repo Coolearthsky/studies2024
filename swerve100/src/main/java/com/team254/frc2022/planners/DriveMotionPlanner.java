@@ -150,7 +150,7 @@ public class DriveMotionPlanner {
             double max_voltage) {
         List<Pose2d> waypoints_maybe_flipped = waypoints;
         List<Rotation2d> headings_maybe_flipped = headings;
-        final Pose2d flip = Pose2d.fromRotation(new Rotation2d(-1, 0, false));
+        final Pose2d flip = Pose2d.fromRotation(new Rotation2d(-1, 0));
         // TODO re-architect the spline generator to support reverse.
         if (reversed) {
             waypoints_maybe_flipped = new ArrayList<>(waypoints.size());
@@ -204,9 +204,9 @@ public class DriveMotionPlanner {
                                   */;// 0.15;
         final double kPathKTheta = 0.3;
         chassisSpeeds.vxMetersPerSecond = chassisSpeeds.vxMetersPerSecond + kPathk * Units.inches_to_meters(
-                mError.getTranslation().x());
+                mError.getTranslation().getX());
         chassisSpeeds.vyMetersPerSecond = chassisSpeeds.vyMetersPerSecond + kPathk * Units.inches_to_meters(
-                mError.getTranslation().y());
+                mError.getTranslation().getY());
         chassisSpeeds.omegaRadiansPerSecond = chassisSpeeds.omegaRadiansPerSecond
                 + kPathKTheta * mError.getRotation().getRadians();
         return chassisSpeeds;
@@ -218,7 +218,7 @@ public class DriveMotionPlanner {
         TimedState<Pose2dWithCurvature> lookahead_state = mCurrentTrajectory.preview(lookahead_time).state();
         double actual_lookahead_distance = mPathSetpoint.state().distance(lookahead_state.state());
         double adaptive_lookahead_distance = mSpeedLookahead.getLookaheadForSpeed(mPathSetpoint.velocity())
-                + Constants.kAdaptiveErrorLookaheadCoefficient * mError.getTranslation().norm();
+                + Constants.kAdaptiveErrorLookaheadCoefficient * mError.getTranslation().getNorm();
         SmartDashboard.putNumber("Adaptive Lookahead", adaptive_lookahead_distance);
         // Find the Point on the Trajectory that is Lookahead Distance Away
         while (actual_lookahead_distance < adaptive_lookahead_distance &&
@@ -239,8 +239,8 @@ public class DriveMotionPlanner {
                     0.0), lookahead_state.t(), lookahead_state.velocity(), lookahead_state.acceleration());
         }
 
-        SmartDashboard.putNumber("Path X", lookahead_state.state().getTranslation().x());
-        SmartDashboard.putNumber("Path Y", lookahead_state.state().getTranslation().y());
+        SmartDashboard.putNumber("Path X", lookahead_state.state().getTranslation().getX());
+        SmartDashboard.putNumber("Path Y", lookahead_state.state().getTranslation().getY());
         SmartDashboard.putNumber("Path Velocity", lookahead_state.velocity());
 
         // Find the vector between robot's current position and the lookahead state
@@ -270,11 +270,11 @@ public class DriveMotionPlanner {
 
         // Convert the Polar Coordinate (speed, direction) into a Rectangular Coordinate
         // (Vx, Vy) in Robot Frame
-        final Translation2d steeringVector = new Translation2d(steeringDirection.cos() * normalizedSpeed,
-                steeringDirection.sin() * normalizedSpeed);
+        final Translation2d steeringVector = new Translation2d(steeringDirection.getCos() * normalizedSpeed,
+                steeringDirection.getSin() * normalizedSpeed);
         SmartDashboard.putString("Steering Vector", steeringVector.toString());
-        ChassisSpeeds chassisSpeeds = new ChassisSpeeds(steeringVector.x() * Constants.kMaxVelocityMetersPerSecond,
-                steeringVector.y() * Constants.kMaxVelocityMetersPerSecond, feedforwardOmegaRadiansPerSecond);
+        ChassisSpeeds chassisSpeeds = new ChassisSpeeds(steeringVector.getX() * Constants.kMaxVelocityMetersPerSecond,
+                steeringVector.getY() * Constants.kMaxVelocityMetersPerSecond, feedforwardOmegaRadiansPerSecond);
 
         // Use the P-Controller for To Follow the Time-Parametrized Heading
         final double kPathKTheta = 0.3;
@@ -300,9 +300,9 @@ public class DriveMotionPlanner {
             mTotalTime = mCurrentTrajectory.trajectory().getLastPoint().state().t() -
                     mCurrentTrajectory.trajectory().getPoint(0).state().t();
             // Interpolate heading
-            mRotationDiff = finalHeading.rotateBy(mInitialHeading.inverse());
+            mRotationDiff = finalHeading.rotateBy(mInitialHeading.unaryMinus());
             if (mRotationDiff.getRadians() > Math.PI) {
-                mRotationDiff = mRotationDiff.inverse().rotateBy(Rotation2d.fromRadians(Math.PI));
+                mRotationDiff = mRotationDiff.unaryMinus().rotateBy(Rotation2d.fromRadians(Math.PI));
             }
 
             mStartTime = timestamp;
@@ -325,7 +325,7 @@ public class DriveMotionPlanner {
             // Compute error in robot frame
             mError = current_state.inverse().transformBy(mPathSetpoint.state().getPose());
             mError = new Pose2d(mError.getTranslation(),
-                    current_state.getRotation().inverse().rotateBy(mHeadingSetpoint.state().getRotation()));
+                    current_state.getRotation().unaryMinus().rotateBy(mHeadingSetpoint.state().getRotation()));
 
             if (mFollowerType == FollowerType.PID) {
 
@@ -345,14 +345,14 @@ public class DriveMotionPlanner {
                 final Rotation2d rotation = mPathSetpoint.state().getRotation();
 
                 // In field frame
-                var chassis_v = new Translation2d(rotation.cos() * velocity_m,
-                        rotation.sin() * velocity_m);
+                var chassis_v = new Translation2d(rotation.getCos() * velocity_m,
+                        rotation.getSin() * velocity_m);
                 // Convert to robot frame
-                chassis_v = chassis_v.rotateBy(mHeadingSetpoint.state().getRotation().inverse());
+                chassis_v = chassis_v.rotateBy(mHeadingSetpoint.state().getRotation().unaryMinus());
 
                 var chassis_twist = new Twist2d(
-                        chassis_v.x(),
-                        chassis_v.y(), mDTheta);
+                        chassis_v.getX(),
+                        chassis_v.getY(), mDTheta);
 
                 // System.out.println(chassis_twist);
 
@@ -412,9 +412,9 @@ public class DriveMotionPlanner {
             mTotalTime = trajectory.trajectory().getLastPoint().state().t() -
                     trajectory.trajectory().getPoint(0).state().t();
             // Interpolate heading
-            mRotationDiff = finalHeading.rotateBy(mInitialHeading.inverse());
+            mRotationDiff = finalHeading.rotateBy(mInitialHeading.unaryMinus());
             if (mRotationDiff.getRadians() > Math.PI) {
-                mRotationDiff = mRotationDiff.inverse().rotateBy(Rotation2d.fromRadians(Math.PI));
+                mRotationDiff = mRotationDiff.unaryMinus().rotateBy(Rotation2d.fromRadians(Math.PI));
             }
 
             mStartTime = timestamp;
@@ -437,7 +437,7 @@ public class DriveMotionPlanner {
             // Compute error in robot frame
             mError = current_state.inverse().transformBy(mPathSetpoint.state().getPose());
             mError = new Pose2d(mError.getTranslation(),
-                    current_state.getRotation().inverse().rotateBy(mHeadingSetpoint.state().getRotation()));
+                    current_state.getRotation().unaryMinus().rotateBy(mHeadingSetpoint.state().getRotation()));
 
             if (mFollowerType == FollowerType.PID) {
                 mPathSetpoint = sample_point.state();
@@ -447,14 +447,14 @@ public class DriveMotionPlanner {
                 final Rotation2d rotation = mPathSetpoint.state().getRotation();
 
                 // In field frame
-                var chassis_v = new Translation2d(rotation.cos() * velocity_m,
-                        rotation.sin() * velocity_m);
+                var chassis_v = new Translation2d(rotation.getCos() * velocity_m,
+                        rotation.getSin() * velocity_m);
                 // Convert to robot frame
-                chassis_v = chassis_v.rotateBy(mHeadingSetpoint.state().getRotation().inverse());
+                chassis_v = chassis_v.rotateBy(mHeadingSetpoint.state().getRotation().unaryMinus());
 
                 var chassis_twist = new Twist2d(
-                        chassis_v.x(),
-                        chassis_v.y(), mDTheta);
+                        chassis_v.getX(),
+                        chassis_v.getY(), mDTheta);
 
                 var chassis_speeds = new ChassisSpeeds(
                         chassis_twist.dx, chassis_twist.dy, chassis_twist.dtheta);
@@ -505,8 +505,8 @@ public class DriveMotionPlanner {
 
     public synchronized Translation2d getTranslationalError() {
         return new Translation2d(
-                Units.inches_to_meters(mError.getTranslation().x()),
-                Units.inches_to_meters(mError.getTranslation().y()));
+                Units.inches_to_meters(mError.getTranslation().getX()),
+                Units.inches_to_meters(mError.getTranslation().getY()));
     }
 
     public synchronized Rotation2d getHeadingError() {

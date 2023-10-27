@@ -44,7 +44,7 @@ public class SwerveDrive {
         @Override
         public String toString() {
             DecimalFormat fmt = new DecimalFormat("#0.000");
-            return fmt.format(movement.norm())/* + ", " + fmt.format(heading.getRadians())*/;
+            return fmt.format(movement.getNorm())/* + ", " + fmt.format(heading.getRadians())*/;
         }
     }
 }
