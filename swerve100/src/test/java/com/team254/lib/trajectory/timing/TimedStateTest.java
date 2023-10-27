@@ -21,7 +21,8 @@ public class TimedStateTest {
         final TimedState<Pose2dState> end_state = new TimedState<>(Pose2dState.fromTranslation(new Translation2dState(0.5, 0.0)), 1.0,
                 1.0, 0.0);
 
-        assertEquals(start_state, start_state.interpolate2(end_state, 0.0));
+        TimedState<Pose2dState> i0 = start_state.interpolate2(end_state, 0.0);
+        assertEquals(start_state, i0, String.format("%s %s", start_state, i0));
         assertEquals(end_state, start_state.interpolate2(end_state, 1.0));
         assertEquals(end_state, end_state.interpolate2(start_state, 0.0));
         System.out.println(end_state.interpolate2(start_state, 1.0));
@@ -31,7 +32,7 @@ public class TimedStateTest {
         assertEquals(0.5, intermediate_state.t(), kTestEpsilon);
         assertEquals(start_state.acceleration(), intermediate_state.acceleration(), kTestEpsilon);
         assertEquals(0.5, intermediate_state.velocity(), kTestEpsilon);
-        assertEquals(0.125, intermediate_state.state().getTranslation().getX(), kTestEpsilon);
+        assertEquals(0.125, intermediate_state.state().get().getTranslation().getX(), kTestEpsilon);
     }
 
 }

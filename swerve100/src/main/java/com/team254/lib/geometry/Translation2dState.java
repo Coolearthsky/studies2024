@@ -1,5 +1,7 @@
 package com.team254.lib.geometry;
 
+import javax.net.ssl.TrustManagerFactory;
+
 import com.team254.lib.util.Util;
 
 import edu.wpi.first.math.geometry.Translation2d;
@@ -61,5 +63,13 @@ public class Translation2dState implements State<Translation2dState> {
     @Override
     public Translation2dState add(Translation2dState other) {
         return new Translation2dState(translation2d.plus(other.get()));
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof Translation2dState)) {
+            return false;
+        }
+        return translation2d.equals(((Translation2dState)other).translation2d);
     }
 }

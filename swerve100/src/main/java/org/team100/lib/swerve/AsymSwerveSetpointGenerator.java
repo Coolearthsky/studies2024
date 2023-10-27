@@ -47,7 +47,7 @@ public class AsymSwerveSetpointGenerator {
      *         the drive direction.
      */
     private boolean flipHeading(Rotation2dState prevToGoal) {
-        return Math.abs(prevToGoal.getRadians()) > Math.PI / 2.0;
+        return Math.abs(prevToGoal.get().getRadians()) > Math.PI / 2.0;
     }
 
     private double unwrapAngle(double ref, double angle) {
@@ -198,21 +198,21 @@ public class AsymSwerveSetpointGenerator {
         Rotation2dState[] desired_heading = new Rotation2dState[modules.length];
         boolean all_modules_should_flip = true;
         for (int i = 0; i < modules.length; ++i) {
-            prev_vx[i] = prevSetpoint.mModuleStates[i].angle.getCos() * prevSetpoint.mModuleStates[i].speedMetersPerSecond;
-            prev_vy[i] = prevSetpoint.mModuleStates[i].angle.getSin() * prevSetpoint.mModuleStates[i].speedMetersPerSecond;
+            prev_vx[i] = prevSetpoint.mModuleStates[i].angle.get().getCos() * prevSetpoint.mModuleStates[i].speedMetersPerSecond;
+            prev_vy[i] = prevSetpoint.mModuleStates[i].angle.get().getSin() * prevSetpoint.mModuleStates[i].speedMetersPerSecond;
             prev_heading[i] = prevSetpoint.mModuleStates[i].angle;
             if (prevSetpoint.mModuleStates[i].speedMetersPerSecond < 0.0) {
                 prev_heading[i] = prev_heading[i].flip();
             }
-            desired_vx[i] = desiredModuleState[i].angle.getCos() * desiredModuleState[i].speedMetersPerSecond;
-            desired_vy[i] = desiredModuleState[i].angle.getSin() * desiredModuleState[i].speedMetersPerSecond;
+            desired_vx[i] = desiredModuleState[i].angle.get().getCos() * desiredModuleState[i].speedMetersPerSecond;
+            desired_vy[i] = desiredModuleState[i].angle.get().getSin() * desiredModuleState[i].speedMetersPerSecond;
             desired_heading[i] = desiredModuleState[i].angle;
             if (desiredModuleState[i].speedMetersPerSecond < 0.0) {
                 desired_heading[i] = desired_heading[i].flip();
             }
             if (all_modules_should_flip) {
                 double required_rotation_rad = Math
-                        .abs(prev_heading[i].unaryMinus().rotateBy(desired_heading[i]).getRadians());
+                        .abs(prev_heading[i].unaryMinus().rotateBy(desired_heading[i]).get().getRadians());
                 if (required_rotation_rad < Math.PI / 2.0) {
                     all_modules_should_flip = false;
                 }
@@ -272,7 +272,7 @@ public class AsymSwerveSetpointGenerator {
                     necessaryRotation = necessaryRotation.rotateBy(GeometryUtil.kPi);
                 }
                 // getRadians() bounds to +/- Pi.
-                final double numStepsNeeded = Math.abs(necessaryRotation.getRadians()) / max_theta_step;
+                final double numStepsNeeded = Math.abs(necessaryRotation.get().getRadians()) / max_theta_step;
 
                 if (numStepsNeeded <= 1.0) {
                     // Steer directly to goal angle.
@@ -282,7 +282,7 @@ public class AsymSwerveSetpointGenerator {
                 } else {
                     // Adjust steering by max_theta_step.
                     overrideSteering.set(i, Optional.of(prevSetpoint.mModuleStates[i].angle.rotateBy(
-                            Rotation2dState.fromRadians(Math.signum(necessaryRotation.getRadians()) * max_theta_step))));
+                            Rotation2dState.fromRadians(Math.signum(necessaryRotation.get().getRadians()) * max_theta_step))));
                     min_s = 0.0;
                     continue;
                 }
@@ -294,8 +294,8 @@ public class AsymSwerveSetpointGenerator {
 
             //TODO(add range reduction trick)
             final int kMaxIterations = 8;
-            double s = findSteeringMaxS(prev_vx[i], prev_vy[i], prev_heading[i].getRadians(),
-                    desired_vx[i], desired_vy[i], desired_heading[i].getRadians(),
+            double s = findSteeringMaxS(prev_vx[i], prev_vy[i], prev_heading[i].get().getRadians(),
+                    desired_vx[i], desired_vy[i], desired_heading[i].get().getRadians(),
                     max_theta_step, kMaxIterations);
             min_s = Math.min(min_s, s);
         }

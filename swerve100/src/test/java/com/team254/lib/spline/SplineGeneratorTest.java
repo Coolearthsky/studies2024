@@ -41,8 +41,8 @@ public class SplineGeneratorTest {
 
         assertEquals(cur_pose.getTranslation().get().getX(), 15.0, kTestEpsilon);
         assertEquals(cur_pose.getTranslation().get().getY(), 10.0, kTestEpsilon);
-        assertEquals(cur_pose.getRotation().getDegrees(), -78.69006752597981, kTestEpsilon);
+        assertEquals(cur_pose.getRotation().get().getDegrees(), -78.69006752597981, kTestEpsilon);
         assertEquals(arclength, 23.17291953186379, kTestEpsilon);
-        assertEquals(cur_heading.getRadians(), headings.get(1).getRadians(), kTestEpsilon);
+        assertEquals(cur_heading.get().getRadians(), headings.get(1).get().getRadians(), kTestEpsilon);
     }
 }

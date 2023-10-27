@@ -21,17 +21,17 @@ public class QuinticHermiteSpline extends Spline {
      * @param p1 The ending pose of the spline
      */
     public QuinticHermiteSpline(Pose2dState p0, Pose2dState p1) {
-        double scale = 1.2 * p0.getTranslation().getDistance(p1.getTranslation());
-        x0 = p0.getTranslation().getX();
-        x1 = p1.getTranslation().getX();
-        dx0 = p0.getRotation().getCos() * scale;
-        dx1 = p1.getRotation().getCos() * scale;
+        double scale = 1.2 * p0.get().getTranslation().getDistance(p1.get().getTranslation());
+        x0 = p0.get().getTranslation().getX();
+        x1 = p1.get().getTranslation().getX();
+        dx0 = p0.get().getRotation().getCos() * scale;
+        dx1 = p1.get().getRotation().getCos() * scale;
         ddx0 = 0;
         ddx1 = 0;
-        y0 = p0.getTranslation().getY();
-        y1 = p1.getTranslation().getY();
-        dy0 = p0.getRotation().getSin() * scale;
-        dy1 = p1.getRotation().getSin() * scale;
+        y0 = p0.get().getTranslation().getY();
+        y1 = p1.get().getTranslation().getY();
+        dy0 = p0.get().getRotation().getSin() * scale;
+        dy1 = p1.get().getRotation().getSin() * scale;
         ddy0 = 0;
         ddy1 = 0;
 

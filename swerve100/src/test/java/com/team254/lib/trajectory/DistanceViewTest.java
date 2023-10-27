@@ -41,8 +41,8 @@ public class DistanceViewTest {
         assertEquals(waypoints.get(0).get().interpolate(waypoints.get(1).get(), 0.5), distance_view.sample(12.0).state().get());
         assertEquals(waypoints.get(3).get().interpolate(waypoints.get(4).get(), 0.5), distance_view.sample(72.0).state().get());
         assertEquals(headings.get(0), distance_view.sample(0.0).heading());
-        assertEquals(headings.get(0).interpolate(headings.get(1), 0.5), distance_view.sample(12).heading());
-        assertEquals(headings.get(3).interpolate(headings.get(4), 0.5), distance_view.sample(72.0).heading());
+        assertEquals(headings.get(0).get().interpolate(headings.get(1).get(), 0.5), distance_view.sample(12).heading().get());
+        assertEquals(headings.get(3).get().interpolate(headings.get(4).get(), 0.5), distance_view.sample(72.0).heading().get());
     }
 
 }

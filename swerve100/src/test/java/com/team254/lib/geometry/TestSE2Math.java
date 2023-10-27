@@ -5,11 +5,14 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
+import org.team100.lib.geometry.GeometryUtil;
 
 import com.team254.lib.util.Util;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 
 public class TestSE2Math {
     public static final double kTestEpsilon = Util.kEpsilon;
@@ -88,7 +91,7 @@ public class TestSE2Math {
         assertEquals(0, rot3.getRadians(), kTestEpsilon);
 
         // A rotation times its inverse should be the identity
-        Rotation2dState identity = new Rotation2dState();
+        Rotation2d identity = new Rotation2d();
         rot1 = Rotation2d.fromDegrees(21.45);
         rot2 = rot1.rotateBy(rot1.unaryMinus());
         assertEquals(identity.getCos(), rot2.getCos(), kTestEpsilon);
@@ -124,15 +127,15 @@ public class TestSE2Math {
         // Test parallel.
         rot1 = Rotation2d.fromDegrees(45);
         rot2 = Rotation2d.fromDegrees(45);
-        assertTrue(rot1.isParallel(rot2));
+        assertTrue(GeometryUtil.isParallel(rot1, rot2));
 
         rot1 = Rotation2d.fromDegrees(45);
         rot2 = Rotation2d.fromDegrees(-45);
-        assertFalse(rot1.isParallel(rot2));
+        assertFalse(GeometryUtil.isParallel(rot1, rot2));
 
         rot1 = Rotation2d.fromDegrees(45);
         rot2 = Rotation2d.fromDegrees(-135);
-        assertTrue(rot1.isParallel(rot2));
+        assertTrue(GeometryUtil.isParallel(rot1, rot2));
     }
 
     @Test
@@ -208,30 +211,30 @@ public class TestSE2Math {
         assertEquals(0, pose1.getTranslation().getY(), kTestEpsilon);
         assertEquals(0, pose1.getRotation().getDegrees(), kTestEpsilon);
 
-        pose1 = new Pose2d(new Translation2dState(3, 4), Rotation2dState.fromDegrees(45));
+        pose1 = new Pose2d(new Translation2d(3, 4), Rotation2d.fromDegrees(45));
         assertEquals(3, pose1.getTranslation().getX(), kTestEpsilon);
         assertEquals(4, pose1.getTranslation().getY(), kTestEpsilon);
         assertEquals(45, pose1.getRotation().getDegrees(), kTestEpsilon);
 
         // Test transformation
-        pose1 = new Pose2d(new Translation2dState(3, 4), Rotation2dState.fromDegrees(90));
-        Pose2dState pose2 = new Pose2dState(new Translation2dState(1, 0), Rotation2dState.fromDegrees(0));
-        Pose2dState pose3 = pose1.transformBy(pose2);
+        pose1 = new Pose2d(new Translation2d(3, 4), Rotation2d.fromDegrees(90));
+        Pose2d pose2 = new Pose2d(new Translation2d(1, 0), Rotation2d.fromDegrees(0));
+        Pose2d pose3 = GeometryUtil.transformBy(pose1, pose2);
         assertEquals(3, pose3.getTranslation().getX(), kTestEpsilon);
         assertEquals(5, pose3.getTranslation().getY(), kTestEpsilon);
         assertEquals(90, pose3.getRotation().getDegrees(), kTestEpsilon);
 
-        pose1 = new Pose2d(new Translation2dState(3, 4), Rotation2dState.fromDegrees(90));
-        pose2 = new Pose2d(new Translation2dState(1, 0), Rotation2dState.fromDegrees(-90));
-        pose3 = pose1.transformBy(pose2);
+        pose1 = new Pose2d(new Translation2d(3, 4), Rotation2d.fromDegrees(90));
+        pose2 = new Pose2d(new Translation2d(1, 0), Rotation2d.fromDegrees(-90));
+        pose3 = GeometryUtil.transformBy(pose1, pose2);
         assertEquals(3, pose3.getTranslation().getX(), kTestEpsilon);
         assertEquals(5, pose3.getTranslation().getY(), kTestEpsilon);
         assertEquals(0, pose3.getRotation().getDegrees(), kTestEpsilon);
 
         // A pose times its inverse should be the identity
-        Pose2dState identity = new Pose2dState();
-        pose1 = new Pose2dState(new Translation2dState(3.51512152, 4.23), Rotation2d.fromDegrees(91.6));
-        pose2 = pose1.transformBy(pose1.inverse());
+        Pose2d identity = new Pose2d();
+        pose1 = new Pose2d(new Translation2d(3.51512152, 4.23), Rotation2d.fromDegrees(91.6));
+        pose2 = GeometryUtil.transformBy(pose1, GeometryUtil.inverse(pose1));
         assertEquals(identity.getTranslation().getX(), pose2.getTranslation().getX(), kTestEpsilon);
         assertEquals(identity.getTranslation().getY(), pose2.getTranslation().getY(), kTestEpsilon);
         assertEquals(identity.getRotation().getDegrees(), pose2.getRotation().getDegrees(), kTestEpsilon);
@@ -241,15 +244,15 @@ public class TestSE2Math {
         // centered at (3, -6)
         pose1 = new Pose2d(new Translation2d(3, 4), Rotation2d.fromDegrees(90));
         pose2 = new Pose2d(new Translation2d(13, -6), Rotation2d.fromDegrees(0.0));
-        pose3 = pose1.interpolate2(pose2, .5);
+        pose3 = pose1.interpolate(pose2, .5);
         double expected_angle_rads = Math.PI / 4;
         assertEquals(3.0 + 10.0 * Math.cos(expected_angle_rads), pose3.getTranslation().getX(), kTestEpsilon);
         assertEquals(-6.0 + 10.0 * Math.sin(expected_angle_rads), pose3.getTranslation().getY(), kTestEpsilon);
         assertEquals(expected_angle_rads, pose3.getRotation().getRadians(), kTestEpsilon);
 
-        pose1 = new Pose2dState(new Translation2dState(3, 4), Rotation2dState.fromDegrees(90));
-        pose2 = new Pose2dState(new Translation2dState(13, -6), Rotation2dState.fromDegrees(0.0));
-        pose3 = pose1.interpolate2(pose2, .75);
+        pose1 = new Pose2d(new Translation2d(3, 4), Rotation2d.fromDegrees(90));
+        pose2 = new Pose2d(new Translation2d(13, -6), Rotation2d.fromDegrees(0.0));
+        pose3 = pose1.interpolate(pose2, .75);
         expected_angle_rads = Math.PI / 8;
         assertEquals(3.0 + 10.0 * Math.cos(expected_angle_rads), pose3.getTranslation().getX(), kTestEpsilon);
         assertEquals(-6.0 + 10.0 * Math.sin(expected_angle_rads), pose3.getTranslation().getY(), kTestEpsilon);
@@ -259,28 +262,28 @@ public class TestSE2Math {
     @Test
     public void testTwist() {
         // Exponentiation (integrate twist to obtain a Pose2d)
-        Twist2dWrapper twist = new Twist2dWrapper(1.0, 0.0, 0.0);
-        Pose2dState pose = Pose2dState.sexp(twist);
+        Twist2d twist = new Twist2d(1.0, 0.0, 0.0);
+        Pose2d pose = new Pose2d().exp(twist);
         assertEquals(1.0, pose.getTranslation().getX(), kTestEpsilon);
         assertEquals(0.0, pose.getTranslation().getY(), kTestEpsilon);
         assertEquals(0.0, pose.getRotation().getDegrees(), kTestEpsilon);
 
         // Scaled.
-        twist = new Twist2dWrapper(1.0, 0.0, 0.0);
-        pose = Pose2dState.sexp(twist.scaled(2.5));
+        twist = new Twist2d(1.0, 0.0, 0.0);
+        pose = new Pose2d().exp(GeometryUtil.scale(twist, 2.5));
         assertEquals(2.5, pose.getTranslation().getX(), kTestEpsilon);
         assertEquals(0.0, pose.getTranslation().getY(), kTestEpsilon);
         assertEquals(0.0, pose.getRotation().getDegrees(), kTestEpsilon);
 
         // Logarithm (find the twist to apply to obtain a given Pose2d)
-        pose = new Pose2dState(new Translation2dState(2.0, 2.0), Rotation2dState.fromRadians(Math.PI / 2));
-        twist = Pose2dState.slog(pose);
+        pose = new Pose2d(new Translation2d(2.0, 2.0), Rotation2d.fromRadians(Math.PI / 2));
+        twist = new Pose2d().log(pose);
         assertEquals(Math.PI, twist.dx, kTestEpsilon);
         assertEquals(0.0, twist.dy, kTestEpsilon);
         assertEquals(Math.PI / 2, twist.dtheta, kTestEpsilon);
 
         // Logarithm is the inverse of exponentiation.
-        Pose2dState new_pose = Pose2dState.sexp(twist);
+        Pose2d new_pose = new Pose2d().exp(twist);
         assertEquals(new_pose.getTranslation().getX(), pose.getTranslation().getX(), kTestEpsilon);
         assertEquals(new_pose.getTranslation().getY(), pose.getTranslation().getY(), kTestEpsilon);
         assertEquals(new_pose.getRotation().getDegrees(), pose.getRotation().getDegrees(), kTestEpsilon);

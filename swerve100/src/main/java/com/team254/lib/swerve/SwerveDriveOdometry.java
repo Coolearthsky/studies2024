@@ -11,6 +11,7 @@ import com.team254.lib.geometry.Pose2dState;
 import com.team254.lib.geometry.Rotation2dState;
 import com.team254.lib.geometry.Twist2dWrapper;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -28,7 +29,7 @@ public class SwerveDriveOdometry {
     private ChassisSpeeds m_velocity;
     private double m_prevTimeSeconds = -1;
 
-    private Rotation2dState m_previousAngle;
+    private Rotation2d m_previousAngle;
     private double[] m_previousDistances;
 
     /**
@@ -42,7 +43,7 @@ public class SwerveDriveOdometry {
         m_kinematics = kinematics;
         m_velocity = new ChassisSpeeds();
         m_poseMeters = initialPose;
-        m_previousAngle = initialPose.getRotation();
+        m_previousAngle = initialPose.get().getRotation();
         m_previousDistances = previousDistances;
     }
 
@@ -77,7 +78,7 @@ public class SwerveDriveOdometry {
     public void resetPosition(Pose2dState pose) {
         m_velocity = new ChassisSpeeds();
         m_poseMeters = pose;
-        m_previousAngle = pose.getRotation();
+        m_previousAngle = pose.get().getRotation();
     }
 
     /**
@@ -125,7 +126,7 @@ public class SwerveDriveOdometry {
                                 chassisState.vxMetersPerSecond * period,
                                 chassisState.vyMetersPerSecond * period,
                                 angle.rotateBy(m_previousAngle.unaryMinus()).get().getRadians()));
-        m_previousAngle = angle;
+        m_previousAngle = angle.get();
         m_poseMeters = new Pose2dState(m_poseMeters.transformBy(newPose).get().getTranslation(), angle);
         return m_poseMeters;
     }
@@ -136,10 +137,10 @@ public class SwerveDriveOdometry {
         //System.out.println("Time: " + currentTimeSeconds);
         m_prevTimeSeconds = currentTimeSeconds;
 
-        var angle = gyroAngle;
-        var chassisState = m_kinematics.toChasisSpeedWheelConstraints(moduleStates);
+        Rotation2dState angle = gyroAngle;
+        ChassisSpeeds chassisState = m_kinematics.toChasisSpeedWheelConstraints(moduleStates);
 
-        var idealStates = m_kinematics.toSwerveModuleStates(chassisState);
+        SwerveModuleState[] idealStates = m_kinematics.toSwerveModuleStates(chassisState);
 
         // Project along ideal angles.
         double average = 0.0;
@@ -169,7 +170,7 @@ public class SwerveDriveOdometry {
         m_velocity = chassisState;
         // m_velocity.omegaRadiansPerSecond = m_previousAngle.inverse().rotateBy(gyroAngle).getRadians() / period;
         m_poseMeters = new Pose2dState(m_poseMeters.transformBy(newPose).get().getTranslation(), angle);
-        m_previousAngle = angle;
+        m_previousAngle = angle.get();
         //System.out.println(m_poseMeters);
         return m_poseMeters;
     }

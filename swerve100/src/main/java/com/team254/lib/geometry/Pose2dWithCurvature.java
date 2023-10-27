@@ -17,7 +17,7 @@ public class Pose2dWithCurvature extends PoseWithCurvature implements State<Pose
     }
 
     public Pose2dWithCurvature(final Pose2dState pose, double curvature, double dcurvature_ds) {
-        super(pose, curvature);
+        super(pose.get(), curvature);
         dcurvature_ds_ = dcurvature_ds;
     }
 
@@ -42,11 +42,11 @@ public class Pose2dWithCurvature extends PoseWithCurvature implements State<Pose
     }
 
     public final Translation2dState getTranslation() {
-        return new Translation2dState(getPose().getTranslation());
+        return new Translation2dState(getPose().get().getTranslation());
     }
 
     public final Rotation2dState getRotation() {
-        return getPose().getRotation();
+        return new Rotation2dState(getPose().get().getRotation());
     }
 
     @Override

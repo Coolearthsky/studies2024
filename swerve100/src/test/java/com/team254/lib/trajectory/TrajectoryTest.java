@@ -96,13 +96,13 @@ public class TrajectoryTest {
         assertEquals(traj.getInterpolated(2.75).index_floor(), 2);
         assertEquals(traj.getInterpolated(2.75).index_ceil(), 3);
 
-        assertEquals(kHeadings.get(0).interpolate(kHeadings.get(1), .25), traj.getInterpolated(0.25).heading());
+        assertEquals(kHeadings.get(0).get().interpolate(kHeadings.get(1).get(), .25), traj.getInterpolated(0.25).heading().get());
         assertEquals(traj.getInterpolated(0.25).index_floor(), 0);
         assertEquals(traj.getInterpolated(0.25).index_ceil(), 1);
-        assertEquals(kHeadings.get(1).interpolate(kHeadings.get(2), .5), traj.getInterpolated(1.5).heading());
+        assertEquals(kHeadings.get(1).get().interpolate(kHeadings.get(2).get(), .5), traj.getInterpolated(1.5).heading().get());
         assertEquals(traj.getInterpolated(1.5).index_floor(), 1);
         assertEquals(traj.getInterpolated(1.5).index_ceil(), 2);
-        assertEquals(kHeadings.get(2).interpolate(kHeadings.get(3), .75), traj.getInterpolated(2.75).heading());
+        assertEquals(kHeadings.get(2).get().interpolate(kHeadings.get(3).get(), .75), traj.getInterpolated(2.75).heading().get());
         assertEquals(traj.getInterpolated(2.75).index_floor(), 2);
         assertEquals(traj.getInterpolated(2.75).index_ceil(), 3);
 
@@ -110,8 +110,8 @@ public class TrajectoryTest {
         assertEquals(kWaypoints.get(0).get().interpolate(kWaypoints.get(1).get(), .25), index_view.sample(0.25).state().get());
         assertEquals(kWaypoints.get(1).get().interpolate(kWaypoints.get(2).get(), .5), index_view.sample(1.5).state().get());
         assertEquals(kWaypoints.get(2).get().interpolate(kWaypoints.get(3).get(), .75), index_view.sample(2.75).state().get());
-        assertEquals(kHeadings.get(0).interpolate(kHeadings.get(1), .25), index_view.sample(0.25).heading());
-        assertEquals(kHeadings.get(1).interpolate(kHeadings.get(2), .5), index_view.sample(1.5).heading());
-        assertEquals(kHeadings.get(2).interpolate(kHeadings.get(3), .75), index_view.sample(2.75).heading());
+        assertEquals(kHeadings.get(0).get().interpolate(kHeadings.get(1).get(), .25), index_view.sample(0.25).heading().get());
+        assertEquals(kHeadings.get(1).get().interpolate(kHeadings.get(2).get(), .5), index_view.sample(1.5).heading().get());
+        assertEquals(kHeadings.get(2).get().interpolate(kHeadings.get(3).get(), .75), index_view.sample(2.75).heading().get());
     }
 }

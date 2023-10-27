@@ -72,7 +72,7 @@ public class Rotation2dState implements State<Rotation2dState> {
         }
     }
 
-    protected double WrapRadians(double radians) {
+    public static double WrapRadians(double radians) {
         final double k2Pi = 2.0 * Math.PI;
         radians = radians % k2Pi;
         radians = (radians + k2Pi) % k2Pi;

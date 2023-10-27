@@ -43,20 +43,20 @@ public class TrajectoryIteratorTest {
 
         // Advance forward.
         assertEquals(kWaypoints.get(0).get().interpolate(kWaypoints.get(1).get(), 0.5), iterator.preview(0.5).state().get());
-        assertEquals(kHeadings.get(0).interpolate(kHeadings.get(1), 0.5), iterator.preview(0.5).heading());
+        assertEquals(kHeadings.get(0).get().interpolate(kHeadings.get(1).get(), 0.5), iterator.preview(0.5).heading().get());
         TrajectorySamplePoint<Translation2dState, Rotation2dState> newPoint = iterator.advance(0.5);
         assertEquals(kWaypoints.get(0).get().interpolate(kWaypoints.get(1).get(), 0.5), newPoint.state().get());
-        assertEquals(kHeadings.get(0).interpolate(kHeadings.get(1), 0.5), newPoint.heading());
+        assertEquals(kHeadings.get(0).get().interpolate(kHeadings.get(1).get(), 0.5), newPoint.heading().get());
         assertEquals(0.5, iterator.getProgress(), kTestEpsilon);
         assertEquals(2.5, iterator.getRemainingProgress(), kTestEpsilon);
         assertFalse(iterator.isDone());
 
         // Advance backwards.
         assertEquals(kWaypoints.get(0).get().interpolate(kWaypoints.get(1).get(), 0.25), iterator.preview(-0.25).state().get());
-        assertEquals(kHeadings.get(0).interpolate(kHeadings.get(1), 0.25), iterator.preview(-0.25).heading());
+        assertEquals(kHeadings.get(0).get().interpolate(kHeadings.get(1).get(), 0.25), iterator.preview(-0.25).heading().get());
         newPoint = iterator.advance(-0.25);
         assertEquals(kWaypoints.get(0).get().interpolate(kWaypoints.get(1).get(), 0.25), newPoint.state().get());
-        assertEquals(kHeadings.get(0).interpolate(kHeadings.get(1), 0.25), newPoint.heading());
+        assertEquals(kHeadings.get(0).get().interpolate(kHeadings.get(1).get(), 0.25), newPoint.heading().get());
         assertEquals(0.25, iterator.getProgress(), kTestEpsilon);
         assertEquals(2.75, iterator.getRemainingProgress(), kTestEpsilon);
         assertFalse(iterator.isDone());

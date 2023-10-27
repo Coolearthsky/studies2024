@@ -41,9 +41,9 @@ public class AsymSwerveSetpointGeneratorTest {
             final var nextModule = next.mModuleStates[i];
             Rotation2dState diffRotation = prevModule.angle.unaryMinus().rotateBy(nextModule.angle);
             assertTrue(
-                    Math.abs(diffRotation.getRadians()) < kKinematicLimits.kMaxSteeringVelocity
+                    Math.abs(diffRotation.get().getRadians()) < kKinematicLimits.kMaxSteeringVelocity
                             + kMaxSteeringVelocityError,
-                    String.format("%f %f %f", diffRotation.getRadians(), kKinematicLimits.kMaxSteeringVelocity,
+                    String.format("%f %f %f", diffRotation.get().getRadians(), kKinematicLimits.kMaxSteeringVelocity,
                             kMaxSteeringVelocityError));
             assertTrue(Math.abs(nextModule.speedMetersPerSecond) <= kKinematicLimits.kMaxDriveVelocity,
                     String.format("%f %f", nextModule.speedMetersPerSecond, kKinematicLimits.kMaxDriveVelocity));

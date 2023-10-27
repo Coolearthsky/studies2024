@@ -57,6 +57,7 @@ public class Util {
     }
 
     public static boolean epsilonEquals(double a, double b) {
+        System.out.println("asdf");
         return epsilonEquals(a, b, kEpsilon);
     }
 

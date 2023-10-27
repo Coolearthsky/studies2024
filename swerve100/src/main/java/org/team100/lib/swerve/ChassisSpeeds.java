@@ -62,8 +62,8 @@ public class ChassisSpeeds {
             double omegaRadiansPerSecond,
             Rotation2dState robotAngle) {
         return new ChassisSpeeds(
-                vxMetersPerSecond * robotAngle.getCos() + vyMetersPerSecond * robotAngle.getSin(),
-                -vxMetersPerSecond * robotAngle.getSin() + vyMetersPerSecond * robotAngle.getCos(),
+                vxMetersPerSecond * robotAngle.get().getCos() + vyMetersPerSecond * robotAngle.get().getSin(),
+                -vxMetersPerSecond * robotAngle.get().getSin() + vyMetersPerSecond * robotAngle.get().getCos(),
                 omegaRadiansPerSecond);
     }
 

@@ -23,7 +23,7 @@ public class Pose2dState implements State<Pose2dState> {
     public Pose2dState(double x, double y, final Rotation2dState rotation) {
         pose2d = new Pose2d(x, y, rotation.get());
     }
-    
+
     public Pose2dState(double x, double y, final Rotation2d rotation) {
         pose2d = new Pose2d(x, y, rotation);
     }
@@ -129,5 +129,13 @@ public class Pose2dState implements State<Pose2dState> {
     public Pose2dState mirror() {
         return new Pose2dState(new Translation2dState(pose2d.getTranslation().getX(), -pose2d.getTranslation().getY()),
                 new Rotation2dState(pose2d.getRotation().unaryMinus()));
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof Pose2dState)) {
+            return false;
+        }
+        return pose2d.equals(((Pose2dState)other).pose2d);
     }
 }
