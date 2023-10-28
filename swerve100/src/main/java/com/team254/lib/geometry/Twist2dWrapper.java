@@ -6,6 +6,8 @@ import edu.wpi.first.math.geometry.Twist2d;
 
 import java.text.DecimalFormat;
 
+import org.team100.lib.geometry.GeometryUtil;
+
 public class Twist2dWrapper extends Twist2d {
     public Twist2dWrapper(double dx, double dy, double dtheta) {
         super(dx, dy, dtheta);
@@ -19,17 +21,10 @@ public class Twist2dWrapper extends Twist2d {
         return new Twist2dWrapper(dx * scale, dy * scale, dtheta * scale);
     }
 
-    public double norm() {
-        // Common case of dy == 0
-        if (dy == 0.0)
-            return Math.abs(dx);
-        return Math.hypot(dx, dy);
-    }
-
     public double curvature() {
-        if (Math.abs(dtheta) < Util.kEpsilon && norm() < Util.kEpsilon)
+        if (Math.abs(dtheta) < Util.kEpsilon && GeometryUtil.norm(this) < Util.kEpsilon)
             return 0.0;
-        return dtheta / norm();
+        return dtheta / GeometryUtil.norm(this);
     }
 
     public boolean epsilonEquals(final Twist2dWrapper other, double epsilon) {

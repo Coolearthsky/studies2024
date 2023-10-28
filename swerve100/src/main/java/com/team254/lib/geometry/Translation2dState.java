@@ -1,7 +1,5 @@
 package com.team254.lib.geometry;
 
-import com.team254.lib.util.Util;
-
 import edu.wpi.first.math.geometry.Translation2d;
 
 public class Translation2dState implements State<Translation2dState> {
@@ -49,19 +47,10 @@ public class Translation2dState implements State<Translation2dState> {
         return new Translation2dState(x * (other.translation2d.getX() - translation2d.getX()) + translation2d.getX(), x * (other.translation2d.getY() - translation2d.getY()) + translation2d.getY());
     }
 
-    // public boolean epsilonEquals(final Translation2dState other, double epsilon) {
-    //     return Util.epsilonEquals(translation2d.getX(), other.translation2d.getX(), epsilon) && Util.epsilonEquals(translation2d.getY(), other.translation2d.getY(), epsilon);
-    // }
-
     @Override
     public double distance(final Translation2dState other) {
         return translation2d.getDistance(other.translation2d);
     }
-
-    // @Override
-    // public Translation2dState add(Translation2dState other) {
-    //     return new Translation2dState(translation2d.plus(other.get()));
-    // }
 
     @Override
     public boolean equals(Object other) {

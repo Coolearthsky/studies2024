@@ -42,8 +42,8 @@ public class Rotation2dState implements State<Rotation2dState> {
         return new Rotation2dState(get().getRadians() - Math.PI / 2.0);
     }
 
-    public Rotation2dState flip() {
-        return new Rotation2dState(get().getRadians() + Math.PI);
+    public static Rotation2d flip(Rotation2d a) {
+        return new Rotation2d(a.getRadians() + Math.PI);
     }
 
     @Override
@@ -62,11 +62,6 @@ public class Rotation2dState implements State<Rotation2dState> {
     public double distance(final Rotation2dState other) {
         return get().unaryMinus().rotateBy(other.get()).getRadians();
     }
-
-    // @Override
-    // public Rotation2dState add(Rotation2dState other) {
-    //     return this.rotateBy(other);
-    // }
 
     @Override
     public boolean equals(final Object other) {

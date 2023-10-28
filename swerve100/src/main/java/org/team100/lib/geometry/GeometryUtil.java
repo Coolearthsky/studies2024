@@ -24,7 +24,6 @@ public class GeometryUtil {
     private GeometryUtil() {
     }
 
-
     public static Twist2d scale(Twist2d twist, double scale) {
         return new Twist2d(twist.dx * scale, twist.dy * scale, twist.dtheta * scale);
     }
@@ -38,9 +37,8 @@ public class GeometryUtil {
         return new Pose2d(a.getTranslation().unaryMinus().rotateBy(rotation_inverted), rotation_inverted);
     }
 
-    public static Twist2dWrapper slog(final Pose2dState transform) {
-        Pose2dState base = new Pose2dState();
-        return new Twist2dWrapper(base.pose2d.log(transform.pose2d));
+    public static Twist2dWrapper slog(final Pose2d transform) {
+        return new Twist2dWrapper(new Pose2dState().pose2d.log(transform));
     }
 
     public static Pose2dState sexp(final Twist2dWrapper delta) {
@@ -79,14 +77,20 @@ public class GeometryUtil {
     public static boolean isColinear(Pose2d a, final Pose2d other) {
         if (!GeometryUtil.isParallel(a.getRotation(), other.getRotation()))
             return false;
-        final Twist2dWrapper twist = slog(
-                new Pose2dState(transformBy(inverse(a), other)));
+        final Twist2dWrapper twist = slog(transformBy(inverse(a), other));
         return (Util.epsilonEquals(twist.dy, 0.0) && Util.epsilonEquals(twist.dtheta, 0.0));
     }
-    
+
     // note parallel also means antiparallel.
     public static boolean isParallel(Rotation2d a, Rotation2d b) {
         return Util.epsilonEquals(a.getRadians(), b.getRadians())
                 || Util.epsilonEquals(a.getRadians(), WrapRadians(b.getRadians() + Math.PI));
+    }
+
+    public static double norm(Twist2dWrapper a) {
+        // Common case of dy == 0
+        if (a.dy == 0.0)
+            return Math.abs(a.dx);
+        return Math.hypot(a.dx, a.dy);
     }
 }

@@ -29,23 +29,13 @@ public class Pose2dState implements State<Pose2dState> {
         this(translation.get(), rotation.get());
     }
 
-    public Pose2dState(final Translation2d translation, final Rotation2dState rotation) {
-        this(translation, rotation.get());
-    }
-
-    public Pose2dState(final Translation2d translation, final Rotation2d rotation) {
+    private Pose2dState(final Translation2d translation, final Rotation2d rotation) {
         pose2d = new Pose2d(translation, rotation);
     }
-
 
     public Pose2dState(final Pose2d other) {
         this(other.getTranslation(), other.getRotation());
     }
-
-    // @Override
-    // public Pose2dState add(Pose2dState other) {
-    //     return new Pose2dState(GeometryUtil.transformBy(this.get(), other.get()));
-    // }
 
     /**
      * Do twist interpolation of this pose assuming constant curvature.
@@ -57,7 +47,7 @@ public class Pose2dState implements State<Pose2dState> {
 
     @Override
     public double distance(final Pose2dState other) {
-        return GeometryUtil.slog(new Pose2dState(GeometryUtil.transformBy(GeometryUtil.inverse(this), other.get()))).norm();
+        return GeometryUtil.norm(GeometryUtil.slog(GeometryUtil.transformBy(GeometryUtil.inverse(this), other.get())));
     }
 
     @Override
