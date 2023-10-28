@@ -7,10 +7,6 @@ public interface State<S> {
 
     boolean equals(final Object other);
 
-    // String toString();
-
-    // String toCSV();
-
     /**
      * Interpolates between this value and an other value according to a given
      * parameter. If x is 0, the method should

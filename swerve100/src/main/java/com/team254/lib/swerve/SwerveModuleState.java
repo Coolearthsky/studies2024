@@ -4,6 +4,8 @@ import com.team254.lib.geometry.Rotation2dState;
 
 import java.util.Objects;
 
+import org.team100.lib.geometry.GeometryUtil;
+
 /** Represents the state of one swerve module. */
 @SuppressWarnings("MemberName")
 public class SwerveModuleState implements Comparable<SwerveModuleState> {
@@ -14,7 +16,7 @@ public class SwerveModuleState implements Comparable<SwerveModuleState> {
     public double distanceMeters;
 
     /** Angle of the module. */
-    public Rotation2dState angle = Rotation2dState.fromDegrees(0);
+    public Rotation2dState angle = GeometryUtil.fromDegrees(0);
 
     /** Constructs a SwerveModuleState with zeros for speed and angle. */
     public SwerveModuleState() {}
@@ -83,7 +85,7 @@ public class SwerveModuleState implements Comparable<SwerveModuleState> {
         if (Math.abs(delta.get().getDegrees()) > 90.0) {
             return new SwerveModuleState(
                     -desiredState.speedMetersPerSecond,
-                    desiredState.angle.rotateBy(Rotation2dState.fromDegrees(180.0)));
+                    desiredState.angle.rotateBy(GeometryUtil.fromDegrees(180.0)));
         } else {
             return new SwerveModuleState(desiredState.speedMetersPerSecond, desiredState.angle);
         }

@@ -66,12 +66,12 @@ public class FancyTrajectoryTest {
 
         // first right and then ahead
         List<Pose2dState> waypoints = List.of(
-                new Pose2dState(0, 0, Rotation2dState.fromDegrees(270)),
-                new Pose2dState(10, -10, Rotation2dState.fromDegrees(0)));
+                new Pose2dState(0, 0, GeometryUtil.fromDegrees(270)),
+                new Pose2dState(10, -10, GeometryUtil.fromDegrees(0)));
         // while turning 180
         List<Rotation2dState> headings = List.of(
-                Rotation2dState.fromDegrees(90),
-                Rotation2dState.fromDegrees(180));
+                GeometryUtil.fromDegrees(90),
+                GeometryUtil.fromDegrees(180));
         // these don't actually do anything.
         List<TimingConstraint<Pose2dWithCurvature>> constraints = List.of(
                 new CentripetalAccelerationConstraint(60));
@@ -110,7 +110,7 @@ public class FancyTrajectoryTest {
         // commenting it out.
 
         Translation2dState translation2d = new Translation2dState(1, 1);
-        Rotation2dState rotation2d = Rotation2dState.fromDegrees(90);
+        Rotation2dState rotation2d = GeometryUtil.fromDegrees(90);
 
         actualPose = new Pose2dState(translation2d, rotation2d);
 

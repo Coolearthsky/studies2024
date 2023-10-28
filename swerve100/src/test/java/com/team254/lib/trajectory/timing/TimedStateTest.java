@@ -3,6 +3,7 @@ package com.team254.lib.trajectory.timing;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
+import org.team100.lib.geometry.GeometryUtil;
 
 import com.team254.lib.geometry.Pose2dState;
 import com.team254.lib.geometry.Translation2dState;
@@ -14,11 +15,11 @@ public class TimedStateTest {
     @Test
     public void test() {
         // At (0,0,0), t=0, v=0, acceleration=1
-        final TimedState<Pose2dState> start_state = new TimedState<>(Pose2dState.fromTranslation(new Translation2dState(0.0, 0.0)),
+        final TimedState<Pose2dState> start_state = new TimedState<>(GeometryUtil.fromTranslation(new Translation2dState(0.0, 0.0)),
                 0.0, 0.0, 1.0);
 
         // At (.5,0,0), t=1, v=1, acceleration=0
-        final TimedState<Pose2dState> end_state = new TimedState<>(Pose2dState.fromTranslation(new Translation2dState(0.5, 0.0)), 1.0,
+        final TimedState<Pose2dState> end_state = new TimedState<>(GeometryUtil.fromTranslation(new Translation2dState(0.5, 0.0)), 1.0,
                 1.0, 0.0);
 
         TimedState<Pose2dState> i0 = start_state.interpolate2(end_state, 0.0);

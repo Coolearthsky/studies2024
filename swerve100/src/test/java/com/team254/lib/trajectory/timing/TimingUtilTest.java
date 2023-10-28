@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.team100.lib.geometry.GeometryUtil;
 
 import com.team254.lib.geometry.Rotation2dState;
 import com.team254.lib.geometry.State;
@@ -29,10 +30,10 @@ public class TimingUtilTest {
             new Translation2dState(60.0, 12.0));
 
     public static final List<Rotation2dState> kHeadings = List.of(
-            Rotation2dState.fromDegrees(0),
-            Rotation2dState.fromDegrees(0),
-            Rotation2dState.fromDegrees(0),
-            Rotation2dState.fromDegrees(0));
+            GeometryUtil.fromDegrees(0),
+            GeometryUtil.fromDegrees(0),
+            GeometryUtil.fromDegrees(0),
+            GeometryUtil.fromDegrees(0));
 
     public <S extends State<S>, T extends State<T>> Trajectory<TimedState<S>, TimedState<T>> buildAndCheckTrajectory(
             final DistanceView<S, T> dist_view,

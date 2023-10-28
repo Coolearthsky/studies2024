@@ -1,5 +1,7 @@
 package com.team254.lib.geometry;
 
+import org.team100.lib.geometry.GeometryUtil;
+
 import com.team254.lib.util.Util;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -25,14 +27,6 @@ public class Rotation2dState implements State<Rotation2dState> {
 
     public Rotation2dState(final Rotation2d other) {
         this.rotation2d = other;
-    }
-
-    public static Rotation2dState fromRadians(double angle_radians) {
-        return new Rotation2dState(angle_radians);
-    }
-
-    public static Rotation2dState fromDegrees(double angle_degrees) {
-        return fromRadians(Math.toRadians(angle_degrees));
     }
 
     public Rotation2dState unaryMinus() {
@@ -62,23 +56,14 @@ public class Rotation2dState implements State<Rotation2dState> {
     public boolean isParallel(final Rotation2dState other) {
         if (hasRadians() && other.hasRadians()) {
             return Util.epsilonEquals(rotation2d.getRadians(), other.rotation2d.getRadians())
-                    || Util.epsilonEquals(rotation2d.getRadians(), WrapRadians(other.rotation2d.getRadians() + Math.PI));
+                    || Util.epsilonEquals(rotation2d.getRadians(), GeometryUtil.WrapRadians(other.rotation2d.getRadians() + Math.PI));
         } else if (hasTrig() && other.hasTrig()) {
             return Util.epsilonEquals(rotation2d.getSin(), other.rotation2d.getSin()) && Util.epsilonEquals(rotation2d.getCos(), other.rotation2d.getCos());
         } else {
             // Use public, checked version.
             return Util.epsilonEquals(rotation2d.getRadians(), other.rotation2d.getRadians())
-                    || Util.epsilonEquals(rotation2d.getRadians(), WrapRadians(other.rotation2d.getRadians() + Math.PI));
+                    || Util.epsilonEquals(rotation2d.getRadians(), GeometryUtil.WrapRadians(other.rotation2d.getRadians() + Math.PI));
         }
-    }
-
-    public static double WrapRadians(double radians) {
-        final double k2Pi = 2.0 * Math.PI;
-        radians = radians % k2Pi;
-        radians = (radians + k2Pi) % k2Pi;
-        if (radians > Math.PI)
-            radians -= k2Pi;
-        return radians;
     }
 
     private synchronized boolean hasTrig() {
@@ -98,7 +83,7 @@ public class Rotation2dState implements State<Rotation2dState> {
             return new Rotation2dState(other.rotation2d);
         }
         double angle_diff = unaryMinus().rotateBy(other).rotation2d.getRadians();
-        return this.rotateBy(Rotation2dState.fromRadians(angle_diff * x));
+        return this.rotateBy(GeometryUtil.fromRadians(angle_diff * x));
     }
 
     @Override

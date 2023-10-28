@@ -24,7 +24,7 @@ public class SplineGeneratorTest {
         Pose2dState p1 = new Pose2dState(new Translation2dState(0, 0), new Rotation2dState());
         Pose2dState p2 = new Pose2dState(new Translation2dState(15, 10), new Rotation2dState(1, -5));
         Spline s = new QuinticHermiteSpline(p1, p2);
-        List<Rotation2dState> headings = List.of(Rotation2dState.fromDegrees(0), Rotation2dState.fromDegrees(90));
+        List<Rotation2dState> headings = List.of(GeometryUtil.fromDegrees(0), GeometryUtil.fromDegrees(90));
 
         List<TrajectoryPoint<Pose2dWithCurvature, Rotation2dState>> samples = SplineGenerator.parameterizeSpline(s, headings);
 
@@ -33,14 +33,14 @@ public class SplineGeneratorTest {
         Pose2dWithCurvature cur_pose = samples.get(0).state();
         for (TrajectoryPoint<Pose2dWithCurvature, Rotation2dState> point : samples) {
             Pose2dWithCurvature sample = point.state();
-            final Twist2dWrapper t = Pose2dState.slog(cur_pose.getPose().inverse().transformBy(sample.getPose()));
+            final Twist2dWrapper t = GeometryUtil.slog(new Pose2dState(cur_pose.getPose().inverse().transformBy(sample.getPose().get())));
             arclength += t.dx;
             cur_pose = sample;
             cur_heading = point.heading();
         }
 
-        assertEquals(cur_pose.getTranslation().get().getX(), 15.0, kTestEpsilon);
-        assertEquals(cur_pose.getTranslation().get().getY(), 10.0, kTestEpsilon);
+        assertEquals(cur_pose.getTranslation().getX(), 15.0, kTestEpsilon);
+        assertEquals(cur_pose.getTranslation().getY(), 10.0, kTestEpsilon);
         assertEquals(cur_pose.getRotation().get().getDegrees(), -78.69006752597981, kTestEpsilon);
         assertEquals(arclength, 23.17291953186379, kTestEpsilon);
         assertEquals(cur_heading.get().getRadians(), headings.get(1).get().getRadians(), kTestEpsilon);

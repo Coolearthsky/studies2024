@@ -282,7 +282,7 @@ public class AsymSwerveSetpointGenerator {
                 } else {
                     // Adjust steering by max_theta_step.
                     overrideSteering.set(i, Optional.of(prevSetpoint.mModuleStates[i].angle.rotateBy(
-                            Rotation2dState.fromRadians(Math.signum(necessaryRotation.get().getRadians()) * max_theta_step))));
+                            GeometryUtil.fromRadians(Math.signum(necessaryRotation.get().getRadians()) * max_theta_step))));
                     min_s = 0.0;
                     continue;
                 }

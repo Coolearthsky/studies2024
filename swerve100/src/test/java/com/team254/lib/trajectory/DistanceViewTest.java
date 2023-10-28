@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.team100.lib.geometry.GeometryUtil;
 
 import com.team254.lib.geometry.Rotation2dState;
 import com.team254.lib.geometry.Translation2dState;
@@ -24,11 +25,11 @@ public class DistanceViewTest {
                 new Translation2dState(36.0, 24.0),
                 new Translation2dState(60.0, 24.0));
         List<Rotation2dState> headings = Arrays.asList(
-                Rotation2dState.fromDegrees(0),
-                Rotation2dState.fromDegrees(30),
-                Rotation2dState.fromDegrees(60),
-                Rotation2dState.fromDegrees(90),
-                Rotation2dState.fromDegrees(180));
+                GeometryUtil.fromDegrees(0),
+                GeometryUtil.fromDegrees(30),
+                GeometryUtil.fromDegrees(60),
+                GeometryUtil.fromDegrees(90),
+                GeometryUtil.fromDegrees(180));
 
         // Create the reference trajectory (straight line motion between waypoints).
         Trajectory<Translation2dState, Rotation2dState> trajectory = new Trajectory<>(waypoints, headings);

@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import org.ejml.simple.SimpleMatrix;
+import org.team100.lib.geometry.GeometryUtil;
 
 /**
  * Helper class that converts a chassis velocity (dx, dy, and dtheta components) into individual
@@ -191,7 +192,7 @@ public class SwerveDriveKinematics {
 
             var beta =
                     module.angle.rotateBy(
-                            m_rotations[i].unaryMinus()).rotateBy(Rotation2dState.fromRadians(Math.PI / 2.0));
+                            m_rotations[i].unaryMinus()).rotateBy(GeometryUtil.fromRadians(Math.PI / 2.0));
 
             //System.out.println(module);
             constraintsMatrix.setRow(i*2, 0,

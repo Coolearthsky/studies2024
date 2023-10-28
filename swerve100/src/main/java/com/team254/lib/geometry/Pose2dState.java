@@ -10,7 +10,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
 public class Pose2dState implements State<Pose2dState> {
-    private final Pose2d pose2d;
+    public final Pose2d pose2d;
 
     public Pose2d get() {
         return pose2d;
@@ -48,48 +48,17 @@ public class Pose2dState implements State<Pose2dState> {
         this(other.getTranslation(), other.getRotation());
     }
 
-    public static Pose2dState fromTranslation(final Translation2dState translation) {
-        return new Pose2dState(translation, new Rotation2dState());
-    }
-
-    public static Pose2dState fromRotation(final Rotation2dState rotation) {
-        return new Pose2dState(new Translation2dState(), rotation);
-    }
-
-    public static Pose2dState sexp(final Twist2dWrapper delta) {
-        return new Pose2dState(new Pose2dState().pose2d.exp(delta));
-    }
-
-    /**
-     * Logical inverse of the above.
-     */
-    public static Twist2dWrapper slog(final Pose2dState transform) {
-        Pose2dState base = new Pose2dState();
-        return new Twist2dWrapper(base.pose2d.log(transform.pose2d));
-    }
-
     public Translation2dState getTranslation2dState() {
         return new Translation2dState(pose2d.getTranslation());
     }
 
-    public Pose2dState rotateBy(Rotation2dState other) {
-        return this.transformBy(new Pose2dState(GeometryUtil.kTranslation2dIdentity, other));
-    }
-
     @Override
     public Pose2dState add(Pose2dState other) {
-        return this.transformBy(other);
+        return new Pose2dState(this.transformBy(other.pose2d));
     }
 
-    public Pose2dState transformBy(final Pose2dState other) {
-        return new Pose2dState(pose2d.getTranslation().plus(other.pose2d.getTranslation().rotateBy(pose2d.getRotation())),
-                pose2d.getRotation().rotateBy(other.pose2d.getRotation()));
-    }
-
-    public Pose2dState transformBy(Transform2d other) {
-        return new Pose2dState(
-            pose2d.getTranslation().plus(other.getTranslation().rotateBy(pose2d.getRotation())),
-            pose2d.getRotation().rotateBy(other.getRotation()));
+    public Pose2d transformBy(final Pose2d other) {
+        return get().transformBy(new Transform2d(other.getTranslation(), other.getRotation()));
     }
 
     public Pose2dState inverse() {
@@ -100,7 +69,8 @@ public class Pose2dState implements State<Pose2dState> {
     public boolean isColinear(final Pose2dState other) {
         if (!new Rotation2dState(pose2d.getRotation()).isParallel(new Rotation2dState(other.pose2d.getRotation())))
             return false;
-        final Twist2dWrapper twist = slog(inverse().transformBy(other));
+        final Twist2dWrapper twist = GeometryUtil.slog(
+            new Pose2dState(inverse().transformBy(other.pose2d)));
         return (Util.epsilonEquals(twist.dy, 0.0) && Util.epsilonEquals(twist.dtheta, 0.0));
     }
 
@@ -119,16 +89,11 @@ public class Pose2dState implements State<Pose2dState> {
 
     @Override
     public double distance(final Pose2dState other) {
-        return Pose2dState.slog(inverse().transformBy(other)).norm();
+        return GeometryUtil.slog(new Pose2dState(inverse().transformBy(other.pose2d))).norm();
     }
 
     public Pose2dState getPose() {
         return this;
-    }
-
-    public Pose2dState mirror() {
-        return new Pose2dState(new Translation2dState(pose2d.getTranslation().getX(), -pose2d.getTranslation().getY()),
-                new Rotation2dState(pose2d.getRotation().unaryMinus()));
     }
 
     @Override

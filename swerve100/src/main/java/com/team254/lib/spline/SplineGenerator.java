@@ -6,6 +6,8 @@ import com.team254.lib.trajectory.TrajectoryPoint;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.team100.lib.geometry.GeometryUtil;
+
 public class SplineGenerator {
     private static final double kMaxDX = 2.0; //inches
     private static final double kMaxDY = 0.05; //inches
@@ -72,7 +74,7 @@ public class SplineGenerator {
         Rotation2dState r0 = s.getHeading(t0);
         Rotation2dState r1 = s.getHeading(t1);
         Pose2dState transformation = new Pose2dState(new Translation2dState(p0, p1).get().rotateBy(r0.unaryMinus().get()), r1.rotateBy(r0.unaryMinus()));
-        Twist2dWrapper twist = Pose2dState.slog(transformation);
+        Twist2dWrapper twist = GeometryUtil.slog(transformation);
 
         if (twist.dy > maxDy || twist.dx > maxDx || twist.dtheta > maxDTheta) {
             getSegmentArc(s, headings, rv, t0, (t0 + t1) / 2, maxDx, maxDy, maxDTheta, totalTime);
@@ -81,7 +83,7 @@ public class SplineGenerator {
             // Interpolate heading
             Rotation2dState diff = headings.get(1).rotateBy(headings.get(0).unaryMinus());
             if (diff.get().getRadians() > Math.PI) {
-                diff = diff.unaryMinus().rotateBy(Rotation2dState.fromRadians( Math.PI));
+                diff = diff.unaryMinus().rotateBy(GeometryUtil.fromRadians( Math.PI));
             }
             Rotation2dState interpolated_heading = headings.get(0).rotateBy(diff.times(t1 / totalTime));
 

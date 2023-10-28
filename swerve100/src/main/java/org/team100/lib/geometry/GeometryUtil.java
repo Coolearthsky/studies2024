@@ -24,7 +24,7 @@ public class GeometryUtil {
 
     public static boolean isParallel(Rotation2d a, Rotation2d b) {
         return Util.epsilonEquals(a.getRadians(), b.getRadians())
-        || Util.epsilonEquals(a.getRadians(), Rotation2dState.WrapRadians(b.getRadians() + Math.PI));
+        || Util.epsilonEquals(a.getRadians(), GeometryUtil.WrapRadians(b.getRadians() + Math.PI));
     }
 
     public static Twist2d scale(Twist2d twist, double scale) {
@@ -39,5 +39,39 @@ public class GeometryUtil {
     public static Pose2d inverse(Pose2d a) {
         Rotation2d rotation_inverted = a.getRotation().unaryMinus();
         return new Pose2d(a.getTranslation().unaryMinus().rotateBy(rotation_inverted), rotation_inverted);      
+    }
+
+    public static Twist2dWrapper slog(final Pose2dState transform) {
+        Pose2dState base = new Pose2dState();
+        return new Twist2dWrapper(base.pose2d.log(transform.pose2d));
+    }
+
+    public static Pose2dState sexp(final Twist2dWrapper delta) {
+        return new Pose2dState(new Pose2dState().pose2d.exp(delta));
+    }
+
+    public static Pose2dState fromRotation(final Rotation2dState rotation) {
+        return new Pose2dState(new Translation2dState(), rotation);
+    }
+
+    public static Pose2dState fromTranslation(final Translation2dState translation) {
+        return new Pose2dState(translation, new Rotation2dState());
+    }
+
+    public static Rotation2dState fromRadians(double angle_radians) {
+        return new Rotation2dState(angle_radians);
+    }
+
+    public static Rotation2dState fromDegrees(double angle_degrees) {
+        return fromRadians(Math.toRadians(angle_degrees));
+    }
+
+    public static double WrapRadians(double radians) {
+        final double k2Pi = 2.0 * Math.PI;
+        radians = radians % k2Pi;
+        radians = (radians + k2Pi) % k2Pi;
+        if (radians > Math.PI)
+            radians -= k2Pi;
+        return radians;
     }
 }

@@ -4,6 +4,7 @@
 
 package com.team254.lib.swerve;
 
+import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.swerve.ChassisSpeeds;
 import org.team100.lib.swerve.SwerveDriveKinematics;
 
@@ -121,13 +122,13 @@ public class SwerveDriveOdometry {
 
         var chassisState = m_kinematics.toChassisSpeeds(moduleStates);
         var newPose =
-                Pose2dState.sexp(
+                GeometryUtil.sexp(
                         new Twist2dWrapper(
                                 chassisState.vxMetersPerSecond * period,
                                 chassisState.vyMetersPerSecond * period,
                                 angle.rotateBy(m_previousAngle.unaryMinus()).get().getRadians()));
         m_previousAngle = angle.get();
-        m_poseMeters = new Pose2dState(m_poseMeters.transformBy(newPose).get().getTranslation(), angle);
+        m_poseMeters = new Pose2dState(m_poseMeters.transformBy(newPose.pose2d).getTranslation(), angle);
         return m_poseMeters;
     }
 
@@ -161,7 +162,7 @@ public class SwerveDriveOdometry {
         SmartDashboard.putNumber("average", average);
 
         var newPose =
-                Pose2dState.sexp(
+                GeometryUtil.sexp(
                         new Twist2dWrapper(
                                 chassisState.vxMetersPerSecond * period * average,
                                 chassisState.vyMetersPerSecond * period * average,
@@ -169,7 +170,7 @@ public class SwerveDriveOdometry {
         //System.out.println("Translation: " + newPose);
         m_velocity = chassisState;
         // m_velocity.omegaRadiansPerSecond = m_previousAngle.inverse().rotateBy(gyroAngle).getRadians() / period;
-        m_poseMeters = new Pose2dState(m_poseMeters.transformBy(newPose).get().getTranslation(), angle);
+        m_poseMeters = new Pose2dState(m_poseMeters.transformBy(newPose.pose2d).getTranslation(), angle);
         m_previousAngle = angle.get();
         //System.out.println(m_poseMeters);
         return m_poseMeters;

@@ -151,13 +151,13 @@ public class DriveMotionPlanner {
             double max_voltage) {
         List<Pose2dState> waypoints_maybe_flipped = waypoints;
         List<Rotation2dState> headings_maybe_flipped = headings;
-        final Pose2dState flip = Pose2dState.fromRotation(new Rotation2dState(-1, 0));
+        final Pose2dState flip = GeometryUtil.fromRotation(new Rotation2dState(-1, 0));
         // TODO re-architect the spline generator to support reverse.
         if (reversed) {
             waypoints_maybe_flipped = new ArrayList<>(waypoints.size());
             headings_maybe_flipped = new ArrayList<>(headings.size());
             for (int i = 0; i < waypoints.size(); ++i) {
-                waypoints_maybe_flipped.add(waypoints.get(i).transformBy(flip));
+                waypoints_maybe_flipped.add(new Pose2dState(waypoints.get(i).transformBy(flip.get())));
                 headings_maybe_flipped.add(headings.get(i).rotateBy(flip.get().getRotation()));
             }
         }
@@ -171,7 +171,7 @@ public class DriveMotionPlanner {
             List<Rotation2dState> flipped_headings = new ArrayList<>(trajectory.length());
             for (int i = 0; i < trajectory.length(); ++i) {
                 flipped_points
-                        .add(new Pose2dWithCurvature(trajectory.getPoint(i).state().getPose().transformBy(flip),
+                        .add(new Pose2dWithCurvature(trajectory.getPoint(i).state().getPose().transformBy(flip.pose2d),
                                 -trajectory
                                         .getPoint(i).state().getCurvature(),
                                 trajectory.getPoint(i).state().getDCurvatureDs()));
@@ -233,19 +233,20 @@ public class DriveMotionPlanner {
         // transform it so it is the lookahead distance away
         if (actual_lookahead_distance < adaptive_lookahead_distance) {
             lookahead_state = new TimedState<>(new Pose2dWithCurvature(lookahead_state.state()
-                    .getPose().transformBy(Pose2dState.fromTranslation(new Translation2dState(
+                    .getPose().transformBy(GeometryUtil.fromTranslation(new Translation2dState(
                             (mIsReversed ? -1.0 : 1.0) * (Constants.kPathMinLookaheadDistance -
                                     actual_lookahead_distance),
-                            0.0))),
+                            0.0)).get()),
                     0.0), lookahead_state.t(), lookahead_state.velocity(), lookahead_state.acceleration());
         }
 
-        SmartDashboard.putNumber("Path X", lookahead_state.state().getTranslation().get().getX());
-        SmartDashboard.putNumber("Path Y", lookahead_state.state().getTranslation().get().getY());
+        SmartDashboard.putNumber("Path X", lookahead_state.state().getTranslation().getX());
+        SmartDashboard.putNumber("Path Y", lookahead_state.state().getTranslation().getY());
         SmartDashboard.putNumber("Path Velocity", lookahead_state.velocity());
 
         // Find the vector between robot's current position and the lookahead state
-        Translation2dState lookaheadTranslation = new Translation2dState(current_state.getTranslation2dState(),
+        Translation2dState lookaheadTranslation = new Translation2dState(
+            current_state.getTranslation2dState().get(),
                 lookahead_state.state().getTranslation());
 
         // Set the steering direction as the direction of the vector
@@ -303,7 +304,7 @@ public class DriveMotionPlanner {
             // Interpolate heading
             mRotationDiff = finalHeading.rotateBy(mInitialHeading.unaryMinus());
             if (mRotationDiff.get().getRadians() > Math.PI) {
-                mRotationDiff = mRotationDiff.unaryMinus().rotateBy(Rotation2dState.fromRadians(Math.PI));
+                mRotationDiff = mRotationDiff.unaryMinus().rotateBy(GeometryUtil.fromRadians(Math.PI));
             }
 
             mStartTime = timestamp;
@@ -324,7 +325,7 @@ public class DriveMotionPlanner {
         if (!isDone()) {
             sample_point = mCurrentTrajectory.advance(mDt);
             // Compute error in robot frame
-            mError = current_state.inverse().transformBy(mPathSetpoint.state().getPose());
+            mError = new Pose2dState(current_state.inverse().transformBy(mPathSetpoint.state().getPose().get()));
             mError = new Pose2dState(mError.get().getTranslation(),
                     current_state.get().getRotation().unaryMinus().rotateBy(mHeadingSetpoint.state().getRotation().get()));
 
@@ -415,7 +416,7 @@ public class DriveMotionPlanner {
             // Interpolate heading
             mRotationDiff = finalHeading.rotateBy(mInitialHeading.unaryMinus());
             if (mRotationDiff.get().getRadians() > Math.PI) {
-                mRotationDiff = mRotationDiff.unaryMinus().rotateBy(Rotation2dState.fromRadians(Math.PI));
+                mRotationDiff = mRotationDiff.unaryMinus().rotateBy(GeometryUtil.fromRadians(Math.PI));
             }
 
             mStartTime = timestamp;
@@ -436,7 +437,7 @@ public class DriveMotionPlanner {
         if (!isDone()) {
             sample_point = trajectory.advance(mDt);
             // Compute error in robot frame
-            mError = current_state.inverse().transformBy(mPathSetpoint.state().getPose());
+            mError = new Pose2dState(current_state.inverse().transformBy(mPathSetpoint.state().getPose().get()));
             mError = new Pose2dState(mError.get().getTranslation(),
                     current_state.get().getRotation().unaryMinus().rotateBy(mHeadingSetpoint.state().getRotation().get()));
 
