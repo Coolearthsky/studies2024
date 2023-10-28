@@ -1,11 +1,13 @@
 package com.team254.lib.spline;
 
-import com.team254.lib.geometry.*;
+import com.team254.lib.geometry.Pose2dWithCurvature;
+import com.team254.lib.geometry.Rotation2dState;
 import com.team254.lib.trajectory.TrajectoryPoint;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,12 +75,12 @@ public class SplineGenerator {
     private static void getSegmentArc(Spline s, List<? extends Rotation2dState> headings, List<TrajectoryPoint<Pose2dWithCurvature, Rotation2dState>> rv,  double t0, double t1, double maxDx,
                                       double maxDy,
                                       double maxDTheta, double totalTime) {
-        Translation2d p0 = s.getPoint(t0).get();
-        Translation2d p1 = s.getPoint(t1).get();
-        Rotation2d r0 = s.getHeading(t0).get();
-        Rotation2d r1 = s.getHeading(t1).get();
+        Translation2d p0 = s.getPoint(t0);
+        Translation2d p1 = s.getPoint(t1);
+        Rotation2d r0 = s.getHeading(t0);
+        Rotation2d r1 = s.getHeading(t1);
         Pose2d transformation = new Pose2d(p1.minus(p0).rotateBy(r0.unaryMinus()), r1.rotateBy(r0.unaryMinus()));
-        Twist2dWrapper twist = GeometryUtil.slog(transformation);
+        Twist2d twist = GeometryUtil.slog(transformation);
 
         if (twist.dy > maxDy || twist.dx > maxDx || twist.dtheta > maxDTheta) {
             getSegmentArc(s, headings, rv, t0, (t0 + t1) / 2, maxDx, maxDy, maxDTheta, totalTime);

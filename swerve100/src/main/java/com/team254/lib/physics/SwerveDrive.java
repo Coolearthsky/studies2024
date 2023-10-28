@@ -1,10 +1,11 @@
 package com.team254.lib.physics;
 
-import com.team254.lib.geometry.Rotation2dState;
-import com.team254.lib.geometry.Translation2dState;
 import java.text.DecimalFormat;
 
 import org.team100.lib.geometry.GeometryUtil;
+
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 
 public class SwerveDrive {
     // All units must be SI!
@@ -24,29 +25,29 @@ public class SwerveDrive {
 
     // Can refer to velocity or acceleration depending on context.
     public static class ChassisState {
-        public Translation2dState movement;
-        public Rotation2dState heading;
+        public Translation2d movement;
+        public Rotation2d heading;
 
-        public ChassisState(Translation2dState movement, Rotation2dState heading) {
+        public ChassisState(Translation2d movement, Rotation2d heading) {
             this.heading = heading;
             this.movement = movement;
         }
 
-        public ChassisState(Translation2dState movement) {
+        public ChassisState(Translation2d movement) {
             this.movement = movement;
-            this.heading = GeometryUtil.kRotationIdentity;
+            this.heading = GeometryUtil.kRotationIdentity.get();
         }
 
 
         public ChassisState() {
-            this.movement = GeometryUtil.kTranslation2dIdentity;
-            this.heading = GeometryUtil.kRotationIdentity;
+            this.movement = GeometryUtil.kTranslation2dIdentity.get();
+            this.heading = GeometryUtil.kRotationIdentity.get();
         }
 
         @Override
         public String toString() {
             DecimalFormat fmt = new DecimalFormat("#0.000");
-            return fmt.format(movement.get().getNorm())/* + ", " + fmt.format(heading.getRadians())*/;
+            return fmt.format(movement.getNorm())/* + ", " + fmt.format(heading.getRadians())*/;
         }
     }
 }

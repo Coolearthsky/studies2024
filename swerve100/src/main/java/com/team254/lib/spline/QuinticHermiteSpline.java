@@ -4,6 +4,10 @@ import com.team254.lib.geometry.Pose2dState;
 import com.team254.lib.geometry.Rotation2dState;
 import com.team254.lib.geometry.Translation2dState;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+
 import java.util.List;
 
 import org.team100.lib.geometry.GeometryUtil;
@@ -22,18 +26,18 @@ public class QuinticHermiteSpline extends Spline {
      * @param p0 The starting pose of the spline
      * @param p1 The ending pose of the spline
      */
-    public QuinticHermiteSpline(Pose2dState p0, Pose2dState p1) {
-        double scale = 1.2 * p0.get().getTranslation().getDistance(p1.get().getTranslation());
-        x0 = p0.get().getTranslation().getX();
-        x1 = p1.get().getTranslation().getX();
-        dx0 = p0.get().getRotation().getCos() * scale;
-        dx1 = p1.get().getRotation().getCos() * scale;
+    public QuinticHermiteSpline(Pose2d p0, Pose2d p1) {
+        double scale = 1.2 * p0.getTranslation().getDistance(p1.getTranslation());
+        x0 = p0.getTranslation().getX();
+        x1 = p1.getTranslation().getX();
+        dx0 = p0.getRotation().getCos() * scale;
+        dx1 = p1.getRotation().getCos() * scale;
         ddx0 = 0;
         ddx1 = 0;
-        y0 = p0.get().getTranslation().getY();
-        y1 = p1.get().getTranslation().getY();
-        dy0 = p0.get().getRotation().getSin() * scale;
-        dy1 = p1.get().getRotation().getSin() * scale;
+        y0 = p0.getTranslation().getY();
+        y1 = p1.getTranslation().getY();
+        dy0 = p0.getRotation().getSin() * scale;
+        dy1 = p1.getRotation().getSin() * scale;
         ddy0 = 0;
         ddy1 = 0;
 
@@ -82,16 +86,16 @@ public class QuinticHermiteSpline extends Spline {
         fy = y0;
     }
 
-    public Pose2dState getStartPose() {
-        return new Pose2dState(
-                new Translation2dState(x0, y0),
-                new Rotation2dState(dx0, dy0));
+    public Pose2d getStartPose() {
+        return new Pose2d(
+                new Translation2d(x0, y0),
+                new Rotation2d(dx0, dy0));
     }
 
-    public Pose2dState getEndPose() {
-        return new Pose2dState(
-                new Translation2dState(x1, y1),
-                new Rotation2dState(dx1, dy1));
+    public Pose2d getEndPose() {
+        return new Pose2d(
+                new Translation2d(x1, y1),
+                new Rotation2d(dx1, dy1));
     }
 
     /**
@@ -99,10 +103,10 @@ public class QuinticHermiteSpline extends Spline {
      * @return the point on the spline for that t value
      */
     @Override
-    public Translation2dState getPoint(double t) {
+    public Translation2d getPoint(double t) {
         double x = ax * t * t * t * t * t + bx * t * t * t * t + cx * t * t * t + dx * t * t + ex * t + fx;
         double y = ay * t * t * t * t * t + by * t * t * t * t + cy * t * t * t + dy * t * t + ey * t + fy;
-        return new Translation2dState(x, y);
+        return new Translation2d(x, y);
     }
 
     private double dx(double t) {
@@ -156,8 +160,8 @@ public class QuinticHermiteSpline extends Spline {
     }
 
     @Override
-    public Rotation2dState getHeading(double t) {
-        return new Rotation2dState(dx(t), dy(t));
+    public Rotation2d getHeading(double t) {
+        return new Rotation2d(dx(t), dy(t));
     }
 
     /**
@@ -226,9 +230,9 @@ public class QuinticHermiteSpline extends Spline {
 
         for (int i = 0; i < splines.size() - 1; ++i) {
             // don't try to optimize colinear points
-            if (GeometryUtil.isColinear(splines.get(i).getStartPose().get(), splines.get(i + 1).getStartPose().get())
-                    || GeometryUtil.isColinear(splines.get(i).getEndPose().get(),
-                            (splines.get(i + 1).getEndPose().get()))) {
+            if (GeometryUtil.isColinear(splines.get(i).getStartPose(), splines.get(i + 1).getStartPose())
+                    || GeometryUtil.isColinear(splines.get(i).getEndPose(),
+                            (splines.get(i + 1).getEndPose()))) {
                 continue;
             }
             double original = sumDCurvature2(splines);
@@ -263,9 +267,9 @@ public class QuinticHermiteSpline extends Spline {
         p2 = new Translation2dState(0, sumDCurvature2(splines)); // middle point is at the current location
 
         for (int i = 0; i < splines.size() - 1; ++i) { // first point is offset from the middle location by -stepSize
-            if (GeometryUtil.isColinear(splines.get(i).getStartPose().get(), splines.get(i + 1).getStartPose().get())
-                    || GeometryUtil.isColinear(splines.get(i).getEndPose().get(),
-                            splines.get(i + 1).getEndPose().get())) {
+            if (GeometryUtil.isColinear(splines.get(i).getStartPose(), splines.get(i + 1).getStartPose())
+                    || GeometryUtil.isColinear(splines.get(i).getEndPose(),
+                            splines.get(i + 1).getEndPose())) {
                 continue;
             }
             // normalize to step size
@@ -285,9 +289,9 @@ public class QuinticHermiteSpline extends Spline {
         p1 = new Translation2dState(-kStepSize, sumDCurvature2(splines));
 
         for (int i = 0; i < splines.size() - 1; ++i) { // last point is offset from the middle location by +stepSize
-            if (GeometryUtil.isColinear(splines.get(i).getStartPose().get(), splines.get(i + 1).getStartPose().get())
-                    || GeometryUtil.isColinear(splines.get(i).getEndPose().get(),
-                            splines.get(i + 1).getEndPose().get())) {
+            if (GeometryUtil.isColinear(splines.get(i).getStartPose(), splines.get(i + 1).getStartPose())
+                    || GeometryUtil.isColinear(splines.get(i).getEndPose(),
+                            splines.get(i + 1).getEndPose())) {
                 continue;
             }
             // move along the gradient by 2 times the step size amount (to return to
@@ -309,9 +313,9 @@ public class QuinticHermiteSpline extends Spline {
                                                    // gradient
 
         for (int i = 0; i < splines.size() - 1; ++i) {
-            if (GeometryUtil.isColinear(splines.get(i).getStartPose().get(), splines.get(i + 1).getStartPose().get())
-                    || GeometryUtil.isColinear(splines.get(i).getEndPose().get(),
-                            splines.get(i + 1).getEndPose().get())) {
+            if (GeometryUtil.isColinear(splines.get(i).getStartPose(), splines.get(i + 1).getStartPose())
+                    || GeometryUtil.isColinear(splines.get(i).getEndPose(),
+                            splines.get(i + 1).getEndPose())) {
                 continue;
             }
             // move by the step size calculated by the parabola fit (+1 to offset for the

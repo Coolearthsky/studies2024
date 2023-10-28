@@ -37,12 +37,12 @@ public class GeometryUtil {
         return new Pose2d(a.getTranslation().unaryMinus().rotateBy(rotation_inverted), rotation_inverted);
     }
 
-    public static Twist2dWrapper slog(final Pose2d transform) {
-        return new Twist2dWrapper(new Pose2dState().pose2d.log(transform));
+    public static Twist2d slog(final Pose2d transform) {
+        return new Pose2d().log(transform);
     }
 
-    public static Pose2dState sexp(final Twist2dWrapper delta) {
-        return new Pose2dState(new Pose2dState().pose2d.exp(delta));
+    public static Pose2d sexp(final Twist2d delta) {
+        return new Pose2d().exp(delta);
     }
 
     public static Pose2dState fromRotation(final Rotation2dState rotation) {
@@ -77,7 +77,7 @@ public class GeometryUtil {
     public static boolean isColinear(Pose2d a, final Pose2d other) {
         if (!GeometryUtil.isParallel(a.getRotation(), other.getRotation()))
             return false;
-        final Twist2dWrapper twist = slog(transformBy(inverse(a), other));
+        final Twist2d twist = slog(transformBy(inverse(a), other));
         return (Util.epsilonEquals(twist.dy, 0.0) && Util.epsilonEquals(twist.dtheta, 0.0));
     }
 
@@ -88,6 +88,13 @@ public class GeometryUtil {
     }
 
     public static double norm(Twist2dWrapper a) {
+        // Common case of dy == 0
+        if (a.dy == 0.0)
+            return Math.abs(a.dx);
+        return Math.hypot(a.dx, a.dy);
+    }
+
+    public static double norm(Twist2d a) {
         // Common case of dy == 0
         if (a.dy == 0.0)
             return Math.abs(a.dx);

@@ -7,7 +7,6 @@ import java.util.List;
 import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.swerve.ChassisSpeeds;
 
-import com.team254.frc2022.Constants;
 import com.team254.lib.control.Lookahead;
 import com.team254.lib.geometry.Pose2dState;
 import com.team254.lib.geometry.Pose2dWithCurvature;
@@ -36,6 +35,17 @@ public class DriveMotionPlanner {
     private static final double kMaxDx = 2.0;
     private static final double kMaxDy = 0.25;
     private static final double kMaxDTheta = Math.toRadians(1.0);
+
+    // Pure Pursuit Constants
+    public static final double kPathLookaheadTime = 0.25; // From 1323 (2019)
+    public static final double kPathMinLookaheadDistance = 12.0; // From 1323 (2019)
+    public static final double kAdaptivePathMinLookaheadDistance = 6.0;
+    public static final double kAdaptivePathMaxLookaheadDistance = 24.0;
+    public static final double kAdaptiveErrorLookaheadCoefficient = 0.01;
+
+    public static final double kTrackScrubFactor = 1;
+
+    public static final double kMaxVelocityMetersPerSecond = 4.959668;
 
     public enum FollowerType {
         FEEDFORWARD_ONLY,
@@ -86,7 +96,7 @@ public class DriveMotionPlanner {
     public DriveMotionPlanner() {
         mModel = new SwerveDrive(
                 0.0942 / 2,
-                0.464 / 2.0 * Constants.kTrackScrubFactor);
+                0.464 / 2.0 * kTrackScrubFactor);
 
         SmartDashboard.putString("Steering Direction", "");
         SmartDashboard.putString("Last Pose", "");
@@ -108,9 +118,9 @@ public class DriveMotionPlanner {
         mLastHeadingSetpoint = null;
         mLastPathSetpoint = null;
         useDefaultCook = true;
-        mSpeedLookahead = new Lookahead(Constants.kAdaptivePathMinLookaheadDistance,
-                Constants.kAdaptivePathMaxLookaheadDistance, 0.0,
-                Units.meters_to_inches(Constants.kMaxVelocityMetersPerSecond));
+        mSpeedLookahead = new Lookahead(kAdaptivePathMinLookaheadDistance,
+                kAdaptivePathMaxLookaheadDistance, 0.0,
+                Units.meters_to_inches(kMaxVelocityMetersPerSecond));
         mCurrentTrajectoryLength = mCurrentTrajectory.trajectory().getLastPoint().state().t();
         for (int i = 0; i < trajectory.trajectory().length(); ++i) {
             if (trajectory.trajectory().getPoint(i).state().velocity() > Util.kEpsilon) {
@@ -221,12 +231,12 @@ public class DriveMotionPlanner {
     }
 
     protected ChassisSpeeds updatePurePursuit(Pose2dState current_state, double feedforwardOmegaRadiansPerSecond) {
-        double lookahead_time = Constants.kPathLookaheadTime;
+        double lookahead_time = kPathLookaheadTime;
         final double kLookaheadSearchDt = 0.01;
         TimedState<Pose2dWithCurvature> lookahead_state = mCurrentTrajectory.preview(lookahead_time).state();
         double actual_lookahead_distance = mPathSetpoint.state().distance(lookahead_state.state());
         double adaptive_lookahead_distance = mSpeedLookahead.getLookaheadForSpeed(mPathSetpoint.velocity())
-                + Constants.kAdaptiveErrorLookaheadCoefficient * mError.getTranslation().getNorm();
+                + kAdaptiveErrorLookaheadCoefficient * mError.getTranslation().getNorm();
         SmartDashboard.putNumber("Adaptive Lookahead", adaptive_lookahead_distance);
         // Find the Point on the Trajectory that is Lookahead Distance Away
         while (actual_lookahead_distance < adaptive_lookahead_distance &&
@@ -243,7 +253,7 @@ public class DriveMotionPlanner {
                     new Pose2dWithCurvature(
                             GeometryUtil.transformBy(lookahead_state.state().getPose().get(),
                                     GeometryUtil.fromTranslation(new Translation2dState(
-                                            (mIsReversed ? -1.0 : 1.0) * (Constants.kPathMinLookaheadDistance -
+                                            (mIsReversed ? -1.0 : 1.0) * (kPathMinLookaheadDistance -
                                                     actual_lookahead_distance),
                                             0.0)).get()),
                             0.0),
@@ -268,7 +278,7 @@ public class DriveMotionPlanner {
 
         // Use the Velocity Feedforward of the Closest Point on the Trajectory
         double normalizedSpeed = Math.abs(mPathSetpoint.velocity())
-                / Units.meters_to_inches(Constants.kMaxVelocityMetersPerSecond);
+                / Units.meters_to_inches(kMaxVelocityMetersPerSecond);
 
         // The Default Cook is the minimum speed to use. So if a feedforward speed is
         // less than defaultCook, the robot will drive at the defaultCook speed
@@ -286,8 +296,8 @@ public class DriveMotionPlanner {
                 steeringDirection.get().getSin() * normalizedSpeed);
         SmartDashboard.putString("Steering Vector", steeringVector.toString());
         ChassisSpeeds chassisSpeeds = new ChassisSpeeds(
-                steeringVector.get().getX() * Constants.kMaxVelocityMetersPerSecond,
-                steeringVector.get().getY() * Constants.kMaxVelocityMetersPerSecond, feedforwardOmegaRadiansPerSecond);
+                steeringVector.get().getX() * kMaxVelocityMetersPerSecond,
+                steeringVector.get().getY() * kMaxVelocityMetersPerSecond, feedforwardOmegaRadiansPerSecond);
 
         // Use the P-Controller for To Follow the Time-Parametrized Heading
         final double kPathKTheta = 0.3;

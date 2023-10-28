@@ -7,20 +7,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import org.team100.lib.geometry.GeometryUtil;
 
-import com.team254.lib.geometry.Pose2dState;
-import com.team254.lib.geometry.Translation2dState;
 import com.team254.lib.util.Util;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 
 public class QuinticHermiteOptimizerTest {
     private static double kEpsilon = Util.kEpsilon;
 
     @Test
     public void test() {
-        Pose2dState a = new Pose2dState(new Translation2dState(0, 100), GeometryUtil.fromDegrees(270));
-        Pose2dState b = new Pose2dState(new Translation2dState(50, 0), GeometryUtil.fromDegrees(0));
-        Pose2dState c = new Pose2dState(new Translation2dState(100, 100), GeometryUtil.fromDegrees(90));
+        Pose2d a = new Pose2d(new Translation2d(0, 100), Rotation2d.fromDegrees(270));
+        Pose2d b = new Pose2d(new Translation2d(50, 0), Rotation2d.fromDegrees(0));
+        Pose2d c = new Pose2d(new Translation2d(100, 100), Rotation2d.fromDegrees(90));
 
         List<QuinticHermiteSpline> splines = new ArrayList<>();
         splines.add(new QuinticHermiteSpline(a, b));
@@ -30,10 +31,10 @@ public class QuinticHermiteOptimizerTest {
         assertTrue(QuinticHermiteSpline.optimizeSpline(splines) < 0.014);
         System.out.println("Optimization time (ms): " + (System.currentTimeMillis() - startTime));
 
-        Pose2dState d = new Pose2dState(new Translation2dState(0, 0), GeometryUtil.fromDegrees(90));
-        Pose2dState e = new Pose2dState(new Translation2dState(0, 50), GeometryUtil.fromDegrees(0));
-        Pose2dState f = new Pose2dState(new Translation2dState(100, 0), GeometryUtil.fromDegrees(90));
-        Pose2dState g = new Pose2dState(new Translation2dState(100, 100), GeometryUtil.fromDegrees(0));
+        Pose2d d = new Pose2d(new Translation2d(0, 0), Rotation2d.fromDegrees(90));
+        Pose2d e = new Pose2d(new Translation2d(0, 50), Rotation2d.fromDegrees(0));
+        Pose2d f = new Pose2d(new Translation2d(100, 0), Rotation2d.fromDegrees(90));
+        Pose2d g = new Pose2d(new Translation2d(100, 100), Rotation2d.fromDegrees(0));
 
         List<QuinticHermiteSpline> splines1 = new ArrayList<>();
         splines1.add(new QuinticHermiteSpline(d, e));
@@ -45,11 +46,11 @@ public class QuinticHermiteOptimizerTest {
         System.out.println("Optimization time (ms): " + (System.currentTimeMillis() - startTime));
 
 
-        Pose2dState h = new Pose2dState(new Translation2dState(0, 0), GeometryUtil.fromDegrees(0));
-        Pose2dState i = new Pose2dState(new Translation2dState(50, 0), GeometryUtil.fromDegrees(0));
-        Pose2dState j = new Pose2dState(new Translation2dState(100, 50), GeometryUtil.fromDegrees(45));
-        Pose2dState k = new Pose2dState(new Translation2dState(150, 0), GeometryUtil.fromDegrees(270));
-        Pose2dState l = new Pose2dState(new Translation2dState(150, -50), GeometryUtil.fromDegrees(270));
+        Pose2d h = new Pose2d(new Translation2d(0, 0), Rotation2d.fromDegrees(0));
+        Pose2d i = new Pose2d(new Translation2d(50, 0), Rotation2d.fromDegrees(0));
+        Pose2d j = new Pose2d(new Translation2d(100, 50), Rotation2d.fromDegrees(45));
+        Pose2d k = new Pose2d(new Translation2d(150, 0), Rotation2d.fromDegrees(270));
+        Pose2d l = new Pose2d(new Translation2d(150, -50), Rotation2d.fromDegrees(270));
 
         List<QuinticHermiteSpline> splines2 = new ArrayList<>();
         splines2.add(new QuinticHermiteSpline(h, i));

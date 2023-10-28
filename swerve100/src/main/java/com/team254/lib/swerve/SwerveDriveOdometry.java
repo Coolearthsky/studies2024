@@ -1,19 +1,12 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package com.team254.lib.swerve;
 
 import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.swerve.ChassisSpeeds;
 import org.team100.lib.swerve.SwerveDriveKinematics;
 
-import com.team254.lib.geometry.Pose2dState;
-import com.team254.lib.geometry.Rotation2dState;
-import com.team254.lib.geometry.Twist2dWrapper;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -77,7 +70,7 @@ public class SwerveDriveOdometry {
      *
      * @param pose The position on the field that your robot is at.
      */
-    public void resetPosition(Pose2dState pose, double... previousDistances) {
+    public void resetPosition(Pose2d pose, double... previousDistances) {
         m_previousDistances = previousDistances;
         resetPosition(pose);
     }
@@ -99,14 +92,6 @@ public class SwerveDriveOdometry {
 
     public ChassisSpeeds getVelocity() {
         return m_velocity;
-    }
-
-    public Pose2dState getPoseMetersPolar() {
-        return new Pose2dState(
-                Math.sqrt(Math.pow(m_poseMeters.getTranslation().getX(), 2)
-                        + Math.pow(m_poseMeters.getTranslation().getY(), 2)),
-                Math.toDegrees(Math.atan2(m_poseMeters.getTranslation().getY(), m_poseMeters.getTranslation().getX())),
-                m_poseMeters.getRotation());
     }
 
     /**
@@ -137,11 +122,10 @@ public class SwerveDriveOdometry {
 
         ChassisSpeeds chassisState = m_kinematics.toChassisSpeeds(moduleStates);
         Pose2d newPose = GeometryUtil.sexp(
-                new Twist2dWrapper(
+                new Twist2d(
                         chassisState.vxMetersPerSecond * period,
                         chassisState.vyMetersPerSecond * period,
-                        angle.rotateBy(m_previousAngle.unaryMinus()).getRadians()))
-                .get();
+                        angle.rotateBy(m_previousAngle.unaryMinus()).getRadians()));
         m_previousAngle = angle;
         m_poseMeters = new Pose2d(GeometryUtil.transformBy(m_poseMeters, newPose).getTranslation(), angle);
         return m_poseMeters;
@@ -176,8 +160,8 @@ public class SwerveDriveOdometry {
         // System.out.println(chassisState);
         SmartDashboard.putNumber("average", average);
 
-        var newPose = GeometryUtil.sexp(
-                new Twist2dWrapper(
+        Pose2d newPose = GeometryUtil.sexp(
+                new Twist2d(
                         chassisState.vxMetersPerSecond * period * average,
                         chassisState.vyMetersPerSecond * period * average,
                         chassisState.omegaRadiansPerSecond * period * average));
@@ -185,7 +169,7 @@ public class SwerveDriveOdometry {
         m_velocity = chassisState;
         // m_velocity.omegaRadiansPerSecond =
         // m_previousAngle.inverse().rotateBy(gyroAngle).getRadians() / period;
-        m_poseMeters = new Pose2d(GeometryUtil.transformBy(m_poseMeters, newPose.pose2d).getTranslation(), angle);
+        m_poseMeters = new Pose2d(GeometryUtil.transformBy(m_poseMeters, newPose).getTranslation(), angle);
         m_previousAngle = angle;
         // System.out.println(m_poseMeters);
         return m_poseMeters;
