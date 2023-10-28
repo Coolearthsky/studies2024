@@ -29,66 +29,38 @@ public class Rotation2dState implements State<Rotation2dState> {
         this.rotation2d = other;
     }
 
-    public Rotation2dState unaryMinus() {
-        return new Rotation2dState(rotation2d.unaryMinus());
-    }
 
-    public Rotation2dState times(double scalar) {
-        return new Rotation2dState(rotation2d.times(scalar));
-    }
-
-    public Rotation2dState rotateBy(final Rotation2dState other) {
-        return new Rotation2dState(rotation2d.rotateBy(other.rotation2d));
+    public Rotation2d rotateBy(final Rotation2dState other) {
+        return get().rotateBy(other.rotation2d);
     }
 
     public Rotation2dState rotateBy(final Rotation2d other) {
-        return new Rotation2dState(rotation2d.rotateBy(other));
+        return new Rotation2dState(get().rotateBy(other));
     }
 
     public Rotation2dState normal() {
-        return new Rotation2dState(rotation2d.getRadians() - Math.PI / 2.0);
+        return new Rotation2dState(get().getRadians() - Math.PI / 2.0);
     }
 
     public Rotation2dState flip() {
-        return new Rotation2dState(rotation2d.getRadians() + Math.PI);
-    }
-
-    public boolean isParallel(final Rotation2dState other) {
-        if (hasRadians() && other.hasRadians()) {
-            return Util.epsilonEquals(rotation2d.getRadians(), other.rotation2d.getRadians())
-                    || Util.epsilonEquals(rotation2d.getRadians(), GeometryUtil.WrapRadians(other.rotation2d.getRadians() + Math.PI));
-        } else if (hasTrig() && other.hasTrig()) {
-            return Util.epsilonEquals(rotation2d.getSin(), other.rotation2d.getSin()) && Util.epsilonEquals(rotation2d.getCos(), other.rotation2d.getCos());
-        } else {
-            // Use public, checked version.
-            return Util.epsilonEquals(rotation2d.getRadians(), other.rotation2d.getRadians())
-                    || Util.epsilonEquals(rotation2d.getRadians(), GeometryUtil.WrapRadians(other.rotation2d.getRadians() + Math.PI));
-        }
-    }
-
-    private synchronized boolean hasTrig() {
-        return !Double.isNaN(rotation2d.getSin()) && !Double.isNaN(rotation2d.getCos());
-    }
-
-    private synchronized boolean hasRadians() {
-        return !Double.isNaN(rotation2d.getRadians());
+        return new Rotation2dState(get().getRadians() + Math.PI);
     }
 
     @Override
     public Rotation2dState interpolate2(final Rotation2dState other,
             double x) {
         if (x <= 0.0) {
-            return new Rotation2dState(this.rotation2d);
+            return new Rotation2dState(this.get());
         } else if (x >= 1.0) {
-            return new Rotation2dState(other.rotation2d);
+            return new Rotation2dState(other.get());
         }
-        double angle_diff = unaryMinus().rotateBy(other).rotation2d.getRadians();
-        return this.rotateBy(GeometryUtil.fromRadians(angle_diff * x));
+        double angle_diff = get().unaryMinus().rotateBy(other.get()).getRadians();
+        return new Rotation2dState(this.rotateBy(GeometryUtil.fromRadians(angle_diff * x)));
     }
 
     @Override
     public double distance(final Rotation2dState other) {
-        return unaryMinus().rotateBy(other).rotation2d.getRadians();
+        return get().unaryMinus().rotateBy(other.get()).getRadians();
     }
 
     // @Override

@@ -5,7 +5,7 @@ public interface State<S> {
 
     // S add(S other);
 
-    boolean equals(final Object other);
+    // boolean equals(final Object other);
 
     /**
      * Interpolates between this value and an other value according to a given

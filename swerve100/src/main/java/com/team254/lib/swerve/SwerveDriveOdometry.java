@@ -146,7 +146,7 @@ public class SwerveDriveOdometry {
         // Project along ideal angles.
         double average = 0.0;
         for (int i = 0 ;i < moduleStates.length; ++i) {
-            double ratio = moduleStates[i].angle.rotateBy(idealStates[i].angle.unaryMinus()).get().getCos()*
+            double ratio = moduleStates[i].angle.rotateBy(idealStates[i].angle.unaryMinus()).getCos()*
                     (moduleStates[i].distanceMeters - m_previousDistances[i])
                     / (idealStates[i].speedMetersPerSecond * period);
             if (Double.isNaN(ratio) || Double.isInfinite(ratio) ||

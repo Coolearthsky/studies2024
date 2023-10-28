@@ -20,16 +20,13 @@ public class GeometryUtil {
     public static final Translation2dState kTranslation2dIdentity = new Translation2dState();
     public static final Pose2dWithCurvature kPose2dWithCurvatureIdentity = new Pose2dWithCurvature();
     public static final Twist2dWrapper kTwist2dIdentity = new Twist2dWrapper(0.0, 0.0, 0.0);
-    
-    private GeometryUtil() {}
 
-    public static boolean isParallel(Rotation2d a, Rotation2d b) {
-        return Util.epsilonEquals(a.getRadians(), b.getRadians())
-        || Util.epsilonEquals(a.getRadians(), GeometryUtil.WrapRadians(b.getRadians() + Math.PI));
+    private GeometryUtil() {
     }
 
+
     public static Twist2d scale(Twist2d twist, double scale) {
-        return new Twist2d(twist.dx*scale, twist.dy * scale, twist.dtheta*scale);
+        return new Twist2d(twist.dx * scale, twist.dy * scale, twist.dtheta * scale);
     }
 
     public static Pose2d transformBy(Pose2d a, Pose2d b) {
@@ -38,7 +35,7 @@ public class GeometryUtil {
 
     public static Pose2d inverse(Pose2d a) {
         Rotation2d rotation_inverted = a.getRotation().unaryMinus();
-        return new Pose2d(a.getTranslation().unaryMinus().rotateBy(rotation_inverted), rotation_inverted);      
+        return new Pose2d(a.getTranslation().unaryMinus().rotateBy(rotation_inverted), rotation_inverted);
     }
 
     public static Twist2dWrapper slog(final Pose2dState transform) {
@@ -77,15 +74,19 @@ public class GeometryUtil {
 
     public static Pose2d inverse(Pose2dState a) {
         return inverse(a.get());
-        // Rotation2d rotation_inverted = a.get().getRotation().unaryMinus();
-        // return new Pose2d(a.get().getTranslation().unaryMinus().rotateBy(rotation_inverted), rotation_inverted);
     }
 
     public static boolean isColinear(Pose2d a, final Pose2d other) {
-        if (!new Rotation2dState(a.getRotation()).isParallel(new Rotation2dState(other.getRotation())))
+        if (!GeometryUtil.isParallel(a.getRotation(), other.getRotation()))
             return false;
         final Twist2dWrapper twist = slog(
-            new Pose2dState(transformBy(inverse(a), other)));
+                new Pose2dState(transformBy(inverse(a), other)));
         return (Util.epsilonEquals(twist.dy, 0.0) && Util.epsilonEquals(twist.dtheta, 0.0));
+    }
+    
+    // note parallel also means antiparallel.
+    public static boolean isParallel(Rotation2d a, Rotation2d b) {
+        return Util.epsilonEquals(a.getRadians(), b.getRadians())
+                || Util.epsilonEquals(a.getRadians(), WrapRadians(b.getRadians() + Math.PI));
     }
 }

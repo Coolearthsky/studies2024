@@ -12,6 +12,8 @@ import com.team254.lib.geometry.Rotation2dState;
 import com.team254.lib.geometry.Translation2dState;
 import com.team254.lib.util.Util;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+
 public class AsymSwerveSetpointGeneratorTest {
 
     protected final static double kRobotSide = 0.616; // m
@@ -39,11 +41,11 @@ public class AsymSwerveSetpointGeneratorTest {
         for (int i = 0; i < prev.mModuleStates.length; ++i) {
             final var prevModule = prev.mModuleStates[i];
             final var nextModule = next.mModuleStates[i];
-            Rotation2dState diffRotation = prevModule.angle.unaryMinus().rotateBy(nextModule.angle);
+            Rotation2d diffRotation = prevModule.angle.get().unaryMinus().rotateBy(nextModule.angle.get());
             assertTrue(
-                    Math.abs(diffRotation.get().getRadians()) < kKinematicLimits.kMaxSteeringVelocity
+                    Math.abs(diffRotation.getRadians()) < kKinematicLimits.kMaxSteeringVelocity
                             + kMaxSteeringVelocityError,
-                    String.format("%f %f %f", diffRotation.get().getRadians(), kKinematicLimits.kMaxSteeringVelocity,
+                    String.format("%f %f %f", diffRotation.getRadians(), kKinematicLimits.kMaxSteeringVelocity,
                             kMaxSteeringVelocityError));
             assertTrue(Math.abs(nextModule.speedMetersPerSecond) <= kKinematicLimits.kMaxDriveVelocity,
                     String.format("%f %f", nextModule.speedMetersPerSecond, kKinematicLimits.kMaxDriveVelocity));

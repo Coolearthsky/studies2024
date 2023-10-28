@@ -49,9 +49,9 @@ public class Translation2dState implements State<Translation2dState> {
         return new Translation2dState(x * (other.translation2d.getX() - translation2d.getX()) + translation2d.getX(), x * (other.translation2d.getY() - translation2d.getY()) + translation2d.getY());
     }
 
-    public boolean epsilonEquals(final Translation2dState other, double epsilon) {
-        return Util.epsilonEquals(translation2d.getX(), other.translation2d.getX(), epsilon) && Util.epsilonEquals(translation2d.getY(), other.translation2d.getY(), epsilon);
-    }
+    // public boolean epsilonEquals(final Translation2dState other, double epsilon) {
+    //     return Util.epsilonEquals(translation2d.getX(), other.translation2d.getX(), epsilon) && Util.epsilonEquals(translation2d.getY(), other.translation2d.getY(), epsilon);
+    // }
 
     @Override
     public double distance(final Translation2dState other) {

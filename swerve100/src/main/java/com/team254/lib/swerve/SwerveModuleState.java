@@ -2,6 +2,8 @@ package com.team254.lib.swerve;
 
 import com.team254.lib.geometry.Rotation2dState;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+
 import java.util.Objects;
 
 import org.team100.lib.geometry.GeometryUtil;
@@ -16,7 +18,7 @@ public class SwerveModuleState implements Comparable<SwerveModuleState> {
     public double distanceMeters;
 
     /** Angle of the module. */
-    public Rotation2dState angle = GeometryUtil.fromDegrees(0);
+    public Rotation2d angle = Rotation2d.fromDegrees(0);
 
     /** Constructs a SwerveModuleState with zeros for speed and angle. */
     public SwerveModuleState() {}
@@ -27,12 +29,12 @@ public class SwerveModuleState implements Comparable<SwerveModuleState> {
      * @param speedMetersPerSecond The speed of the wheel of the module.
      * @param angle The angle of the module.
      */
-    public SwerveModuleState(double speedMetersPerSecond, Rotation2dState angle) {
+    public SwerveModuleState(double speedMetersPerSecond, Rotation2d angle) {
         this.speedMetersPerSecond = speedMetersPerSecond;
         this.angle = angle;
     }
 
-    public SwerveModuleState(double speedMetersPerSecond, double distanceMeters, Rotation2dState angle) {
+    public SwerveModuleState(double speedMetersPerSecond, double distanceMeters, Rotation2d angle) {
         this.speedMetersPerSecond = speedMetersPerSecond;
         this.distanceMeters = distanceMeters;
         this.angle = angle;
@@ -81,7 +83,7 @@ public class SwerveModuleState implements Comparable<SwerveModuleState> {
      */
     public static SwerveModuleState optimize(
             SwerveModuleState desiredState, Rotation2dState currentAngle) {
-        var delta = desiredState.angle.rotateBy(currentAngle.unaryMinus());    // todo check math
+        var delta = desiredState.angle.rotateBy(currentAngle.get().unaryMinus());    // todo check math
         if (Math.abs(delta.get().getDegrees()) > 90.0) {
             return new SwerveModuleState(
                     -desiredState.speedMetersPerSecond,

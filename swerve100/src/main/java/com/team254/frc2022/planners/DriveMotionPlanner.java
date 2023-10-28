@@ -27,6 +27,8 @@ import com.team254.lib.trajectory.timing.TimingUtil;
 import com.team254.lib.util.Units;
 import com.team254.lib.util.Util;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class DriveMotionPlanner {
@@ -62,10 +64,12 @@ public class DriveMotionPlanner {
     public double mVelocitym = 0;
     Pose2dState mError = GeometryUtil.kPose2dIdentity;
 
-    Translation2dState mTranslationalError = GeometryUtil.kTranslation2dIdentity;
-    Rotation2dState mHeadingError = GeometryUtil.kRotationIdentity;
+    // TODO:  this appears not do be used?
+    Translation2d mTranslationalError = GeometryUtil.kTranslation2dIdentity.get();
+    // TODO:  this appears not do be used?
+    Rotation2d mHeadingError = GeometryUtil.kRotationIdentity.get();
     Rotation2dState mInitialHeading = GeometryUtil.kRotationIdentity;
-    Rotation2dState mRotationDiff = GeometryUtil.kRotationIdentity;
+    Rotation2d mRotationDiff = GeometryUtil.kRotationIdentity.get();
     Pose2dState mCurrentState = GeometryUtil.kPose2dIdentity;
 
     double mCurrentTrajectoryLength = 0.0;
@@ -119,8 +123,8 @@ public class DriveMotionPlanner {
     }
 
     public void reset() {
-        mTranslationalError = GeometryUtil.kTranslation2dIdentity;
-        mHeadingError = GeometryUtil.kRotationIdentity;
+        mTranslationalError = GeometryUtil.kTranslation2dIdentity.get();
+        mHeadingError = GeometryUtil.kRotationIdentity.get();
         mLastHeadingSetpoint = null;
         mLastPathSetpoint = null;
         mOutput = new ChassisSpeeds();
@@ -304,20 +308,20 @@ public class DriveMotionPlanner {
             mLastTime = timestamp;
 
             mInitialHeading = mCurrentTrajectory.trajectory().getPoint(0).heading().state();
-            var finalHeading = mCurrentTrajectory.trajectory().getLastPoint().heading().state();
+            var finalHeading = mCurrentTrajectory.trajectory().getLastPoint().heading().state().get();
             mTotalTime = mCurrentTrajectory.trajectory().getLastPoint().state().t() -
                     mCurrentTrajectory.trajectory().getPoint(0).state().t();
             // Interpolate heading
-            mRotationDiff = finalHeading.rotateBy(mInitialHeading.unaryMinus());
-            if (mRotationDiff.get().getRadians() > Math.PI) {
-                mRotationDiff = mRotationDiff.unaryMinus().rotateBy(GeometryUtil.fromRadians(Math.PI));
+            mRotationDiff = finalHeading.rotateBy(mInitialHeading.get().unaryMinus());
+            if (mRotationDiff.getRadians() > Math.PI) {
+                mRotationDiff = mRotationDiff.unaryMinus().rotateBy(Rotation2d.fromRadians(Math.PI));
             }
 
             mStartTime = timestamp;
-            if (Math.abs(mRotationDiff.get().getRadians()) < 0.1) {
+            if (Math.abs(mRotationDiff.getRadians()) < 0.1) {
                 mDTheta = 0.0;
             } else {
-                mDTheta = mRotationDiff.get().getRadians() / mTotalTime;
+                mDTheta = mRotationDiff.getRadians() / mTotalTime;
             }
         }
 
@@ -359,7 +363,7 @@ public class DriveMotionPlanner {
                         rotation.get().getSin() * velocity_m);
                 // Convert to robot frame
                 chassis_v = new Translation2dState(
-                        chassis_v.get().rotateBy(mHeadingSetpoint.state().getRotation().unaryMinus().get()));
+                        chassis_v.get().rotateBy(mHeadingSetpoint.state().getRotation().get().unaryMinus()));
 
                 var chassis_twist = new Twist2dWrapper(
                         chassis_v.get().getX(),
@@ -420,20 +424,20 @@ public class DriveMotionPlanner {
 
             mInitialHeading = new Rotation2dState(
                     trajectory.trajectory().getPoint(0).heading().state().get());
-            var finalHeading = trajectory.trajectory().getLastPoint().heading().state();
+            var finalHeading = trajectory.trajectory().getLastPoint().heading().state().get();
             mTotalTime = trajectory.trajectory().getLastPoint().state().t() -
                     trajectory.trajectory().getPoint(0).state().t();
             // Interpolate heading
-            mRotationDiff = finalHeading.rotateBy(mInitialHeading.unaryMinus());
-            if (mRotationDiff.get().getRadians() > Math.PI) {
-                mRotationDiff = mRotationDiff.unaryMinus().rotateBy(GeometryUtil.fromRadians(Math.PI));
+            mRotationDiff = finalHeading.rotateBy(mInitialHeading.get().unaryMinus());
+            if (mRotationDiff.getRadians() > Math.PI) {
+                mRotationDiff = mRotationDiff.unaryMinus().rotateBy(Rotation2d.fromRadians(Math.PI));
             }
 
             mStartTime = timestamp;
-            if (Math.abs(mRotationDiff.get().getRadians()) < 0.1) {
+            if (Math.abs(mRotationDiff.getRadians()) < 0.1) {
                 mDTheta = 0.0;
             } else {
-                mDTheta = mRotationDiff.get().getRadians() / mTotalTime;
+                mDTheta = mRotationDiff.getRadians() / mTotalTime;
             }
         }
 
@@ -465,7 +469,7 @@ public class DriveMotionPlanner {
                         rotation.get().getSin() * velocity_m);
                 // Convert to robot frame
                 chassis_v = new Translation2dState(
-                        chassis_v.get().rotateBy(mHeadingSetpoint.state().getRotation().unaryMinus().get()));
+                        chassis_v.get().rotateBy(mHeadingSetpoint.state().getRotation().get().unaryMinus()));
 
                 var chassis_twist = new Twist2dWrapper(
                         chassis_v.get().getX(),
