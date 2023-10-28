@@ -128,7 +128,7 @@ public class SwerveDriveOdometry {
                                 chassisState.vyMetersPerSecond * period,
                                 angle.rotateBy(m_previousAngle.unaryMinus()).get().getRadians()));
         m_previousAngle = angle.get();
-        m_poseMeters = new Pose2dState(m_poseMeters.transformBy(newPose.pose2d).getTranslation(), angle);
+        m_poseMeters = new Pose2dState(GeometryUtil.transformBy(m_poseMeters.get(), newPose.pose2d).getTranslation(), angle);
         return m_poseMeters;
     }
 
@@ -170,7 +170,7 @@ public class SwerveDriveOdometry {
         //System.out.println("Translation: " + newPose);
         m_velocity = chassisState;
         // m_velocity.omegaRadiansPerSecond = m_previousAngle.inverse().rotateBy(gyroAngle).getRadians() / period;
-        m_poseMeters = new Pose2dState(m_poseMeters.transformBy(newPose.pose2d).getTranslation(), angle);
+        m_poseMeters = new Pose2dState(GeometryUtil.transformBy(m_poseMeters.get(), newPose.pose2d).getTranslation(), angle);
         m_previousAngle = angle.get();
         //System.out.println(m_poseMeters);
         return m_poseMeters;

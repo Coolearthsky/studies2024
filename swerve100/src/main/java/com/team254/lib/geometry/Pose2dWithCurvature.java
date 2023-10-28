@@ -1,5 +1,7 @@
 package com.team254.lib.geometry;
 
+import org.team100.lib.geometry.GeometryUtil;
+
 import com.team254.lib.util.Util;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -37,7 +39,7 @@ public class Pose2dWithCurvature extends PoseWithCurvature implements State<Pose
     }
 
     public Pose2dWithCurvature transformBy(Pose2dState transform) {
-        return new Pose2dWithCurvature(getPose().transformBy(transform.get()), getCurvature(), getDCurvatureDs());
+        return new Pose2dWithCurvature(GeometryUtil.transformBy(getPose().get(), transform.get()), getCurvature(), getDCurvatureDs());
     }
 
     public double getCurvature() {
@@ -81,8 +83,8 @@ public class Pose2dWithCurvature extends PoseWithCurvature implements State<Pose
     //     return new Pose2dWithCurvature(getPose().get().rotateBy(other.get()), getCurvature(), getDCurvatureDs());
     // }
 
-    @Override
-    public Pose2dWithCurvature add(Pose2dWithCurvature other) {
-        return this.transformBy(new Pose2dState(other.poseMeters));   // todo make work
-    }
+    // @Override
+    // public Pose2dWithCurvature add(Pose2dWithCurvature other) {
+    //     return this.transformBy(new Pose2dState(other.poseMeters));   // todo make work
+    // }
 }

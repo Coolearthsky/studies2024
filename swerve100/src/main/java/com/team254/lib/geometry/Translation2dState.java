@@ -58,10 +58,10 @@ public class Translation2dState implements State<Translation2dState> {
         return translation2d.getDistance(other.translation2d);
     }
 
-    @Override
-    public Translation2dState add(Translation2dState other) {
-        return new Translation2dState(translation2d.plus(other.get()));
-    }
+    // @Override
+    // public Translation2dState add(Translation2dState other) {
+    //     return new Translation2dState(translation2d.plus(other.get()));
+    // }
 
     @Override
     public boolean equals(Object other) {

@@ -57,14 +57,6 @@ public class TimedState<S extends State<S>> implements State<TimedState<S>> {
                 + fmt.format(acceleration());
     }
 
-    // @Override
-    // public String toCSV() {
-    // final DecimalFormat fmt = new DecimalFormat("#0.000");
-    // return state().toCSV() + "," + fmt.format(t()) + "," + fmt.format(velocity())
-    // + ","
-    // + fmt.format(acceleration());
-    // }
-
     @Override
     public TimedState<S> interpolate2(TimedState<S> other, double x) {
         final double new_t = Util.interpolate(t(), other.t(), x);
@@ -85,10 +77,10 @@ public class TimedState<S extends State<S>> implements State<TimedState<S>> {
                 acceleration());
     }
 
-    @Override
-    public TimedState<S> add(TimedState<S> other) {
-        return new TimedState<>(this.state().add(other.state()));
-    }
+    // @Override
+    // public TimedState<S> add(TimedState<S> other) {
+    //     return new TimedState<>(this.state().add(other.state()));
+    // }
 
     @Override
     public double distance(TimedState<S> other) {

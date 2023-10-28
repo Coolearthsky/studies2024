@@ -9,6 +9,7 @@ import com.team254.lib.util.Util;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Twist2d;
 
 public class GeometryUtil {
@@ -32,8 +33,7 @@ public class GeometryUtil {
     }
 
     public static Pose2d transformBy(Pose2d a, Pose2d b) {
-        return new Pose2d(a.getTranslation().plus(b.getTranslation().rotateBy(a.getRotation())),
-        a.getRotation().rotateBy(b.getRotation()));
+        return a.transformBy(new Transform2d(b.getTranslation(), b.getRotation()));
     }
 
     public static Pose2d inverse(Pose2d a) {
@@ -73,5 +73,19 @@ public class GeometryUtil {
         if (radians > Math.PI)
             radians -= k2Pi;
         return radians;
+    }
+
+    public static Pose2d inverse(Pose2dState a) {
+        return inverse(a.get());
+        // Rotation2d rotation_inverted = a.get().getRotation().unaryMinus();
+        // return new Pose2d(a.get().getTranslation().unaryMinus().rotateBy(rotation_inverted), rotation_inverted);
+    }
+
+    public static boolean isColinear(Pose2d a, final Pose2d other) {
+        if (!new Rotation2dState(a.getRotation()).isParallel(new Rotation2dState(other.getRotation())))
+            return false;
+        final Twist2dWrapper twist = slog(
+            new Pose2dState(transformBy(inverse(a), other)));
+        return (Util.epsilonEquals(twist.dy, 0.0) && Util.epsilonEquals(twist.dtheta, 0.0));
     }
 }

@@ -91,10 +91,10 @@ public class Rotation2dState implements State<Rotation2dState> {
         return unaryMinus().rotateBy(other).rotation2d.getRadians();
     }
 
-    @Override
-    public Rotation2dState add(Rotation2dState other) {
-        return this.rotateBy(other);
-    }
+    // @Override
+    // public Rotation2dState add(Rotation2dState other) {
+    //     return this.rotateBy(other);
+    // }
 
     @Override
     public boolean equals(final Object other) {

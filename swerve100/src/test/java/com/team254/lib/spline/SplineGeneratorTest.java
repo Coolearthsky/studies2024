@@ -26,14 +26,16 @@ public class SplineGeneratorTest {
         Spline s = new QuinticHermiteSpline(p1, p2);
         List<Rotation2dState> headings = List.of(GeometryUtil.fromDegrees(0), GeometryUtil.fromDegrees(90));
 
-        List<TrajectoryPoint<Pose2dWithCurvature, Rotation2dState>> samples = SplineGenerator.parameterizeSpline(s, headings);
+        List<TrajectoryPoint<Pose2dWithCurvature, Rotation2dState>> samples = SplineGenerator.parameterizeSpline(s,
+                headings);
 
         double arclength = 0;
         Rotation2dState cur_heading = GeometryUtil.kRotationIdentity;
         Pose2dWithCurvature cur_pose = samples.get(0).state();
         for (TrajectoryPoint<Pose2dWithCurvature, Rotation2dState> point : samples) {
             Pose2dWithCurvature sample = point.state();
-            final Twist2dWrapper t = GeometryUtil.slog(new Pose2dState(cur_pose.getPose().inverse().transformBy(sample.getPose().get())));
+            final Twist2dWrapper t = GeometryUtil.slog(
+                    new Pose2dState(GeometryUtil.transformBy(GeometryUtil.inverse(cur_pose.getPose()), sample.getPose().get())));
             arclength += t.dx;
             cur_pose = sample;
             cur_heading = point.heading();

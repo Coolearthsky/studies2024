@@ -3,7 +3,7 @@ package com.team254.lib.geometry;
 public interface State<S> {
     double distance(final S other);
 
-    S add(S other);
+    // S add(S other);
 
     boolean equals(final Object other);
 
