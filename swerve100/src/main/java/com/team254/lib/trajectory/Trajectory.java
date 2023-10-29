@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.team254.lib.geometry.State;
 
-public class Trajectory<S extends State<S>, T extends State<T>>  {
+public class Trajectory<S extends State<S>, T extends State<T>> {
     protected final List<TrajectoryPoint<S, T>> points_;
 
     public Trajectory(final List<S> states, final List<T> headings) {
@@ -43,19 +43,26 @@ public class Trajectory<S extends State<S>, T extends State<T>>  {
         if (isEmpty()) {
             return null;
         } else if (index <= 0.0) {
-            return new TrajectorySamplePoint<>(getPoint(0));
+            TrajectoryPoint<S, T> point = getPoint(0);
+            return new TrajectorySamplePoint<>(point.state(), point.heading(), point.index(), point.index());
         } else if (index >= length() - 1) {
-            return new TrajectorySamplePoint<>(getPoint(length() - 1));
+            TrajectoryPoint<S, T> point = getPoint(length() - 1);
+            return new TrajectorySamplePoint<>(point.state(), point.heading(), point.index(), point.index());
         }
         final int i = (int) Math.floor(index);
         final double frac = index - i;
         if (frac <= Double.MIN_VALUE) {
-            return new TrajectorySamplePoint<>(getPoint(i));
+            TrajectoryPoint<S, T> point = getPoint(i);
+            return new TrajectorySamplePoint<>(point.state(), point.heading(), point.index(), point.index());
         } else if (frac >= 1.0 - Double.MIN_VALUE) {
-            return new TrajectorySamplePoint<>(getPoint(i + 1));
+            TrajectoryPoint<S, T> point = getPoint(i + 1);
+            return new TrajectorySamplePoint<>(point.state(), point.heading(), point.index(), point.index());
         } else {
-            return new TrajectorySamplePoint<>(getPoint(i).state().interpolate2(getPoint(i + 1).state(), frac),
-                    getPoint(i).heading().interpolate2(getPoint(i + 1).heading(), frac), i, i + 1);
+            return new TrajectorySamplePoint<>(
+                    getPoint(i).state().interpolate2(getPoint(i + 1).state(), frac),
+                    getPoint(i).heading().interpolate2(getPoint(i + 1).heading(), frac),
+                    i,
+                    i + 1);
         }
     }
 

@@ -15,12 +15,6 @@ public class TrajectorySamplePoint<S extends State<S>, T extends State<T>> {
         index_ceil_ = index_ceil;
     }
 
-    public TrajectorySamplePoint(final TrajectoryPoint<S, T> point) {
-        state_ = point.state();
-        heading_ = point.heading();
-        index_floor_ = index_ceil_ = point.index();
-    }
-
     public S state() {
         return state_;
     }

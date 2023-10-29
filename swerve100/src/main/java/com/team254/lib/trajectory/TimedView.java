@@ -27,23 +27,25 @@ public class TimedView<S extends State<S>, T extends State<T>> implements Trajec
     @Override
     public TrajectorySamplePoint<TimedState<S>, TimedState<T>> sample(double t) {
         if (t >= end_t_) {
-            return new TrajectorySamplePoint<>(trajectory_.getPoint(trajectory_.length() - 1));
+            TrajectoryPoint<TimedState<S>, TimedState<T>> point = trajectory_.getPoint(trajectory_.length() - 1);
+            return new TrajectorySamplePoint<>(point.state(), point.heading(), point.index(), point.index());
         }
         if (t <= start_t_) {
-            return new TrajectorySamplePoint<>(trajectory_.getPoint(0));
+            TrajectoryPoint<TimedState<S>, TimedState<T>> point = trajectory_.getPoint(0);
+            return new TrajectorySamplePoint<>(point.state(), point.heading(), point.index(), point.index());
         }
         for (int i = 1; i < trajectory_.length(); ++i) {
-            final TrajectoryPoint<TimedState<S>, TimedState<T>> s = trajectory_.getPoint(i);
-            if (s.state().t() >= t) {
+            final TrajectoryPoint<TimedState<S>, TimedState<T>> point = trajectory_.getPoint(i);
+            if (point.state().t() >= t) {
                 final TrajectoryPoint<TimedState<S>, TimedState<T>> prev_s = trajectory_.getPoint(i - 1);
-                if (Math.abs(s.state().t() - prev_s.state().t()) <= 1e-12) {
-                    return new TrajectorySamplePoint<>(s);
+                if (Math.abs(point.state().t() - prev_s.state().t()) <= 1e-12) {
+                    return new TrajectorySamplePoint<>(point.state(), point.heading(), point.index(), point.index());
                 }
                 return new TrajectorySamplePoint<>(
-                        prev_s.state().interpolate2(s.state(),
-                                (t - prev_s.state().t()) / (s.state().t() - prev_s.state().t())),
-                        prev_s.heading().interpolate2(s.heading(),
-                                (t - prev_s.heading().t()) / (s.heading().t() - prev_s.heading().t())),
+                        prev_s.state().interpolate2(point.state(),
+                                (t - prev_s.state().t()) / (point.state().t() - prev_s.state().t())),
+                        prev_s.heading().interpolate2(point.heading(),
+                                (t - prev_s.heading().t()) / (point.heading().t() - prev_s.heading().t())),
                         i - 1, i);
             }
         }

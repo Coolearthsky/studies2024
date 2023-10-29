@@ -18,21 +18,25 @@ public class DistanceView<S extends State<S>, T extends State<T>> implements Tra
 
     @Override
     public TrajectorySamplePoint<S, T> sample(double distance) {
-        if (distance >= last_interpolant())
-            return new TrajectorySamplePoint<>(trajectory_.getPoint(trajectory_.length() - 1));
-        if (distance <= 0.0)
-            return new TrajectorySamplePoint<>(trajectory_.getPoint(0));
+        if (distance >= last_interpolant()) {
+            TrajectoryPoint<S, T> point = trajectory_.getPoint(trajectory_.length() - 1);
+            return new TrajectorySamplePoint<>(point.state(), point.heading(), point.index(), point.index());
+        }
+        if (distance <= 0.0) {
+            TrajectoryPoint<S, T> point = trajectory_.getPoint(0);
+            return new TrajectorySamplePoint<>(point.state(), point.heading(), point.index(), point.index());
+        }
         for (int i = 1; i < distances_.length; ++i) {
-            final TrajectoryPoint<S, T> s = trajectory_.getPoint(i);
+            final TrajectoryPoint<S, T> point = trajectory_.getPoint(i);
             if (distances_[i] >= distance) {
                 final TrajectoryPoint<S, T> prev_s = trajectory_.getPoint(i - 1);
                 if (Math.abs(distances_[i] - distances_[i - 1]) <= 1e-12) {
-                    return new TrajectorySamplePoint<>(s);
+                    return new TrajectorySamplePoint<>(point.state(), point.heading(), point.index(), point.index());
                 } else {
                     return new TrajectorySamplePoint<>(
-                            prev_s.state().interpolate2(s.state(),
+                            prev_s.state().interpolate2(point.state(),
                                     (distance - distances_[i - 1]) / (distances_[i] - distances_[i - 1])),
-                            prev_s.heading().interpolate2(s.heading(),
+                            prev_s.heading().interpolate2(point.heading(),
                                     (distance - distances_[i - 1]) / (distances_[i] - distances_[i - 1])),
                             i - 1, i);
                 }
