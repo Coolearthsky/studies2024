@@ -10,9 +10,9 @@ import org.team100.lib.telemetry.Telemetry;
 import com.team254.frc2022.planners.DriveMotionPlanner;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2dState;
+import com.team254.lib.trajectory.TimedTrajectoryIterator;
 import com.team254.lib.trajectory.TimedView;
 import com.team254.lib.trajectory.Trajectory;
-import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.CentripetalAccelerationConstraint;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.trajectory.timing.TimingConstraint;
@@ -70,7 +70,7 @@ public class FancyTrajectory extends Command {
         System.out.println("TRAJECTORY LENGTH: " + trajectory.length());
         // assertEquals(10, trajectory.length());
 
-        TrajectoryIterator<TimedState<Pose2dWithCurvature>, TimedState<Rotation2dState>> iter = new TrajectoryIterator<>(
+        TimedTrajectoryIterator<Pose2dWithCurvature, Rotation2dState> iter = new TimedTrajectoryIterator<>(
                 new TimedView<>(trajectory));
 
         mMotionPlanner.reset();

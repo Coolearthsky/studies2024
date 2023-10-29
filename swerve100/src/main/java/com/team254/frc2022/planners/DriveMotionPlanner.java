@@ -17,8 +17,8 @@ import com.team254.lib.spline.QuinticHermiteSpline;
 import com.team254.lib.spline.Spline;
 import com.team254.lib.spline.SplineGenerator;
 import com.team254.lib.trajectory.DistanceView;
+import com.team254.lib.trajectory.TimedTrajectoryIterator;
 import com.team254.lib.trajectory.Trajectory;
-import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.TrajectorySamplePoint;
 import com.team254.lib.trajectory.timing.SwerveDriveDynamicsConstraint;
 import com.team254.lib.trajectory.timing.TimedState;
@@ -64,7 +64,7 @@ public class DriveMotionPlanner {
     private double defaultCook = 0.4;
     private boolean useDefaultCook = true;
 
-    private TrajectoryIterator<TimedState<Pose2dWithCurvature>, TimedState<Rotation2dState>> mCurrentTrajectory;
+    private TimedTrajectoryIterator<Pose2dWithCurvature, Rotation2dState> mCurrentTrajectory;
     boolean mIsReversed = false;
     double mLastTime = Double.POSITIVE_INFINITY;
     public TimedState<Pose2dWithCurvature> mLastPathSetpoint = null;
@@ -106,7 +106,7 @@ public class DriveMotionPlanner {
     }
 
     public void setTrajectory(
-            final TrajectoryIterator<TimedState<Pose2dWithCurvature>, TimedState<Rotation2dState>> trajectory) {
+            final TimedTrajectoryIterator<Pose2dWithCurvature, Rotation2dState> trajectory) {
 
         mCurrentTrajectory = trajectory;
 
@@ -416,7 +416,7 @@ public class DriveMotionPlanner {
     }
 
     public ChassisSpeeds update(
-            TrajectoryIterator<TimedState<Pose2dWithCurvature>, TimedState<Rotation2dState>> trajectory,
+            TimedTrajectoryIterator<Pose2dWithCurvature, Rotation2dState> trajectory,
             double timestamp, Pose2d current_state) {
         if (trajectory == null) {
             // System.out.println("YOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");

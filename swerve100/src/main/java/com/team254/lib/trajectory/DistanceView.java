@@ -2,7 +2,7 @@ package com.team254.lib.trajectory;
 
 import com.team254.lib.geometry.State;
 
-public class DistanceView<S extends State<S>, T extends State<T>> implements TrajectoryView<S, T> {
+public class DistanceView<S extends State<S>, T extends State<T>> {
     protected final Trajectory<S, T> trajectory_;
     protected final double[] distances_;
 
@@ -16,7 +16,6 @@ public class DistanceView<S extends State<S>, T extends State<T>> implements Tra
         }
     }
 
-    @Override
     public TrajectorySamplePoint<S, T> sample(double distance) {
         if (distance >= last_interpolant()) {
             TrajectoryPoint<S, T> point = trajectory_.getPoint(trajectory_.length() - 1);
@@ -45,17 +44,14 @@ public class DistanceView<S extends State<S>, T extends State<T>> implements Tra
         throw new RuntimeException();
     }
 
-    @Override
     public double last_interpolant() {
         return distances_[distances_.length - 1];
     }
 
-    @Override
     public double first_interpolant() {
         return 0.0;
     }
 
-    @Override
     public Trajectory<S, T> trajectory() {
         return trajectory_;
     }

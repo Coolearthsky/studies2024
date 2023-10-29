@@ -7,13 +7,11 @@ import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.swerve.ChassisSpeeds;
 
 import com.team254.frc2022.planners.DriveMotionPlanner;
-import com.team254.lib.geometry.Pose2dState;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2dState;
-import com.team254.lib.geometry.Translation2dState;
+import com.team254.lib.trajectory.TimedTrajectoryIterator;
 import com.team254.lib.trajectory.TimedView;
 import com.team254.lib.trajectory.Trajectory;
-import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.CentripetalAccelerationConstraint;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.trajectory.timing.TimingConstraint;
@@ -98,8 +96,11 @@ public class FancyTrajectoryTest {
         System.out.println("TRAJECTORY LENGTH: " + trajectory.length());
         // assertEquals(10, trajectory.length());
 
-        TrajectoryIterator<TimedState<Pose2dWithCurvature>, TimedState<Rotation2dState>> iter = new TrajectoryIterator<>(
-                new TimedView<>(trajectory));
+        TimedView<Pose2dWithCurvature, Rotation2dState> view = new TimedView<>(trajectory);
+
+        TimedTrajectoryIterator<Pose2dWithCurvature, Rotation2dState> iter =
+       new TimedTrajectoryIterator<>(view);
+        // new TimedTrajectoryIterator<>();
 
         mMotionPlanner.setTrajectory(iter);
 

@@ -3,7 +3,7 @@ package com.team254.lib.trajectory;
 import com.team254.lib.geometry.State;
 import com.team254.lib.trajectory.timing.TimedState;
 
-public class TimedView<S extends State<S>, T extends State<T>> implements TrajectoryView<TimedState<S>, TimedState<T>> {
+public class TimedView<S extends State<S>, T extends State<T>> {
     protected final Trajectory<TimedState<S>, TimedState<T>> trajectory_;
     protected final double start_t_;
     protected final double end_t_;
@@ -14,17 +14,14 @@ public class TimedView<S extends State<S>, T extends State<T>> implements Trajec
         end_t_ = trajectory_.getPoint(trajectory_.length() - 1).state().t();
     }
 
-    @Override
     public double first_interpolant() {
         return start_t_;
     }
 
-    @Override
     public double last_interpolant() {
         return end_t_;
     }
 
-    @Override
     public TrajectorySamplePoint<TimedState<S>, TimedState<T>> sample(double t) {
         if (t >= end_t_) {
             TrajectoryPoint<TimedState<S>, TimedState<T>> point = trajectory_.getPoint(trajectory_.length() - 1);
@@ -52,7 +49,6 @@ public class TimedView<S extends State<S>, T extends State<T>> implements Trajec
         throw new RuntimeException();
     }
 
-    @Override
     public Trajectory<TimedState<S>, TimedState<T>> trajectory() {
         return trajectory_;
     }

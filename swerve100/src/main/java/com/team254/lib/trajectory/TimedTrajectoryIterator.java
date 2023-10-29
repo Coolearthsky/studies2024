@@ -8,6 +8,10 @@ public class TimedTrajectoryIterator<S extends State<S>, T extends State<T>> {
     protected double progress_ = 0.0;
     protected TrajectorySamplePoint<TimedState<S>, TimedState<T>> current_sample_;
 
+    public TimedTrajectoryIterator() {
+        view_=null;
+    }
+
     public TimedTrajectoryIterator(final TimedView<S, T> view) {
         view_ = view;
 

@@ -36,7 +36,7 @@ public class TrajectoryIteratorTest {
     @Test
     public void test() {
         Trajectory<Pose2dWithCurvature, Rotation2dState> traj = new Trajectory<>(kWaypoints, kHeadings);
-        TrajectoryIterator<Pose2dWithCurvature, Rotation2dState> iterator = new TrajectoryIterator<>(
+        IndexTrajectoryIterator<Pose2dWithCurvature, Rotation2dState> iterator = new IndexTrajectoryIterator<>(
                 new IndexView<>(traj));
 
         // Initial conditions.
