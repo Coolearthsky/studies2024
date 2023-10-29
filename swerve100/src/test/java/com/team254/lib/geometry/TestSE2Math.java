@@ -182,12 +182,12 @@ public class TestSE2Math {
         assertEquals(1, pos3.getNorm(), kTestEpsilon);
 
         // A translation times its inverse should be the identity
-        Translation2dState identity = new Translation2dState();
+        Translation2d identity = new Translation2d();
         pos1 = new Translation2d(2.16612, -23.55);
         pos2 = pos1.plus(pos1.unaryMinus());
-        assertEquals(identity.get().getX(), pos2.getX(), kTestEpsilon);
-        assertEquals(identity.get().getY(), pos2.getY(), kTestEpsilon);
-        assertEquals(identity.get().getNorm(), pos2.getNorm(), kTestEpsilon);
+        assertEquals(identity.getX(), pos2.getX(), kTestEpsilon);
+        assertEquals(identity.getY(), pos2.getY(), kTestEpsilon);
+        assertEquals(identity.getNorm(), pos2.getNorm(), kTestEpsilon);
 
         // Test interpolation
         pos1 = new Translation2d(0, 1);

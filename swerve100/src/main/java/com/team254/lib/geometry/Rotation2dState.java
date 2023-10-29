@@ -2,12 +2,10 @@ package com.team254.lib.geometry;
 
 import org.team100.lib.geometry.GeometryUtil;
 
-import com.team254.lib.util.Util;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class Rotation2dState implements State<Rotation2dState> {
-    final Rotation2d rotation2d;
+    private final Rotation2d rotation2d;
 
     public Rotation2d get() {
         return rotation2d;
@@ -28,7 +26,6 @@ public class Rotation2dState implements State<Rotation2dState> {
     public Rotation2dState(final Rotation2d other) {
         this.rotation2d = other;
     }
-
 
     public Rotation2d rotateBy(final Rotation2dState other) {
         return get().rotateBy(other.rotation2d);
@@ -68,10 +65,6 @@ public class Rotation2dState implements State<Rotation2dState> {
         if (!(other instanceof Rotation2dState)) {
             return false;
         }
-        return distance((Rotation2dState) other) < Util.kEpsilon;
-    }
-
-    public Rotation2dState getRotation() {
-        return this;
+        return rotation2d.equals(((Rotation2dState)other).rotation2d);
     }
 }

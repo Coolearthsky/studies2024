@@ -29,11 +29,11 @@ public class SplineGenerator {
      * @return list of Pose2dWithCurvature that approximates the original spline
      */
     public static List<TrajectoryPoint<Pose2dWithCurvature, Rotation2dState>> parameterizeSpline(
-        Spline s,
+            Spline s,
             List<? extends Rotation2dState> headings,
-             double maxDx, 
-            double maxDy, 
-            double maxDTheta, 
+            double maxDx,
+            double maxDy,
+            double maxDTheta,
             double t0,
             double t1) {
         List<TrajectoryPoint<Pose2dWithCurvature, Rotation2dState>> rv = new ArrayList<>();
@@ -78,7 +78,7 @@ public class SplineGenerator {
         List<TrajectoryPoint<Pose2dWithCurvature, Rotation2dState>> rv = new ArrayList<>();
         if (splines.isEmpty())
             return rv;
-        rv.add(new TrajectoryPoint<>(splines.get(0).getPose2dWithCurvature(0.0), headings.get(0).getRotation(), 0));
+        rv.add(new TrajectoryPoint<>(splines.get(0).getPose2dWithCurvature(0.0), headings.get(0), 0));
         for (int i = 0; i < splines.size(); i++) {
             Spline s = splines.get(i);
             List<Rotation2dState> spline_rots = new ArrayList<>();
@@ -123,5 +123,8 @@ public class SplineGenerator {
 
             rv.add(new TrajectoryPoint<>(s.getPose2dWithCurvature(t1), interpolated_heading, rv.size() - 1));
         }
+    }
+
+    private SplineGenerator() {
     }
 }

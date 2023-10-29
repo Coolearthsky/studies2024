@@ -21,20 +21,13 @@ public class Translation2dState implements State<Translation2dState> {
         this(other.translation2d.getX(), other.translation2d.getY());
     }
 
-    public Translation2dState(final Translation2dState start, final Translation2dState end) {
-        this(end.translation2d.getX() - start.translation2d.getX(), end.translation2d.getY() - start.translation2d.getY());
-    }
-
-    public Translation2dState(final Translation2d start, final Translation2d end) {
-        this(end.getX() - start.getX(), end.getY() - start.getY());
-    }
-
     public Translation2d get() {
         return translation2d;
     }
 
     @Override
     public Translation2dState interpolate2(final Translation2dState other, double x) {
+        // this is not used
         if (x <= 0) {
             return new Translation2dState(this);
         } else if (x >= 1) {
@@ -49,6 +42,7 @@ public class Translation2dState implements State<Translation2dState> {
 
     @Override
     public double distance(final Translation2dState other) {
+        // this is not used
         return translation2d.getDistance(other.translation2d);
     }
 

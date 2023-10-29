@@ -121,7 +121,7 @@ public class FancyTrajectoryTest {
 
         ChassisSpeeds output = mMotionPlanner.update(now, actualPose);
 
-        Translation2dState translational_error = mMotionPlanner.getTranslationalError();
+        Translation2d translational_error = mMotionPlanner.getTranslationalError();
         Rotation2dState heading_error = mMotionPlanner.getHeadingError();
         TimedState<Pose2dWithCurvature> path_setpoint = mMotionPlanner.getPathSetpoint();
         TimedState<Rotation2dState> heading_setpoint = mMotionPlanner.getHeadingSetpoint();

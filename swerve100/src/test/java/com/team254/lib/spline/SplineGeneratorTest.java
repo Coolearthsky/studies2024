@@ -37,15 +37,15 @@ public class SplineGeneratorTest {
         for (TrajectoryPoint<Pose2dWithCurvature, Rotation2dState> point : samples) {
             Pose2dWithCurvature sample = point.state();
             final Twist2d t = GeometryUtil
-                    .slog(GeometryUtil.transformBy(GeometryUtil.inverse(cur_pose.getPose()), sample.getPose().get()));
+                    .slog(GeometryUtil.transformBy(GeometryUtil.inverse(cur_pose.getPose()), sample.getPose()));
             arclength += t.dx;
             cur_pose = sample;
             cur_heading = point.heading();
         }
 
-        assertEquals(cur_pose.getTranslation().getX(), 15.0, kTestEpsilon);
-        assertEquals(cur_pose.getTranslation().getY(), 10.0, kTestEpsilon);
-        assertEquals(cur_pose.getRotation().get().getDegrees(), -78.69006752597981, kTestEpsilon);
+        assertEquals(cur_pose.getPose().getTranslation().getX(), 15.0, kTestEpsilon);
+        assertEquals(cur_pose.getPose().getTranslation().getY(), 10.0, kTestEpsilon);
+        assertEquals(cur_pose.getPose().getRotation().getDegrees(), -78.69006752597981, kTestEpsilon);
         assertEquals(arclength, 23.17291953186379, kTestEpsilon);
         assertEquals(cur_heading.get().getRadians(), headings.get(1).get().getRadians(), kTestEpsilon);
     }

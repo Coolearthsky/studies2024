@@ -1,9 +1,5 @@
 package com.team254.lib.spline;
 
-import com.team254.lib.geometry.Pose2dState;
-import com.team254.lib.geometry.Rotation2dState;
-import com.team254.lib.geometry.Translation2dState;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -263,8 +259,8 @@ public class QuinticHermiteSpline extends Spline {
 
         // minimize along the direction of the gradient
         // first calculate 3 points along the direction of the gradient
-        Translation2dState p1, p2, p3;
-        p2 = new Translation2dState(0, sumDCurvature2(splines)); // middle point is at the current location
+        Translation2d p1, p2, p3;
+        p2 = new Translation2d(0, sumDCurvature2(splines)); // middle point is at the current location
 
         for (int i = 0; i < splines.size() - 1; ++i) { // first point is offset from the middle location by -stepSize
             if (GeometryUtil.isColinear(splines.get(i).getStartPose(), splines.get(i + 1).getStartPose())
@@ -286,7 +282,7 @@ public class QuinticHermiteSpline extends Spline {
             splines.get(i).computeCoefficients();
             splines.get(i + 1).computeCoefficients();
         }
-        p1 = new Translation2dState(-kStepSize, sumDCurvature2(splines));
+        p1 = new Translation2d(-kStepSize, sumDCurvature2(splines));
 
         for (int i = 0; i < splines.size() - 1; ++i) { // last point is offset from the middle location by +stepSize
             if (GeometryUtil.isColinear(splines.get(i).getStartPose(), splines.get(i + 1).getStartPose())
@@ -307,7 +303,7 @@ public class QuinticHermiteSpline extends Spline {
             splines.get(i + 1).computeCoefficients();
         }
 
-        p3 = new Translation2dState(kStepSize, sumDCurvature2(splines));
+        p3 = new Translation2d(kStepSize, sumDCurvature2(splines));
 
         double stepSize = fitParabola(p1, p2, p3); // approximate step size to minimize sumDCurvature2 along the
                                                    // gradient
@@ -340,14 +336,11 @@ public class QuinticHermiteSpline extends Spline {
      *
      * @return the x coordinate of the vertex of the parabola
      */
-    private static double fitParabola(Translation2dState p1, Translation2dState p2, Translation2dState p3) {
-        double A = (p3.get().getX() * (p2.get().getY() - p1.get().getY())
-                + p2.get().getX() * (p1.get().getY() - p3.get().getY())
-                + p1.get().getX() * (p3.get().getY() - p2.get().getY()));
-        double B = (p3.get().getX() * p3.get().getX() * (p1.get().getY() - p2.get().getY())
-                + p2.get().getX() * p2.get().getX() * (p3.get().getY() - p1.get().getY())
-                + p1.get().getX() * p1.get().getX() *
-                        (p2.get().getY() - p3.get().getY()));
+    private static double fitParabola(Translation2d p1, Translation2d p2, Translation2d p3) {
+        double A = (p3.getX() * (p2.getY() - p1.getY()) + p2.getX() * (p1.getY() - p3.getY())
+                + p1.getX() * (p3.getY() - p2.getY()));
+        double B = (p3.getX() * p3.getX() * (p1.getY() - p2.getY()) + p2.getX() * p2.getX() * (p3.getY() - p1.getY())
+                + p1.getX() * p1.getX() * (p2.getY() - p3.getY()));
         return -B / (2 * A);
     }
 }

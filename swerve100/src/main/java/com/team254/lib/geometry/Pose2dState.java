@@ -13,20 +13,8 @@ public class Pose2dState implements State<Pose2dState> {
         return pose2d;
     }
 
-    public Pose2dState() {
-        this(new Translation2d(), new Rotation2d());
-    }
-
-    public Pose2dState(double x, double y, final Rotation2dState rotation) {
-        this(x, y, rotation.get());
-    }
-
     public Pose2dState(double x, double y, final Rotation2d rotation) {
         this(new Translation2d(x, y), rotation);
-    }
-
-    public Pose2dState(final Translation2dState translation, final Rotation2dState rotation) {
-        this(translation.get(), rotation.get());
     }
 
     private Pose2dState(final Translation2d translation, final Rotation2d rotation) {
