@@ -1,18 +1,19 @@
 package com.team254.lib.trajectory;
 
-import com.team254.lib.geometry.State;
+import com.team254.lib.geometry.Pose2dWithCurvature;
+import com.team254.lib.geometry.Rotation2dState;
 import com.team254.lib.trajectory.timing.TimedState;
 
-public class TimedTrajectoryIterator<S extends State<S>, T extends State<T>> {
-    protected final TimedView<S, T> view_;
+public class TimedTrajectoryIterator {
+    protected final TimedView view_;
     protected double progress_ = 0.0;
-    protected TrajectorySamplePoint<TimedState<S>, TimedState<T>> current_sample_;
+    protected TrajectorySamplePoint<TimedState<Pose2dWithCurvature>, TimedState<Rotation2dState>> current_sample_;
 
     public TimedTrajectoryIterator() {
         view_=null;
     }
 
-    public TimedTrajectoryIterator(final TimedView<S, T> view) {
+    public TimedTrajectoryIterator(final TimedView view) {
         view_ = view;
 
         // No effect if view is empty.
@@ -32,32 +33,32 @@ public class TimedTrajectoryIterator<S extends State<S>, T extends State<T>> {
         return Math.max(0.0, view_.last_interpolant() - progress_);
     }
 
-    public TrajectorySamplePoint<TimedState<S>, TimedState<T>> getSample() {
+    public TrajectorySamplePoint<TimedState<Pose2dWithCurvature>, TimedState<Rotation2dState>> getSample() {
         return current_sample_;
     }
 
-    public TimedState<S> getState() {
+    public TimedState<Pose2dWithCurvature> getState() {
         return getSample().state();
     }
 
-    public TimedState<T> getHeading() {
+    public TimedState<Rotation2dState> getHeading() {
         return getSample().heading();
     }
 
-    public TrajectorySamplePoint<TimedState<S>, TimedState<T>> advance(double additional_progress) {
+    public TrajectorySamplePoint<TimedState<Pose2dWithCurvature>, TimedState<Rotation2dState>> advance(double additional_progress) {
         progress_ = Math.max(view_.first_interpolant(),
                 Math.min(view_.last_interpolant(), progress_ + additional_progress));
         current_sample_ = view_.sample(progress_);
         return current_sample_;
     }
 
-    public TrajectorySamplePoint<TimedState<S>, TimedState<T>> preview(double additional_progress) {
+    public TrajectorySamplePoint<TimedState<Pose2dWithCurvature>, TimedState<Rotation2dState>> preview(double additional_progress) {
         final double progress = Math.max(view_.first_interpolant(),
                 Math.min(view_.last_interpolant(), progress_ + additional_progress));
         return view_.sample(progress);
     }
 
-    public Trajectory<TimedState<S>, TimedState<T>> trajectory() {
+    public Trajectory<TimedState<Pose2dWithCurvature>, TimedState<Rotation2dState>> trajectory() {
         return view_.trajectory();
     }
 }

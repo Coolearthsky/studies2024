@@ -64,7 +64,7 @@ public class DriveMotionPlanner {
     private double defaultCook = 0.4;
     private boolean useDefaultCook = true;
 
-    private TimedTrajectoryIterator<Pose2dWithCurvature, Rotation2dState> mCurrentTrajectory;
+    private TimedTrajectoryIterator mCurrentTrajectory;
     boolean mIsReversed = false;
     double mLastTime = Double.POSITIVE_INFINITY;
     public TimedState<Pose2dWithCurvature> mLastPathSetpoint = null;
@@ -105,8 +105,7 @@ public class DriveMotionPlanner {
         SmartDashboard.putNumber("Adaptive Lookahead", -1.0);
     }
 
-    public void setTrajectory(
-            final TimedTrajectoryIterator<Pose2dWithCurvature, Rotation2dState> trajectory) {
+    public void setTrajectory(final TimedTrajectoryIterator trajectory) {
 
         mCurrentTrajectory = trajectory;
 
@@ -185,7 +184,7 @@ public class DriveMotionPlanner {
         }
 
         // Generate the timed trajectory.
-        DistanceView<Pose2dWithCurvature, Rotation2dState> distance_view = new DistanceView<>(trajectory);
+        DistanceView distance_view = new DistanceView(trajectory);
         return TimingUtil.timeParameterizeTrajectory(distance_view, kMaxDx, Arrays.asList(),
                 start_vel, end_vel, max_vel, max_accel);
     }
@@ -415,9 +414,7 @@ public class DriveMotionPlanner {
         return mOutput;
     }
 
-    public ChassisSpeeds update(
-            TimedTrajectoryIterator<Pose2dWithCurvature, Rotation2dState> trajectory,
-            double timestamp, Pose2d current_state) {
+    public ChassisSpeeds update(   TimedTrajectoryIterator trajectory,  double timestamp, Pose2d current_state) {
         if (trajectory == null) {
             // System.out.println("YOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
             return null;

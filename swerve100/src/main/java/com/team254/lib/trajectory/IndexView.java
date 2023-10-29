@@ -1,15 +1,16 @@
 package com.team254.lib.trajectory;
 
-import com.team254.lib.geometry.State;
+import com.team254.lib.geometry.Pose2dWithCurvature;
+import com.team254.lib.geometry.Rotation2dState;
 
-public class IndexView<S extends State<S>, T extends State<T>> {
-    private final Trajectory<S, T> trajectory;
+public class IndexView {
+    private final Trajectory<Pose2dWithCurvature, Rotation2dState> trajectory;
 
-    public IndexView(Trajectory<S, T> trajectory) {
+    public IndexView(Trajectory<Pose2dWithCurvature, Rotation2dState> trajectory) {
         this.trajectory = trajectory;
     }
 
-    public TrajectorySamplePoint<S, T> sample(double index) {
+    public TrajectorySamplePoint<Pose2dWithCurvature, Rotation2dState> sample(double index) {
         return trajectory.getInterpolated(index);
     }
 
@@ -21,7 +22,7 @@ public class IndexView<S extends State<S>, T extends State<T>> {
         return 0.0;
     }
 
-    public Trajectory<S, T> trajectory() {
+    public Trajectory<Pose2dWithCurvature, Rotation2dState> trajectory() {
         return trajectory;
     }
 }

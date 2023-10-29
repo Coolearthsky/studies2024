@@ -1,14 +1,15 @@
 package com.team254.lib.trajectory;
 
-import com.team254.lib.geometry.State;
+import com.team254.lib.geometry.Pose2dWithCurvature;
+import com.team254.lib.geometry.Rotation2dState;
 import com.team254.lib.trajectory.timing.TimedState;
 
-public class TimedView<S extends State<S>, T extends State<T>> {
-    protected final Trajectory<TimedState<S>, TimedState<T>> trajectory_;
+public class TimedView {
+    protected final Trajectory<TimedState<Pose2dWithCurvature>, TimedState<Rotation2dState>> trajectory_;
     protected final double start_t_;
     protected final double end_t_;
 
-    public TimedView(Trajectory<TimedState<S>, TimedState<T>> trajectory) {
+    public TimedView(Trajectory<TimedState<Pose2dWithCurvature>, TimedState<Rotation2dState>> trajectory) {
         trajectory_ = trajectory;
         start_t_ = trajectory_.getPoint(0).state().t();
         end_t_ = trajectory_.getPoint(trajectory_.length() - 1).state().t();
@@ -22,19 +23,19 @@ public class TimedView<S extends State<S>, T extends State<T>> {
         return end_t_;
     }
 
-    public TrajectorySamplePoint<TimedState<S>, TimedState<T>> sample(double t) {
+    public TrajectorySamplePoint<TimedState<Pose2dWithCurvature>, TimedState<Rotation2dState>> sample(double t) {
         if (t >= end_t_) {
-            TrajectoryPoint<TimedState<S>, TimedState<T>> point = trajectory_.getPoint(trajectory_.length() - 1);
+            TrajectoryPoint<TimedState<Pose2dWithCurvature>, TimedState<Rotation2dState>> point = trajectory_.getPoint(trajectory_.length() - 1);
             return new TrajectorySamplePoint<>(point.state(), point.heading(), point.index(), point.index());
         }
         if (t <= start_t_) {
-            TrajectoryPoint<TimedState<S>, TimedState<T>> point = trajectory_.getPoint(0);
+            TrajectoryPoint<TimedState<Pose2dWithCurvature>, TimedState<Rotation2dState>> point = trajectory_.getPoint(0);
             return new TrajectorySamplePoint<>(point.state(), point.heading(), point.index(), point.index());
         }
         for (int i = 1; i < trajectory_.length(); ++i) {
-            final TrajectoryPoint<TimedState<S>, TimedState<T>> point = trajectory_.getPoint(i);
+            final TrajectoryPoint<TimedState<Pose2dWithCurvature>, TimedState<Rotation2dState>> point = trajectory_.getPoint(i);
             if (point.state().t() >= t) {
-                final TrajectoryPoint<TimedState<S>, TimedState<T>> prev_s = trajectory_.getPoint(i - 1);
+                final TrajectoryPoint<TimedState<Pose2dWithCurvature>, TimedState<Rotation2dState>> prev_s = trajectory_.getPoint(i - 1);
                 if (Math.abs(point.state().t() - prev_s.state().t()) <= 1e-12) {
                     return new TrajectorySamplePoint<>(point.state(), point.heading(), point.index(), point.index());
                 }
@@ -49,7 +50,7 @@ public class TimedView<S extends State<S>, T extends State<T>> {
         throw new RuntimeException();
     }
 
-    public Trajectory<TimedState<S>, TimedState<T>> trajectory() {
+    public Trajectory<TimedState<Pose2dWithCurvature>, TimedState<Rotation2dState>> trajectory() {
         return trajectory_;
     }
 }

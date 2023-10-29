@@ -3,22 +3,24 @@ package com.team254.lib.trajectory.timing;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.team254.lib.geometry.Pose2dWithCurvature;
+import com.team254.lib.geometry.Rotation2dState;
 import com.team254.lib.geometry.State;
 import com.team254.lib.trajectory.DistanceView;
 import com.team254.lib.trajectory.Trajectory;
 
 public class TimingUtil {
-    public static <S extends State<S>, T extends State<T>> Trajectory<TimedState<S>, TimedState<T>> timeParameterizeTrajectory(
-            final DistanceView<S, T> distance_view,
+    public static  Trajectory<TimedState<Pose2dWithCurvature>, TimedState<Rotation2dState>> timeParameterizeTrajectory(
+            final DistanceView distance_view,
             double step_size,
-            final List<TimingConstraint<S>> constraints,
+            final List<TimingConstraint<Pose2dWithCurvature>> constraints,
             double start_velocity,
             double end_velocity,
             double max_translational_velocity,
             double max_abs_acceleration) {
         final int num_states = (int) Math.ceil(distance_view.last_interpolant() / step_size + 1);
-        List<S> states = new ArrayList<>(num_states);
-        List<T> headings = new ArrayList<>(num_states);
+        List<Pose2dWithCurvature> states = new ArrayList<>(num_states);
+        List<Rotation2dState> headings = new ArrayList<>(num_states);
         for (int i = 0; i < num_states; ++i) {
             states.add(distance_view.sample(Math.min(i * step_size, distance_view.last_interpolant())).state());
             headings.add(distance_view.sample(Math.min(i * step_size, distance_view.last_interpolant())).heading());

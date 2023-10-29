@@ -96,11 +96,9 @@ public class FancyTrajectoryTest {
         System.out.println("TRAJECTORY LENGTH: " + trajectory.length());
         // assertEquals(10, trajectory.length());
 
-        TimedView<Pose2dWithCurvature, Rotation2dState> view = new TimedView<>(trajectory);
+        TimedView view = new TimedView(trajectory);
 
-        TimedTrajectoryIterator<Pose2dWithCurvature, Rotation2dState> iter =
-       new TimedTrajectoryIterator<>(view);
-        // new TimedTrajectoryIterator<>();
+        TimedTrajectoryIterator iter = new TimedTrajectoryIterator(view);
 
         mMotionPlanner.setTrajectory(iter);
 

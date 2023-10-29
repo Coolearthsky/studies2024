@@ -70,8 +70,7 @@ public class FancyTrajectory extends Command {
         System.out.println("TRAJECTORY LENGTH: " + trajectory.length());
         // assertEquals(10, trajectory.length());
 
-        TimedTrajectoryIterator<Pose2dWithCurvature, Rotation2dState> iter = new TimedTrajectoryIterator<>(
-                new TimedView<>(trajectory));
+        TimedTrajectoryIterator iter = new TimedTrajectoryIterator(new TimedView(trajectory));
 
         mMotionPlanner.reset();
         mMotionPlanner.setTrajectory(iter);

@@ -1,12 +1,13 @@
 package com.team254.lib.trajectory;
 
-import com.team254.lib.geometry.State;
+import com.team254.lib.geometry.Pose2dWithCurvature;
+import com.team254.lib.geometry.Rotation2dState;
 
-public class DistanceView<S extends State<S>, T extends State<T>> {
-    protected final Trajectory<S, T> trajectory_;
+public class DistanceView {
+    protected final Trajectory<Pose2dWithCurvature, Rotation2dState> trajectory_;
     protected final double[] distances_;
 
-    public DistanceView(final Trajectory<S, T> trajectory) {
+    public DistanceView(final Trajectory<Pose2dWithCurvature, Rotation2dState> trajectory) {
         trajectory_ = trajectory;
         distances_ = new double[trajectory_.length()];
         distances_[0] = 0.0;
@@ -16,19 +17,19 @@ public class DistanceView<S extends State<S>, T extends State<T>> {
         }
     }
 
-    public TrajectorySamplePoint<S, T> sample(double distance) {
+    public TrajectorySamplePoint<Pose2dWithCurvature, Rotation2dState> sample(double distance) {
         if (distance >= last_interpolant()) {
-            TrajectoryPoint<S, T> point = trajectory_.getPoint(trajectory_.length() - 1);
+            TrajectoryPoint<Pose2dWithCurvature, Rotation2dState> point = trajectory_.getPoint(trajectory_.length() - 1);
             return new TrajectorySamplePoint<>(point.state(), point.heading(), point.index(), point.index());
         }
         if (distance <= 0.0) {
-            TrajectoryPoint<S, T> point = trajectory_.getPoint(0);
+            TrajectoryPoint<Pose2dWithCurvature, Rotation2dState> point = trajectory_.getPoint(0);
             return new TrajectorySamplePoint<>(point.state(), point.heading(), point.index(), point.index());
         }
         for (int i = 1; i < distances_.length; ++i) {
-            final TrajectoryPoint<S, T> point = trajectory_.getPoint(i);
+            final TrajectoryPoint<Pose2dWithCurvature, Rotation2dState> point = trajectory_.getPoint(i);
             if (distances_[i] >= distance) {
-                final TrajectoryPoint<S, T> prev_s = trajectory_.getPoint(i - 1);
+                final TrajectoryPoint<Pose2dWithCurvature, Rotation2dState> prev_s = trajectory_.getPoint(i - 1);
                 if (Math.abs(distances_[i] - distances_[i - 1]) <= 1e-12) {
                     return new TrajectorySamplePoint<>(point.state(), point.heading(), point.index(), point.index());
                 } else {
@@ -52,7 +53,7 @@ public class DistanceView<S extends State<S>, T extends State<T>> {
         return 0.0;
     }
 
-    public Trajectory<S, T> trajectory() {
+    public Trajectory<Pose2dWithCurvature, Rotation2dState> trajectory() {
         return trajectory_;
     }
 }
