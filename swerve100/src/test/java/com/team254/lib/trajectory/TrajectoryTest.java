@@ -34,15 +34,11 @@ public class TrajectoryTest {
         // Empty constructor.
         Trajectory<Translation2dState, Rotation2dState> traj = new Trajectory<>();
         assertTrue(traj.isEmpty());
-        assertEquals(0.0, traj.getIndexView().first_interpolant(), kTestEpsilon);
-        assertEquals(0.0, traj.getIndexView().last_interpolant(), kTestEpsilon);
         assertEquals(0, traj.length());
 
         // Set states at construction time.
         traj = new Trajectory<>(kWaypoints, kHeadings);
         assertFalse(traj.isEmpty());
-        assertEquals(0.0, traj.getIndexView().first_interpolant(), kTestEpsilon);
-        assertEquals(3.0, traj.getIndexView().last_interpolant(), kTestEpsilon);
         assertEquals(4, traj.length());
     }
 
@@ -86,32 +82,61 @@ public class TrajectoryTest {
         assertEquals(traj.getInterpolated(3.0).index_floor(), 3);
         assertEquals(traj.getInterpolated(3.0).index_ceil(), 3);
 
-        assertEquals(kWaypoints.get(0).get().interpolate(kWaypoints.get(1).get(), .25), traj.getInterpolated(0.25).state().get());
+        assertEquals(kWaypoints.get(0).get().interpolate(kWaypoints.get(1).get(), .25),
+                traj.getInterpolated(0.25).state().get());
         assertEquals(traj.getInterpolated(0.25).index_floor(), 0);
         assertEquals(traj.getInterpolated(0.25).index_ceil(), 1);
-        assertEquals(kWaypoints.get(1).get().interpolate(kWaypoints.get(2).get(), .5), traj.getInterpolated(1.5).state().get());
+        assertEquals(kWaypoints.get(1).get().interpolate(kWaypoints.get(2).get(), .5),
+                traj.getInterpolated(1.5).state().get());
         assertEquals(traj.getInterpolated(1.5).index_floor(), 1);
         assertEquals(traj.getInterpolated(1.5).index_ceil(), 2);
-        assertEquals(kWaypoints.get(2).get().interpolate(kWaypoints.get(3).get(), .75), traj.getInterpolated(2.75).state().get());
+        assertEquals(kWaypoints.get(2).get().interpolate(kWaypoints.get(3).get(), .75),
+                traj.getInterpolated(2.75).state().get());
         assertEquals(traj.getInterpolated(2.75).index_floor(), 2);
         assertEquals(traj.getInterpolated(2.75).index_ceil(), 3);
 
-        assertEquals(kHeadings.get(0).get().interpolate(kHeadings.get(1).get(), .25), traj.getInterpolated(0.25).heading().get());
+        assertEquals(kHeadings.get(0).get().interpolate(kHeadings.get(1).get(), .25),
+                traj.getInterpolated(0.25).heading().get());
         assertEquals(traj.getInterpolated(0.25).index_floor(), 0);
         assertEquals(traj.getInterpolated(0.25).index_ceil(), 1);
-        assertEquals(kHeadings.get(1).get().interpolate(kHeadings.get(2).get(), .5), traj.getInterpolated(1.5).heading().get());
+        assertEquals(kHeadings.get(1).get().interpolate(kHeadings.get(2).get(), .5),
+                traj.getInterpolated(1.5).heading().get());
         assertEquals(traj.getInterpolated(1.5).index_floor(), 1);
         assertEquals(traj.getInterpolated(1.5).index_ceil(), 2);
-        assertEquals(kHeadings.get(2).get().interpolate(kHeadings.get(3).get(), .75), traj.getInterpolated(2.75).heading().get());
+        assertEquals(kHeadings.get(2).get().interpolate(kHeadings.get(3).get(), .75),
+                traj.getInterpolated(2.75).heading().get());
         assertEquals(traj.getInterpolated(2.75).index_floor(), 2);
         assertEquals(traj.getInterpolated(2.75).index_ceil(), 3);
 
-        Trajectory<Translation2dState, Rotation2dState>.IndexView index_view = traj.getIndexView();
-        assertEquals(kWaypoints.get(0).get().interpolate(kWaypoints.get(1).get(), .25), index_view.sample(0.25).state().get());
-        assertEquals(kWaypoints.get(1).get().interpolate(kWaypoints.get(2).get(), .5), index_view.sample(1.5).state().get());
-        assertEquals(kWaypoints.get(2).get().interpolate(kWaypoints.get(3).get(), .75), index_view.sample(2.75).state().get());
-        assertEquals(kHeadings.get(0).get().interpolate(kHeadings.get(1).get(), .25), index_view.sample(0.25).heading().get());
-        assertEquals(kHeadings.get(1).get().interpolate(kHeadings.get(2).get(), .5), index_view.sample(1.5).heading().get());
-        assertEquals(kHeadings.get(2).get().interpolate(kHeadings.get(3).get(), .75), index_view.sample(2.75).heading().get());
+       // Trajectory<Translation2dState, Rotation2dState>.IndexView index_view = traj.getIndexView();
+        TrajectorySamplePoint<Translation2dState, Rotation2dState> sample0 = traj.getInterpolated(0.25);
+        // index_view.sample(0.25);
+        assertEquals(kWaypoints.get(0).get().interpolate(kWaypoints.get(1).get(), .25),
+                sample0.state().get());
+
+        TrajectorySamplePoint<Translation2dState, Rotation2dState> sample1 = traj.getInterpolated(1.5);
+        // index_view.sample(1.5);
+        assertEquals(kWaypoints.get(1).get().interpolate(kWaypoints.get(2).get(), .5),
+                sample1.state().get());
+
+        TrajectorySamplePoint<Translation2dState, Rotation2dState> sample2 = traj.getInterpolated(2.75);
+        // index_view.sample(2.75);
+        assertEquals(kWaypoints.get(2).get().interpolate(kWaypoints.get(3).get(), .75),
+                sample2.state().get());
+
+        TrajectorySamplePoint<Translation2dState, Rotation2dState> sample3 = traj.getInterpolated(0.25);
+        // index_view.sample(0.25);
+        assertEquals(kHeadings.get(0).get().interpolate(kHeadings.get(1).get(), .25),
+                sample3.heading().get());
+
+        TrajectorySamplePoint<Translation2dState, Rotation2dState> sample4 = traj.getInterpolated(1.5);
+        // index_view.sample(1.5);
+        assertEquals(kHeadings.get(1).get().interpolate(kHeadings.get(2).get(), .5),
+                sample4.heading().get());
+
+        TrajectorySamplePoint<Translation2dState, Rotation2dState> sample5 = traj.getInterpolated(2.75);
+        // index_view.sample(2.75);
+        assertEquals(kHeadings.get(2).get().interpolate(kHeadings.get(3).get(), .75),
+                sample5.heading().get());
     }
 }
