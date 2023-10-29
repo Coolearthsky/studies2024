@@ -18,6 +18,8 @@ import com.team254.lib.trajectory.timing.CentripetalAccelerationConstraint;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.trajectory.timing.TimingConstraint;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -39,9 +41,9 @@ public class FancyTrajectory extends Command {
         final double kMaxAccel = 196;
         final double kMaxVoltage = 9.0;
 
-        List<Pose2dState> waypoints = List.of(
-                new Pose2dState(0, 0, GeometryUtil.fromDegrees(90)),
-                new Pose2dState(80, 80, GeometryUtil.fromDegrees(0)));
+        List<Pose2d> waypoints = List.of(
+                new Pose2d(0, 0, Rotation2d.fromDegrees(90)),
+                new Pose2d(80, 80, Rotation2d.fromDegrees(0)));
         // while turning 180
         List<Rotation2dState> headings = List.of(
                 GeometryUtil.fromDegrees(0),
@@ -82,9 +84,10 @@ public class FancyTrajectory extends Command {
     public void execute() {
         final double now = Timer.getFPGATimestamp();
 
-        Pose2dState currentPose = new Pose2dState(Units.metersToInches(m_robotDrive.getPose().getX()),
+        // TODO: remove this meters/inches stuff
+        Pose2d currentPose = new Pose2d(Units.metersToInches(m_robotDrive.getPose().getX()),
                 Units.metersToInches(m_robotDrive.getPose().getY()),
-                new Rotation2dState(m_robotDrive.getPose().getRotation()));
+                m_robotDrive.getPose().getRotation());
 
         ChassisSpeeds output = mMotionPlanner.update(now, currentPose);
 

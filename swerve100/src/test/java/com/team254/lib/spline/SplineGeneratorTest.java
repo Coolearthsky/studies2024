@@ -9,7 +9,6 @@ import org.team100.lib.geometry.GeometryUtil;
 
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2dState;
-import com.team254.lib.geometry.Twist2dWrapper;
 import com.team254.lib.trajectory.TrajectoryPoint;
 import com.team254.lib.util.Util;
 
@@ -33,7 +32,7 @@ public class SplineGeneratorTest {
                 headings);
 
         double arclength = 0;
-        Rotation2dState cur_heading = GeometryUtil.kRotationIdentity;
+        Rotation2dState cur_heading = new Rotation2dState();
         Pose2dWithCurvature cur_pose = samples.get(0).state();
         for (TrajectoryPoint<Pose2dWithCurvature, Rotation2dState> point : samples) {
             Pose2dWithCurvature sample = point.state();

@@ -18,6 +18,9 @@ import com.team254.lib.trajectory.timing.CentripetalAccelerationConstraint;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.trajectory.timing.TimingConstraint;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Timer;
 
 /**
@@ -65,9 +68,9 @@ public class FancyTrajectoryTest {
         final double kMaxVoltage = 9.0;
 
         // first right and then ahead
-        List<Pose2dState> waypoints = List.of(
-                new Pose2dState(0, 0, GeometryUtil.fromDegrees(270)),
-                new Pose2dState(10, -10, GeometryUtil.fromDegrees(0)));
+        List<Pose2d> waypoints = List.of(
+                new Pose2d(0, 0, Rotation2d.fromDegrees(270)),
+                new Pose2d(10, -10, Rotation2d.fromDegrees(0)));
         // while turning 180
         List<Rotation2dState> headings = List.of(
                 GeometryUtil.fromDegrees(90),
@@ -103,16 +106,16 @@ public class FancyTrajectoryTest {
         mMotionPlanner.setTrajectory(iter);
 
         // in the drive loop, this happens:
-        Pose2dState actualPose = GeometryUtil.kPose2dIdentity;
+        Pose2d actualPose = GeometryUtil.kPose2dIdentity;
         double fpgatime = 0;
         final double now = Timer.getFPGATimestamp();
         // this stuff doesn't work, and i don't want to break the build so i'm
         // commenting it out.
 
-        Translation2dState translation2d = new Translation2dState(1, 1);
-        Rotation2dState rotation2d = GeometryUtil.fromDegrees(90);
+        Translation2d translation2d = new Translation2d(1, 1);
+        Rotation2d rotation2d = Rotation2d.fromDegrees(90);
 
-        actualPose = new Pose2dState(translation2d, rotation2d);
+        actualPose = new Pose2d(translation2d, rotation2d);
 
         System.out.println("POSE::::::::::::::::::::::::::::" + actualPose);
 

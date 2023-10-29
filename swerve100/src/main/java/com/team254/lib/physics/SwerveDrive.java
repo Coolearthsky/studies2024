@@ -35,13 +35,13 @@ public class SwerveDrive {
 
         public ChassisState(Translation2d movement) {
             this.movement = movement;
-            this.heading = GeometryUtil.kRotationIdentity.get();
+            this.heading = GeometryUtil.kRotationIdentity;
         }
 
 
         public ChassisState() {
-            this.movement = GeometryUtil.kTranslation2dIdentity.get();
-            this.heading = GeometryUtil.kRotationIdentity.get();
+            this.movement = GeometryUtil.kTranslation2dIdentity;
+            this.heading = GeometryUtil.kRotationIdentity;
         }
 
         @Override

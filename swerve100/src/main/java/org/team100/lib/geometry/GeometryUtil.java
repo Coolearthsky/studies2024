@@ -3,21 +3,21 @@ package org.team100.lib.geometry;
 import com.team254.lib.geometry.Pose2dState;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2dState;
-import com.team254.lib.geometry.Translation2dState;
 import com.team254.lib.geometry.Twist2dWrapper;
 import com.team254.lib.util.Util;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 
 public class GeometryUtil {
 
-    public static final Rotation2dState kRotationIdentity = new Rotation2dState();
+    public static final Rotation2d kRotationIdentity = new Rotation2d();
     public static final Rotation2dState kPi = new Rotation2dState(Math.PI);
-    public static final Pose2dState kPose2dIdentity = new Pose2dState();
-    public static final Translation2dState kTranslation2dIdentity = new Translation2dState();
+    public static final Pose2d kPose2dIdentity = new Pose2d();
+    public static final Translation2d kTranslation2dIdentity = new Translation2d();
     public static final Pose2dWithCurvature kPose2dWithCurvatureIdentity = new Pose2dWithCurvature();
     public static final Twist2dWrapper kTwist2dIdentity = new Twist2dWrapper(0.0, 0.0, 0.0);
 
@@ -45,12 +45,12 @@ public class GeometryUtil {
         return new Pose2d().exp(delta);
     }
 
-    public static Pose2dState fromRotation(final Rotation2dState rotation) {
-        return new Pose2dState(new Translation2dState(), rotation);
+    public static Pose2d fromRotation(final Rotation2d rotation) {
+        return new Pose2d(new Translation2d(), rotation);
     }
 
-    public static Pose2dState fromTranslation(final Translation2dState translation) {
-        return new Pose2dState(translation, new Rotation2dState());
+    public static Pose2d fromTranslation(final Translation2d translation) {
+        return new Pose2d(translation, new Rotation2d());
     }
 
     public static Rotation2dState fromRadians(double angle_radians) {

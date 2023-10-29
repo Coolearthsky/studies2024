@@ -67,7 +67,7 @@ public class Pose2dWithCurvature extends PoseWithCurvature implements State<Pose
 
     @Override
     public double distance(final Pose2dWithCurvature other) {
-        return getPose().distance(other.getPose());
+        return GeometryUtil.norm(GeometryUtil.slog(GeometryUtil.transformBy(GeometryUtil.inverse(getPose()), other.getPose().get())));
     }
 
     @Override

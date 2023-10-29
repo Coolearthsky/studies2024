@@ -47,6 +47,7 @@ public class Pose2dState implements State<Pose2dState> {
 
     @Override
     public double distance(final Pose2dState other) {
+        // this is never used.
         return GeometryUtil.norm(GeometryUtil.slog(GeometryUtil.transformBy(GeometryUtil.inverse(this), other.get())));
     }
 

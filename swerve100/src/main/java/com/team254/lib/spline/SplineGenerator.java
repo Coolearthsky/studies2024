@@ -15,9 +15,9 @@ import java.util.List;
 import org.team100.lib.geometry.GeometryUtil;
 
 public class SplineGenerator {
-    private static final double kMaxDX = 2.0; //inches
-    private static final double kMaxDY = 0.05; //inches
-    private static final double kMaxDTheta = 0.1; //radians!
+    private static final double kMaxDX = 2.0; // inches
+    private static final double kMaxDY = 0.05; // inches
+    private static final double kMaxDTheta = 0.1; // radians!
     private static final int kMinSampleSize = 1;
 
     /**
@@ -28,8 +28,14 @@ public class SplineGenerator {
      * @param t1 ending percentage of spline to parametrize
      * @return list of Pose2dWithCurvature that approximates the original spline
      */
-    public static List<TrajectoryPoint<Pose2dWithCurvature, Rotation2dState>> parameterizeSpline(Spline s, List<? extends Rotation2dState> headings, double maxDx, double maxDy, double
-            maxDTheta, double t0, double t1) {
+    public static List<TrajectoryPoint<Pose2dWithCurvature, Rotation2dState>> parameterizeSpline(
+        Spline s,
+            List<? extends Rotation2dState> headings,
+             double maxDx, 
+            double maxDy, 
+            double maxDTheta, 
+            double t0,
+            double t1) {
         List<TrajectoryPoint<Pose2dWithCurvature, Rotation2dState>> rv = new ArrayList<>();
         rv.add(new TrajectoryPoint<>(s.getPose2dWithCurvature(0.0), headings.get(0), 0));
         double dt = (t1 - t0);
@@ -42,39 +48,61 @@ public class SplineGenerator {
     /**
      * Convenience function to parametrize a spline from t 0 to 1
      */
-    public static List<TrajectoryPoint<Pose2dWithCurvature, Rotation2dState>> parameterizeSpline(Spline s, List<? extends Rotation2dState> headings) {
+    public static List<TrajectoryPoint<Pose2dWithCurvature, Rotation2dState>> parameterizeSpline(
+            Spline s,
+            List<? extends Rotation2dState> headings) {
         return parameterizeSpline(s, headings, kMaxDX, kMaxDY, kMaxDTheta, 0.0, 1.0);
     }
 
-    public static List<TrajectoryPoint<Pose2dWithCurvature, Rotation2dState>> parameterizeSpline(Spline s, List<? extends Rotation2dState> headings, double maxDx, double maxDy, double maxDTheta) {
+    public static List<TrajectoryPoint<Pose2dWithCurvature, Rotation2dState>> parameterizeSpline(
+            Spline s,
+            List<? extends Rotation2dState> headings,
+            double maxDx,
+            double maxDy,
+            double maxDTheta) {
         return parameterizeSpline(s, headings, maxDx, maxDy, maxDTheta, 0.0, 1.0);
     }
 
-    public static List<TrajectoryPoint<Pose2dWithCurvature, Rotation2dState>> parameterizeSplines(List<Spline> splines, List<? extends Rotation2dState> headings) {
+    public static List<TrajectoryPoint<Pose2dWithCurvature, Rotation2dState>> parameterizeSplines(
+            List<Spline> splines,
+            List<? extends Rotation2dState> headings) {
         return parameterizeSplines(splines, headings, kMaxDX, kMaxDY, kMaxDTheta);
     }
 
-    public static List<TrajectoryPoint<Pose2dWithCurvature, Rotation2dState>> parameterizeSplines(List<? extends Spline> splines, List<? extends Rotation2dState> headings, double maxDx, double maxDy,
-                                                                double maxDTheta) {
+    public static List<TrajectoryPoint<Pose2dWithCurvature, Rotation2dState>> parameterizeSplines(
+            List<? extends Spline> splines,
+            List<? extends Rotation2dState> headings,
+            double maxDx,
+            double maxDy,
+            double maxDTheta) {
         List<TrajectoryPoint<Pose2dWithCurvature, Rotation2dState>> rv = new ArrayList<>();
-        if (splines.isEmpty()) return rv;
+        if (splines.isEmpty())
+            return rv;
         rv.add(new TrajectoryPoint<>(splines.get(0).getPose2dWithCurvature(0.0), headings.get(0).getRotation(), 0));
         for (int i = 0; i < splines.size(); i++) {
             Spline s = splines.get(i);
             List<Rotation2dState> spline_rots = new ArrayList<>();
             spline_rots.add(headings.get(i));
-            spline_rots.add(headings.get(i+1));
+            spline_rots.add(headings.get(i + 1));
 
-            List<TrajectoryPoint<Pose2dWithCurvature, Rotation2dState>> samples = parameterizeSpline(s, spline_rots, maxDx, maxDy, maxDTheta);
+            List<TrajectoryPoint<Pose2dWithCurvature, Rotation2dState>> samples = parameterizeSpline(s, spline_rots,
+                    maxDx, maxDy, maxDTheta);
             samples.remove(0);
             rv.addAll(samples);
         }
         return rv;
     }
 
-    private static void getSegmentArc(Spline s, List<? extends Rotation2dState> headings, List<TrajectoryPoint<Pose2dWithCurvature, Rotation2dState>> rv,  double t0, double t1, double maxDx,
-                                      double maxDy,
-                                      double maxDTheta, double totalTime) {
+    private static void getSegmentArc(
+            Spline s,
+            List<? extends Rotation2dState> headings,
+            List<TrajectoryPoint<Pose2dWithCurvature, Rotation2dState>> rv,
+            double t0,
+            double t1,
+            double maxDx,
+            double maxDy,
+            double maxDTheta,
+            double totalTime) {
         Translation2d p0 = s.getPoint(t0);
         Translation2d p1 = s.getPoint(t1);
         Rotation2d r0 = s.getHeading(t0);
@@ -89,12 +117,11 @@ public class SplineGenerator {
             // Interpolate heading
             Rotation2d diff = headings.get(1).rotateBy(headings.get(0).get().unaryMinus()).get();
             if (diff.getRadians() > Math.PI) {
-                diff = diff.unaryMinus().rotateBy(Rotation2d.fromRadians( Math.PI));
+                diff = diff.unaryMinus().rotateBy(Rotation2d.fromRadians(Math.PI));
             }
             Rotation2dState interpolated_heading = headings.get(0).rotateBy(diff.times(t1 / totalTime));
 
-            rv.add(new TrajectoryPoint<>(s.getPose2dWithCurvature(t1), interpolated_heading, rv.size()-1));
+            rv.add(new TrajectoryPoint<>(s.getPose2dWithCurvature(t1), interpolated_heading, rv.size() - 1));
         }
     }
-
 }

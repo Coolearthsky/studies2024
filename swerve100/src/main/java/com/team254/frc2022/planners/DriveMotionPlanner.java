@@ -68,20 +68,20 @@ public class DriveMotionPlanner {
     boolean mIsReversed = false;
     double mLastTime = Double.POSITIVE_INFINITY;
     public TimedState<Pose2dWithCurvature> mLastPathSetpoint = null;
-    public TimedState<Pose2dWithCurvature> mPathSetpoint = new TimedState<>(GeometryUtil.kPose2dWithCurvatureIdentity);
+    public TimedState<Pose2dWithCurvature> mPathSetpoint = new TimedState<>(new Pose2dWithCurvature());
     public TimedState<Rotation2dState> mHeadingSetpoint = null;
-    public TimedState<Rotation2dState> mLastHeadingSetpoint = new TimedState<>(GeometryUtil.kRotationIdentity);
+    public TimedState<Rotation2dState> mLastHeadingSetpoint = new TimedState<>(new Rotation2dState());
 
     public double mVelocitym = 0;
-    Pose2d mError = GeometryUtil.kPose2dIdentity.get();
+    Pose2d mError = GeometryUtil.kPose2dIdentity;
 
     // TODO: this appears not do be used?
-    Translation2d mTranslationalError = GeometryUtil.kTranslation2dIdentity.get();
+    Translation2d mTranslationalError = GeometryUtil.kTranslation2dIdentity;
     // TODO: this appears not do be used?
-    Rotation2d mHeadingError = GeometryUtil.kRotationIdentity.get();
-    Rotation2d mInitialHeading = GeometryUtil.kRotationIdentity.get();
-    Rotation2d mRotationDiff = GeometryUtil.kRotationIdentity.get();
-    Pose2d mCurrentState = GeometryUtil.kPose2dIdentity.get();
+    Rotation2d mHeadingError = GeometryUtil.kRotationIdentity;
+    Rotation2d mInitialHeading = GeometryUtil.kRotationIdentity;
+    Rotation2d mRotationDiff = GeometryUtil.kRotationIdentity;
+    Pose2d mCurrentState = GeometryUtil.kPose2dIdentity;
 
     double mCurrentTrajectoryLength = 0.0;
     double mTotalTime = Double.POSITIVE_INFINITY;
@@ -134,8 +134,8 @@ public class DriveMotionPlanner {
     }
 
     public void reset() {
-        mTranslationalError = GeometryUtil.kTranslation2dIdentity.get();
-        mHeadingError = GeometryUtil.kRotationIdentity.get();
+        mTranslationalError = GeometryUtil.kTranslation2dIdentity;
+        mHeadingError = GeometryUtil.kRotationIdentity;
         mLastHeadingSetpoint = null;
         mLastPathSetpoint = null;
         mOutput = new ChassisSpeeds();
@@ -144,7 +144,7 @@ public class DriveMotionPlanner {
 
     public Trajectory<TimedState<Pose2dWithCurvature>, TimedState<Rotation2dState>> generateTrajectory(
             boolean reversed,
-            final List<Pose2dState> waypoints,
+            final List<Pose2d> waypoints,
             final List<Rotation2dState> headings,
             final List<TimingConstraint<Pose2dWithCurvature>> constraints,
             double max_vel, // inches/s
@@ -156,7 +156,7 @@ public class DriveMotionPlanner {
 
     public Trajectory<TimedState<Pose2dWithCurvature>, TimedState<Rotation2dState>> generateTrajectory(
             boolean reversed,
-            final List<Pose2dState> waypoints,
+            final List<Pose2d> waypoints,
             final List<Rotation2dState> headings,
             final List<TimingConstraint<Pose2dWithCurvature>> constraints,
             double start_vel,
@@ -164,17 +164,17 @@ public class DriveMotionPlanner {
             double max_vel, // inches/s
             double max_accel, // inches/s^2
             double max_voltage) {
-        List<Pose2dState> waypoints_maybe_flipped = waypoints;
+        List<Pose2d> waypoints_maybe_flipped = waypoints;
         List<Rotation2dState> headings_maybe_flipped = headings;
-        final Pose2dState flip = GeometryUtil.fromRotation(new Rotation2dState(-1, 0));
+        final Pose2d flip = GeometryUtil.fromRotation(new Rotation2d(-1, 0));
         // TODO re-architect the spline generator to support reverse.
         if (reversed) {
             waypoints_maybe_flipped = new ArrayList<>(waypoints.size());
             headings_maybe_flipped = new ArrayList<>(headings.size());
             for (int i = 0; i < waypoints.size(); ++i) {
                 waypoints_maybe_flipped
-                        .add(new Pose2dState(GeometryUtil.transformBy(waypoints.get(i).get(), flip.get())));
-                headings_maybe_flipped.add(headings.get(i).rotateBy(flip.get().getRotation()));
+                        .add(GeometryUtil.transformBy(waypoints.get(i), flip));
+                headings_maybe_flipped.add(headings.get(i).rotateBy(flip.getRotation()));
             }
         }
 
@@ -188,11 +188,11 @@ public class DriveMotionPlanner {
             for (int i = 0; i < trajectory.length(); ++i) {
                 flipped_points
                         .add(new Pose2dWithCurvature(
-                                GeometryUtil.transformBy(trajectory.getPoint(i).state().getPose().get(), flip.pose2d),
+                                GeometryUtil.transformBy(trajectory.getPoint(i).state().getPose().get(), flip),
                                 -trajectory
                                         .getPoint(i).state().getCurvature(),
                                 trajectory.getPoint(i).state().getDCurvatureDs()));
-                flipped_headings.add(trajectory.getPoint(i).heading().rotateBy(flip.get().getRotation()));
+                flipped_headings.add(trajectory.getPoint(i).heading().rotateBy(flip.getRotation()));
             }
             trajectory = new Trajectory<>(flipped_points, flipped_headings);
         }
@@ -230,7 +230,7 @@ public class DriveMotionPlanner {
         return chassisSpeeds;
     }
 
-    protected ChassisSpeeds updatePurePursuit(Pose2dState current_state, double feedforwardOmegaRadiansPerSecond) {
+    protected ChassisSpeeds updatePurePursuit(Pose2d current_state, double feedforwardOmegaRadiansPerSecond) {
         double lookahead_time = kPathLookaheadTime;
         final double kLookaheadSearchDt = 0.01;
         TimedState<Pose2dWithCurvature> lookahead_state = mCurrentTrajectory.preview(lookahead_time).state();
@@ -252,10 +252,11 @@ public class DriveMotionPlanner {
             lookahead_state = new TimedState<>(
                     new Pose2dWithCurvature(
                             GeometryUtil.transformBy(lookahead_state.state().getPose().get(),
-                                    GeometryUtil.fromTranslation(new Translation2dState(
-                                            (mIsReversed ? -1.0 : 1.0) * (kPathMinLookaheadDistance -
-                                                    actual_lookahead_distance),
-                                            0.0)).get()),
+                                    GeometryUtil.fromTranslation(
+                                            new Translation2d(
+                                                    (mIsReversed ? -1.0 : 1.0) * (kPathMinLookaheadDistance -
+                                                            actual_lookahead_distance),
+                                                    0.0))),
                             0.0),
                     lookahead_state.t(), lookahead_state.velocity(), lookahead_state.acceleration());
         }
@@ -266,7 +267,7 @@ public class DriveMotionPlanner {
 
         // Find the vector between robot's current position and the lookahead state
         Translation2d lookaheadTranslation = lookahead_state.state().getTranslation()
-                .minus(current_state.get().getTranslation());
+                .minus(current_state.getTranslation());
 
         // Set the steering direction as the direction of the vector
         Rotation2dState steeringDirection = new Rotation2dState(lookaheadTranslation.getAngle());
@@ -307,7 +308,7 @@ public class DriveMotionPlanner {
         return chassisSpeeds;
     }
 
-    public ChassisSpeeds update(double timestamp, Pose2dState current_state) {
+    public ChassisSpeeds update(double timestamp, Pose2d current_state) {
 
         if (mCurrentTrajectory == null) {
             // System.out.println("YOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
@@ -342,14 +343,14 @@ public class DriveMotionPlanner {
         mHeadingSetpoint = new TimedState<>(
                 new Rotation2dState(mInitialHeading.rotateBy(mRotationDiff.times(Math.min(1.0,
                         (timestamp - mStartTime) / mTotalTime)))));
-        mCurrentState = current_state.get();
+        mCurrentState = current_state;
         if (!isDone()) {
             sample_point = mCurrentTrajectory.advance(mDt);
             // Compute error in robot frame
             mError = GeometryUtil.transformBy(GeometryUtil.inverse(current_state),
                     mPathSetpoint.state().getPose().get());
             mError = new Pose2d(mError.getTranslation(),
-                    current_state.get().getRotation().unaryMinus()
+                    current_state.getRotation().unaryMinus()
                             .rotateBy(mHeadingSetpoint.state().getRotation().get()));
 
             if (mFollowerType == FollowerType.PID) {
@@ -424,7 +425,7 @@ public class DriveMotionPlanner {
 
     public ChassisSpeeds update(
             TrajectoryIterator<TimedState<Pose2dWithCurvature>, TimedState<Rotation2dState>> trajectory,
-            double timestamp, Pose2dState current_state) {
+            double timestamp, Pose2d current_state) {
         if (trajectory == null) {
             // System.out.println("YOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
             return null;
@@ -458,14 +459,14 @@ public class DriveMotionPlanner {
         mHeadingSetpoint = new TimedState<>(
                 new Rotation2dState(mInitialHeading.rotateBy(mRotationDiff.times(Math.min(1.0,
                         (timestamp - mStartTime) / mTotalTime)))));
-        mCurrentState = current_state.get();
+        mCurrentState = current_state;
         if (!isDone()) {
             sample_point = trajectory.advance(mDt);
             // Compute error in robot frame
             mError = GeometryUtil.transformBy(GeometryUtil.inverse(current_state),
                     mPathSetpoint.state().getPose().get());
             mError = new Pose2d(mError.getTranslation(),
-                    current_state.get().getRotation().unaryMinus()
+                    current_state.getRotation().unaryMinus()
                             .rotateBy(mHeadingSetpoint.state().getRotation().get()));
 
             if (mFollowerType == FollowerType.PID) {
@@ -543,8 +544,10 @@ public class DriveMotionPlanner {
         return new Rotation2dState(mError.getRotation());
     }
 
-    private double distance(Pose2dState current_state, double additional_progress) {
-        return mCurrentTrajectory.preview(additional_progress).state().state().getPose().distance(current_state);
+    private double distance(Pose2d current_state, double additional_progress) {
+        Pose2dState pose = mCurrentTrajectory.preview(additional_progress).state().state().getPose();
+        return GeometryUtil
+                .norm(GeometryUtil.slog(GeometryUtil.transformBy(GeometryUtil.inverse(pose), current_state)));
     }
 
     public synchronized TimedState<Pose2dWithCurvature> getPathSetpoint() {
