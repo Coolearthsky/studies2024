@@ -81,13 +81,11 @@ public class FancyTrajectoryTest {
 
         // note there are static constraints in here.
         DriveMotionPlanner mMotionPlanner = new DriveMotionPlanner();
-        boolean reversed = false;
         double start_vel = 0;
         double end_vel = 0;
         // there's a bug in here; it doesn't use the constraints, nor the voltage.
         Trajectory<TimedState<Pose2dWithCurvature>, TimedState<Rotation2dState>> trajectory = mMotionPlanner
                 .generateTrajectory(
-                        reversed,
                         waypoints,
                         headings,
                         constraints,

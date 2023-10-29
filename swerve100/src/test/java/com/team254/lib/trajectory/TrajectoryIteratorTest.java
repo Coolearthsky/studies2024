@@ -37,7 +37,7 @@ public class TrajectoryIteratorTest {
     public void test() {
         Trajectory<Pose2dWithCurvature, Rotation2dState> traj = new Trajectory<>(kWaypoints, kHeadings);
         TrajectoryIterator<Pose2dWithCurvature, Rotation2dState> iterator = new TrajectoryIterator<>(
-                traj.getIndexView());
+                new IndexView<>(traj));
 
         // Initial conditions.
         assertEquals(0.0, iterator.getProgress(), kTestEpsilon);

@@ -7,29 +7,7 @@ import com.team254.lib.geometry.State;
 
 public class Trajectory<S extends State<S>, T extends State<T>>  {
     protected final List<TrajectoryPoint<S, T>> points_;
-    protected final IndexView index_view_ = new IndexView();
-    protected double default_velocity_;
 
-    /**
-     * Create an empty trajectory.
-     */
-    public Trajectory() {
-        points_ = new ArrayList<>();
-    }
-
-    public void setDefaultVelocity(double velocity) {
-        default_velocity_ = velocity;
-    }
-
-    public double getDefaultVelocity() {
-        return default_velocity_;
-    }
-
-    /**
-     * Create a trajectory from the given states and transforms.
-     *
-     * @param states The states of the trajectory.
-     */
     public Trajectory(final List<S> states, final List<T> headings) {
         points_ = new ArrayList<>(states.size());
         for (int i = 0; i < states.size(); ++i) {
@@ -38,6 +16,7 @@ public class Trajectory<S extends State<S>, T extends State<T>>  {
     }
 
     public Trajectory(final List<TrajectoryPoint<S, T>> points) {
+        // this renumbers the points.
         points_ = new ArrayList<>(points.size());
         for (int i = 0; i < points.size(); i++) {
             points_.add(new TrajectoryPoint<>(points.get(i).state(), points.get(i).heading(), i));
@@ -80,10 +59,6 @@ public class Trajectory<S extends State<S>, T extends State<T>>  {
         }
     }
 
-    public IndexView getIndexView() {
-        return index_view_;
-    }
-
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
@@ -95,27 +70,5 @@ public class Trajectory<S extends State<S>, T extends State<T>>  {
             builder.append(System.lineSeparator());
         }
         return builder.toString();
-    }
-
-    public class IndexView implements TrajectoryView<S, T> {
-        @Override
-        public TrajectorySamplePoint<S, T> sample(double index) {
-            return Trajectory.this.getInterpolated(index);
-        }
-
-        @Override
-        public double last_interpolant() {
-            return Math.max(0.0, Trajectory.this.length() - 1);
-        }
-
-        @Override
-        public double first_interpolant() {
-            return 0.0;
-        }
-
-        @Override
-        public Trajectory<S, T> trajectory() {
-            return Trajectory.this;
-        }
     }
 }

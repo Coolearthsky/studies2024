@@ -9,7 +9,6 @@ import com.team254.lib.trajectory.Trajectory;
 
 public class TimingUtil {
     public static <S extends State<S>, T extends State<T>> Trajectory<TimedState<S>, TimedState<T>> timeParameterizeTrajectory(
-            boolean reverse,
             final DistanceView<S, T> distance_view,
             double step_size,
             final List<TimingConstraint<S>> constraints,
@@ -24,12 +23,11 @@ public class TimingUtil {
             states.add(distance_view.sample(Math.min(i * step_size, distance_view.last_interpolant())).state());
             headings.add(distance_view.sample(Math.min(i * step_size, distance_view.last_interpolant())).heading());
         }
-        return timeParameterizeTrajectory(reverse, states, headings, constraints, start_velocity, end_velocity,
+        return timeParameterizeTrajectory(states, headings, constraints, start_velocity, end_velocity,
                 max_translational_velocity, max_abs_acceleration);
     }
 
     public static <S extends State<S>, T extends State<T>> Trajectory<TimedState<S>, TimedState<T>> timeParameterizeTrajectory(
-            boolean reverse,
             final List<S> states,
             final List<T> headings,
             final List<TimingConstraint<S>> constraints,
@@ -93,16 +91,15 @@ public class TimingUtil {
                 // Now enforce all acceleration constraints.
                 for (final TimingConstraint<S> constraint : constraints) {
                     final TimingConstraint.MinMaxAcceleration min_max_accel = constraint.getMinMaxAcceleration(
-                            constraint_state.state,
-                            (reverse ? -1.0 : 1.0) * constraint_state.max_translational_velocity);
+                            constraint_state.state, constraint_state.max_translational_velocity);
                     if (!min_max_accel.valid()) {
                         // This should never happen if constraints are well-behaved.
                         throw new RuntimeException();
                     }
                     constraint_state.min_translational_acceleration = Math.max(constraint_state.min_translational_acceleration,
-                            reverse ? -min_max_accel.max_acceleration() : min_max_accel.min_acceleration());
+                            min_max_accel.min_acceleration());
                     constraint_state.max_acceleration = Math.min(constraint_state.max_acceleration,
-                            reverse ? -min_max_accel.min_acceleration() : min_max_accel.max_acceleration());
+                            min_max_accel.max_acceleration());
                 }
                 if (constraint_state.min_translational_acceleration > constraint_state.max_acceleration) {
                     // This should never happen if constraints are well-behaved.
@@ -164,14 +161,14 @@ public class TimingUtil {
                 for (final TimingConstraint<S> constraint : constraints) {
                     final TimingConstraint.MinMaxAcceleration min_max_accel = constraint.getMinMaxAcceleration(
                             constraint_state.state,
-                            (reverse ? -1.0 : 1.0) * constraint_state.max_translational_velocity);
+                            constraint_state.max_translational_velocity);
                     if (!min_max_accel.valid()) {
                         throw new RuntimeException();
                     }
                     constraint_state.min_translational_acceleration = Math.max(constraint_state.min_translational_acceleration,
-                            reverse ? -min_max_accel.max_acceleration() : min_max_accel.min_acceleration());
+                            min_max_accel.min_acceleration());
                     constraint_state.max_acceleration = Math.min(constraint_state.max_acceleration,
-                            reverse ? -min_max_accel.min_acceleration() : min_max_accel.max_acceleration());
+                            min_max_accel.max_acceleration());
                 }
                 if (constraint_state.min_translational_acceleration > constraint_state.max_acceleration) {
                     throw new RuntimeException();
@@ -209,7 +206,7 @@ public class TimingUtil {
             final double accel = (constrained_state.max_translational_velocity * constrained_state.max_translational_velocity - v * v) / (2.0 * ds);
             double dt = 0.0;
             if (i > 0) {
-                timed_states.get(i - 1).set_acceleration(reverse ? -accel : accel);
+                timed_states.get(i - 1).set_acceleration(accel);
                 if (Math.abs(accel) > kEpsilon) {
                     dt = (constrained_state.max_translational_velocity - v) / accel;
                 } else if (Math.abs(v) > kEpsilon) {
@@ -225,8 +222,8 @@ public class TimingUtil {
 
             v = constrained_state.max_translational_velocity;
             s = constrained_state.distance;
-            timed_states.add(new TimedState<>(constrained_state.state, t, reverse ? -v : v, reverse ? -accel : accel));
-            timed_headings.add(new TimedState<>(constrained_state.heading, t, reverse ? -v : v, reverse ? -accel : accel)); // todo verify
+            timed_states.add(new TimedState<>(constrained_state.state, t, v,  accel));
+            timed_headings.add(new TimedState<>(constrained_state.heading, t, v, accel)); // todo verify
         }
         return new Trajectory<>(timed_states, timed_headings);
     }

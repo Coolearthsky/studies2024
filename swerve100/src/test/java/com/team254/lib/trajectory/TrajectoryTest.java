@@ -31,13 +31,7 @@ public class TrajectoryTest {
 
     @Test
     public void testConstruction() {
-        // Empty constructor.
-        Trajectory<Translation2dState, Rotation2dState> traj = new Trajectory<>();
-        assertTrue(traj.isEmpty());
-        assertEquals(0, traj.length());
-
-        // Set states at construction time.
-        traj = new Trajectory<>(kWaypoints, kHeadings);
+        Trajectory<Translation2dState, Rotation2dState> traj = new Trajectory<>(kWaypoints, kHeadings);
         assertFalse(traj.isEmpty());
         assertEquals(4, traj.length());
     }
@@ -108,7 +102,8 @@ public class TrajectoryTest {
         assertEquals(traj.getInterpolated(2.75).index_floor(), 2);
         assertEquals(traj.getInterpolated(2.75).index_ceil(), 3);
 
-       // Trajectory<Translation2dState, Rotation2dState>.IndexView index_view = traj.getIndexView();
+        // Trajectory<Translation2dState, Rotation2dState>.IndexView index_view =
+        // traj.getIndexView();
         TrajectorySamplePoint<Translation2dState, Rotation2dState> sample0 = traj.getInterpolated(0.25);
         // index_view.sample(0.25);
         assertEquals(kWaypoints.get(0).get().interpolate(kWaypoints.get(1).get(), .25),

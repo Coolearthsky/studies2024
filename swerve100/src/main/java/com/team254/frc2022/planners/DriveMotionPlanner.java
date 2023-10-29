@@ -13,11 +13,13 @@ import com.team254.lib.geometry.Rotation2dState;
 import com.team254.lib.geometry.Translation2dState;
 import com.team254.lib.geometry.Twist2dWrapper;
 import com.team254.lib.physics.SwerveDrive;
+import com.team254.lib.spline.QuinticHermiteSpline;
+import com.team254.lib.spline.Spline;
+import com.team254.lib.spline.SplineGenerator;
 import com.team254.lib.trajectory.DistanceView;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.TrajectorySamplePoint;
-import com.team254.lib.trajectory.TrajectoryUtil;
 import com.team254.lib.trajectory.timing.SwerveDriveDynamicsConstraint;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.trajectory.timing.TimingConstraint;
@@ -141,19 +143,6 @@ public class DriveMotionPlanner {
     }
 
     public Trajectory<TimedState<Pose2dWithCurvature>, TimedState<Rotation2dState>> generateTrajectory(
-            boolean reversed,
-            final List<Pose2d> waypoints,
-            final List<Rotation2dState> headings,
-            final List<TimingConstraint<Pose2dWithCurvature>> constraints,
-            double max_vel, // inches/s
-            double max_accel, // inches/s^2
-            double max_voltage) {
-        return generateTrajectory(reversed, waypoints, headings, constraints, 0.0, 0.0, max_vel, max_accel,
-                max_voltage);
-    }
-
-    public Trajectory<TimedState<Pose2dWithCurvature>, TimedState<Rotation2dState>> generateTrajectory(
-            boolean reversed,
             final List<Pose2d> waypoints,
             final List<Rotation2dState> headings,
             final List<TimingConstraint<Pose2dWithCurvature>> constraints,
@@ -162,38 +151,28 @@ public class DriveMotionPlanner {
             double max_vel, // inches/s
             double max_accel, // inches/s^2
             double max_voltage) {
-        List<Pose2d> waypoints_maybe_flipped = waypoints;
-        List<Rotation2dState> headings_maybe_flipped = headings;
-        final Pose2d flip = GeometryUtil.fromRotation(new Rotation2d(-1, 0));
-        // TODO re-architect the spline generator to support reverse.
-        if (reversed) {
-            waypoints_maybe_flipped = new ArrayList<>(waypoints.size());
-            headings_maybe_flipped = new ArrayList<>(headings.size());
-            for (int i = 0; i < waypoints.size(); ++i) {
-                waypoints_maybe_flipped
-                        .add(GeometryUtil.transformBy(waypoints.get(i), flip));
-                headings_maybe_flipped.add(headings.get(i).rotateBy(flip.getRotation()));
-            }
-        }
 
         // Create a trajectory from splines.
-        Trajectory<Pose2dWithCurvature, Rotation2dState> trajectory = TrajectoryUtil.trajectoryFromWaypoints(
-                waypoints_maybe_flipped, headings_maybe_flipped, kMaxDx, kMaxDy, kMaxDTheta);
 
-        if (reversed) {
-            List<Pose2dWithCurvature> flipped_points = new ArrayList<>(trajectory.length());
-            List<Rotation2dState> flipped_headings = new ArrayList<>(trajectory.length());
-            for (int i = 0; i < trajectory.length(); ++i) {
-                flipped_points
-                        .add(new Pose2dWithCurvature(
-                                GeometryUtil.transformBy(trajectory.getPoint(i).state().getPose(), flip),
-                                -trajectory
-                                        .getPoint(i).state().getCurvature(),
-                                trajectory.getPoint(i).state().getDCurvatureDs()));
-                flipped_headings.add(trajectory.getPoint(i).heading().rotateBy(flip.getRotation()));
-            }
-            trajectory = new Trajectory<>(flipped_points, flipped_headings);
+        // This isn't actually a trajectory at all, they're just using a trajectory as a
+        // container for
+        // the path, so get rid of it.
+
+        /////
+        ////
+
+        List<QuinticHermiteSpline> splines = new ArrayList<>(waypoints.size() - 1);
+        for (int i1 = 1; i1 < waypoints.size(); ++i1) {
+            splines.add(new QuinticHermiteSpline(waypoints.get(i1 - 1), waypoints.get(i1)));
         }
+        QuinticHermiteSpline.optimizeSpline(splines);
+        final List<? extends Spline> splines1 = splines;
+
+        Trajectory<Pose2dWithCurvature, Rotation2dState> trajectory = new Trajectory<>(
+                SplineGenerator.parameterizeSplines(splines1, headings, kMaxDx, kMaxDy, kMaxDTheta));
+
+        //////
+        /////
 
         // Create the constraint that the robot must be able to traverse the trajectory
         // without ever applying more
@@ -206,10 +185,9 @@ public class DriveMotionPlanner {
         }
 
         // Generate the timed trajectory.
-        Trajectory<TimedState<Pose2dWithCurvature>, TimedState<Rotation2dState>> timed_trajectory = TimingUtil
-                .timeParameterizeTrajectory(reversed, new DistanceView<>(trajectory), kMaxDx, Arrays.asList(),
-                        start_vel, end_vel, max_vel, max_accel);
-        return timed_trajectory;
+        DistanceView<Pose2dWithCurvature, Rotation2dState> distance_view = new DistanceView<>(trajectory);
+        return TimingUtil.timeParameterizeTrajectory(distance_view, kMaxDx, Arrays.asList(),
+                start_vel, end_vel, max_vel, max_accel);
     }
 
     protected ChassisSpeeds updatePIDChassis(ChassisSpeeds chassisSpeeds) {
