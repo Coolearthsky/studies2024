@@ -6,12 +6,11 @@ import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.GeometryUtil;
 
 import com.team254.lib.geometry.Pose2dState;
-import com.team254.lib.util.Util;
 
 import edu.wpi.first.math.geometry.Translation2d;
 
 public class TimedStateTest {
-    public static final double kTestEpsilon = Util.kEpsilon;
+    public static final double kTestEpsilon = 1e-12;
 
     @Test
     public void test() {

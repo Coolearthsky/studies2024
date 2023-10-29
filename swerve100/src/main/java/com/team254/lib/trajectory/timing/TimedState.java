@@ -1,7 +1,8 @@
 package com.team254.lib.trajectory.timing;
 
 import com.team254.lib.geometry.State;
-import com.team254.lib.util.Util;
+
+import edu.wpi.first.math.MathUtil;
 
 import java.text.DecimalFormat;
 
@@ -59,12 +60,12 @@ public class TimedState<S extends State<S>> implements State<TimedState<S>> {
 
     @Override
     public TimedState<S> interpolate2(TimedState<S> other, double x) {
-        final double new_t = Util.interpolate(t(), other.t(), x);
+        final double new_t = MathUtil.interpolate(t(), other.t(), x);
         final double delta_t = new_t - t();
         if (delta_t < 0.0) {
             return other.interpolate2(this, 1.0 - x);
         }
-        boolean reversing = velocity() < 0.0 || (Util.epsilonEquals(velocity(), 0.0) && acceleration() < 0.0);
+        boolean reversing = velocity() < 0.0 || (Math.abs(velocity() - 0.0) <= 1e-12 && acceleration() < 0.0);
         final double new_v = velocity() + acceleration() * delta_t;
         final double new_s = (reversing ? -1.0 : 1.0)
                 * (velocity() * delta_t + .5 * acceleration() * delta_t * delta_t);
@@ -99,7 +100,7 @@ public class TimedState<S extends State<S>> implements State<TimedState<S>> {
             System.out.println("states not equal");
             return false;
         }
-        boolean timeEqual = Util.epsilonEquals(t(), ts.t());
+        boolean timeEqual = Math.abs(t() - ts.t()) <= 1e-12;
         if (!timeEqual) {
             System.out.println("time not equal");
             return false;

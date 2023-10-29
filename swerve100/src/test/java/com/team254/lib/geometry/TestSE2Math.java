@@ -7,15 +7,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.GeometryUtil;
 
-import com.team254.lib.util.Util;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 
 public class TestSE2Math {
-    public static final double kTestEpsilon = Util.kEpsilon;
+    public static final double kTestEpsilon = 1e-12;
 
     @Test
     public void testRotation2d() {

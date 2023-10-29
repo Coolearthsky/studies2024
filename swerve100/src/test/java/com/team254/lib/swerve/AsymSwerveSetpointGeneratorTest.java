@@ -8,8 +8,6 @@ import org.team100.lib.swerve.ChassisSpeeds;
 import org.team100.lib.swerve.SwerveDriveKinematics;
 import org.team100.lib.swerve.SwerveSetpoint;
 
-import com.team254.lib.util.Util;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
@@ -59,7 +57,7 @@ public class AsymSwerveSetpointGeneratorTest {
             AsymSwerveSetpointGenerator generator) {
         System.out.println("Driving to goal state " + goal);
         System.out.println("Initial state: " + prevSetpoint);
-        while (!prevSetpoint.mChassisSpeeds.toTwist2d().epsilonEquals(goal.toTwist2d(), Util.kEpsilon)) {
+        while (!prevSetpoint.mChassisSpeeds.toTwist2d().epsilonEquals(goal.toTwist2d(), 1e-12)) {
             var newsetpoint = generator.generateSetpoint(kKinematicLimits, prevSetpoint, goal, kDt);
             System.out.println(newsetpoint);
             SatisfiesConstraints(prevSetpoint, newsetpoint);

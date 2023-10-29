@@ -10,10 +10,9 @@ import org.team100.lib.geometry.GeometryUtil;
 
 import com.team254.lib.geometry.Rotation2dState;
 import com.team254.lib.geometry.Translation2dState;
-import com.team254.lib.util.Util;
 
 public class DistanceViewTest {
-    public static final double kTestEpsilon = Util.kEpsilon;
+    public static final double kTestEpsilon = 1e-12;
 
     @Test
     public void test() {

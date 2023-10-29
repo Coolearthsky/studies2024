@@ -2,7 +2,6 @@ package com.team254.lib.trajectory;
 
 import com.team254.lib.geometry.State;
 import com.team254.lib.trajectory.timing.TimedState;
-import com.team254.lib.util.Util;
 
 public class TimedView<S extends State<S>, T extends State<T>> implements TrajectoryView<TimedState<S>, TimedState<T>> {
     protected final Trajectory<TimedState<S>, TimedState<T>> trajectory_;
@@ -37,7 +36,7 @@ public class TimedView<S extends State<S>, T extends State<T>> implements Trajec
             final TrajectoryPoint<TimedState<S>, TimedState<T>> s = trajectory_.getPoint(i);
             if (s.state().t() >= t) {
                 final TrajectoryPoint<TimedState<S>, TimedState<T>> prev_s = trajectory_.getPoint(i - 1);
-                if (Util.epsilonEquals(s.state().t(), prev_s.state().t())) {
+                if (Math.abs(s.state().t() - prev_s.state().t()) <= 1e-12) {
                     return new TrajectorySamplePoint<>(s);
                 }
                 return new TrajectorySamplePoint<>(

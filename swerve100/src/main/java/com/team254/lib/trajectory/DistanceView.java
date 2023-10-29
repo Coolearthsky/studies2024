@@ -1,7 +1,6 @@
 package com.team254.lib.trajectory;
 
 import com.team254.lib.geometry.State;
-import com.team254.lib.util.Util;
 
 public class DistanceView<S extends State<S>, T extends State<T>> implements TrajectoryView<S, T> {
     protected final Trajectory<S, T> trajectory_;
@@ -27,7 +26,7 @@ public class DistanceView<S extends State<S>, T extends State<T>> implements Tra
             final TrajectoryPoint<S, T> s = trajectory_.getPoint(i);
             if (distances_[i] >= distance) {
                 final TrajectoryPoint<S, T> prev_s = trajectory_.getPoint(i - 1);
-                if (Util.epsilonEquals(distances_[i], distances_[i - 1])) {
+                if (Math.abs(distances_[i] - distances_[i - 1]) <= 1e-12) {
                     return new TrajectorySamplePoint<>(s);
                 } else {
                     return new TrajectorySamplePoint<>(

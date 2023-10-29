@@ -1,7 +1,5 @@
 package com.team254.lib.geometry;
 
-import com.team254.lib.util.Util;
-
 import edu.wpi.first.math.geometry.Twist2d;
 
 import java.text.DecimalFormat;
@@ -22,15 +20,13 @@ public class Twist2dWrapper extends Twist2d {
     }
 
     public double curvature() {
-        if (Math.abs(dtheta) < Util.kEpsilon && GeometryUtil.norm(this) < Util.kEpsilon)
+        if (Math.abs(dtheta) < 1e-12 && GeometryUtil.norm(this) < 1e-12)
             return 0.0;
         return dtheta / GeometryUtil.norm(this);
     }
 
     public boolean epsilonEquals(final Twist2dWrapper other, double epsilon) {
-        return Util.epsilonEquals(dx, other.dx, epsilon) &&
-                Util.epsilonEquals(dy, other.dy, epsilon) &&
-                Util.epsilonEquals(dtheta, other.dtheta, epsilon);
+        return super.equals(other);
     }
 
     @Override

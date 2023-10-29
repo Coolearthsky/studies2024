@@ -12,10 +12,9 @@ import org.team100.lib.geometry.GeometryUtil;
 
 import com.team254.lib.geometry.Rotation2dState;
 import com.team254.lib.geometry.Translation2dState;
-import com.team254.lib.util.Util;
 
 public class TrajectoryIteratorTest {
-    public static final double kTestEpsilon = Util.kEpsilon;
+    public static final double kTestEpsilon = 1e-12;
 
     public static final List<Translation2dState> kWaypoints = Arrays.asList(
             new Translation2dState(0.0, 0.0),

@@ -8,7 +8,6 @@ import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.swerve.ChassisSpeeds;
 
 import com.team254.lib.control.Lookahead;
-import com.team254.lib.geometry.Pose2dState;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2dState;
 import com.team254.lib.geometry.Translation2dState;
@@ -23,12 +22,11 @@ import com.team254.lib.trajectory.timing.SwerveDriveDynamicsConstraint;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.trajectory.timing.TimingConstraint;
 import com.team254.lib.trajectory.timing.TimingUtil;
-import com.team254.lib.util.Units;
-import com.team254.lib.util.Util;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class DriveMotionPlanner {
@@ -120,13 +118,13 @@ public class DriveMotionPlanner {
         useDefaultCook = true;
         mSpeedLookahead = new Lookahead(kAdaptivePathMinLookaheadDistance,
                 kAdaptivePathMaxLookaheadDistance, 0.0,
-                Units.meters_to_inches(kMaxVelocityMetersPerSecond));
+                Units.metersToInches(kMaxVelocityMetersPerSecond));
         mCurrentTrajectoryLength = mCurrentTrajectory.trajectory().getLastPoint().state().t();
         for (int i = 0; i < trajectory.trajectory().length(); ++i) {
-            if (trajectory.trajectory().getPoint(i).state().velocity() > Util.kEpsilon) {
+            if (trajectory.trajectory().getPoint(i).state().velocity() > 1e-12) {
                 mIsReversed = false;
                 break;
-            } else if (trajectory.trajectory().getPoint(i).state().velocity() < -Util.kEpsilon) {
+            } else if (trajectory.trajectory().getPoint(i).state().velocity() < -1e-12) {
                 mIsReversed = true;
                 break;
             }
@@ -221,9 +219,9 @@ public class DriveMotionPlanner {
                                   * chassisSpeeds.vyMetersPerSecond)
                                   */;// 0.15;
         final double kPathKTheta = 0.3;
-        chassisSpeeds.vxMetersPerSecond = chassisSpeeds.vxMetersPerSecond + kPathk * Units.inches_to_meters(
+        chassisSpeeds.vxMetersPerSecond = chassisSpeeds.vxMetersPerSecond + kPathk * Units.inchesToMeters(
                 mError.getTranslation().getX());
-        chassisSpeeds.vyMetersPerSecond = chassisSpeeds.vyMetersPerSecond + kPathk * Units.inches_to_meters(
+        chassisSpeeds.vyMetersPerSecond = chassisSpeeds.vyMetersPerSecond + kPathk * Units.inchesToMeters(
                 mError.getTranslation().getY());
         chassisSpeeds.omegaRadiansPerSecond = chassisSpeeds.omegaRadiansPerSecond
                 + kPathKTheta * mError.getRotation().getRadians();
@@ -296,7 +294,7 @@ public class DriveMotionPlanner {
 
         // Use the Velocity Feedforward of the Closest Point on the Trajectory
         double normalizedSpeed = Math.abs(mPathSetpoint.velocity())
-                / Units.meters_to_inches(kMaxVelocityMetersPerSecond);
+                / Units.metersToInches(kMaxVelocityMetersPerSecond);
 
         // The Default Cook is the minimum speed to use. So if a feedforward speed is
         // less than defaultCook, the robot will drive at the defaultCook speed
@@ -412,7 +410,7 @@ public class DriveMotionPlanner {
                 double reverseDistance = distance(current_state, previewQuantity - searchStepSize);
                 searchDirection = Math.signum(reverseDistance - forwardDistance);
                 while (searchStepSize > 0.001) {
-                    if (Util.epsilonEquals(distance(current_state, previewQuantity), 0.0, 0.01))
+                    if (Math.abs(distance(current_state, previewQuantity) - 0.0) <= 0.01)
                         break;
                     while (/* next point is closer than current point */ distance(current_state, previewQuantity
                             + searchStepSize * searchDirection) < distance(current_state, previewQuantity)) {
@@ -489,7 +487,7 @@ public class DriveMotionPlanner {
                 mPathSetpoint = sample_point.state();
 
                 // Generate feedforward voltages.
-                final double velocity_m = Units.inches_to_meters(mPathSetpoint.velocity());
+                final double velocity_m = Units.inchesToMeters(mPathSetpoint.velocity());
                 final Rotation2d rotation = mPathSetpoint.state().getPose().getRotation();
 
                 // In field frame
@@ -514,7 +512,7 @@ public class DriveMotionPlanner {
                 double reverseDistance = distance(current_state, previewQuantity - searchStepSize);
                 searchDirection = Math.signum(reverseDistance - forwardDistance);
                 while (searchStepSize > 0.001) {
-                    if (Util.epsilonEquals(distance(current_state, previewQuantity), 0.0, 0.01))
+                    if (Math.abs(distance(current_state, previewQuantity) - 0.0) <= 0.01)
                         break;
                     while (/* next point is closer than current point */ distance(current_state, previewQuantity
                             + searchStepSize * searchDirection) < distance(current_state, previewQuantity)) {
@@ -551,8 +549,8 @@ public class DriveMotionPlanner {
 
     public synchronized Translation2d getTranslationalError() {
         return new Translation2d(
-                Units.inches_to_meters(mError.getTranslation().getX()),
-                Units.inches_to_meters(mError.getTranslation().getY()));
+                Units.inchesToMeters(mError.getTranslation().getX()),
+                Units.inchesToMeters(mError.getTranslation().getY()));
     }
 
     public synchronized Rotation2dState getHeadingError() {

@@ -8,7 +8,6 @@ import org.team100.lib.swerve.ChassisSpeeds;
 import org.team100.lib.telemetry.Telemetry;
 
 import com.team254.frc2022.planners.DriveMotionPlanner;
-import com.team254.lib.geometry.Pose2dState;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2dState;
 import com.team254.lib.trajectory.TimedView;

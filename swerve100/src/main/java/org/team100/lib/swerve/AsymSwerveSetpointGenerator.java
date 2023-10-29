@@ -4,14 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.team254.lib.geometry.Rotation2dState;
-import com.team254.lib.geometry.Translation2dState;
-import com.team254.lib.geometry.Twist2dWrapper;
-import com.team254.lib.swerve.SwerveModuleState;
-
 import org.team100.lib.geometry.GeometryUtil;
-import org.team100.lib.swerve.SwerveSetpoint;
-import com.team254.lib.util.Util;
+
+import com.team254.lib.geometry.Rotation2dState;
+import com.team254.lib.swerve.SwerveModuleState;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -91,7 +87,7 @@ public class AsymSwerveSetpointGenerator {
      */
     private double findRoot(Function2d func, double x_0, double y_0, double f_0, double x_1, double y_1, double f_1,
             int iterations_left) {
-        if (iterations_left < 0 || Util.epsilonEquals(f_0, f_1)) {
+        if (iterations_left < 0 || Math.abs(f_0 - f_1) <= 1e-12) {
             return 1.0;
         }
         var s_guess = Math.max(0.0, Math.min(1.0, -f_0 / (f_1 - f_0)));
@@ -184,7 +180,7 @@ public class AsymSwerveSetpointGenerator {
         // Special case: desiredState is a complete stop. In this case, module angle is
         // arbitrary, so just use the previous angle.
         boolean need_to_steer = true;
-        if (desiredState.toTwist2d().epsilonEquals(GeometryUtil.kTwist2dIdentity, Util.kEpsilon)) {
+        if (desiredState.toTwist2d().epsilonEquals(GeometryUtil.kTwist2dIdentity, 1e-12)) {
             need_to_steer = false;
             for (int i = 0; i < modules.length; ++i) {
                 desiredModuleState[i].angle = prevSetpoint.mModuleStates[i].angle;
@@ -222,8 +218,8 @@ public class AsymSwerveSetpointGenerator {
             }
         }
         if (all_modules_should_flip &&
-                !prevSetpoint.mChassisSpeeds.toTwist2d().epsilonEquals(GeometryUtil.kTwist2dIdentity, Util.kEpsilon) &&
-                !desiredState.toTwist2d().epsilonEquals(GeometryUtil.kTwist2dIdentity, Util.kEpsilon)) {
+                !prevSetpoint.mChassisSpeeds.toTwist2d().epsilonEquals(GeometryUtil.kTwist2dIdentity, 1e-12) &&
+                !desiredState.toTwist2d().epsilonEquals(GeometryUtil.kTwist2dIdentity, 1e-12)) {
             // It will (likely) be faster to stop the robot, rotate the modules in place to
             // the complement of the desired
             // angle, and accelerate again.
@@ -259,11 +255,11 @@ public class AsymSwerveSetpointGenerator {
                 continue;
             }
             overrideSteering.add(Optional.empty());
-            if (Util.epsilonEquals(prevSetpoint.mModuleStates[i].speedMetersPerSecond, 0.0)) {
+            if (Math.abs(prevSetpoint.mModuleStates[i].speedMetersPerSecond - 0.0) <= 1e-12) {
                 // If module is stopped, we know that we will need to move straight to the final
                 // steering angle, so limit based
                 // purely on rotation in place.
-                if (Util.epsilonEquals(desiredModuleState[i].speedMetersPerSecond, 0.0)) {
+                if (Math.abs(desiredModuleState[i].speedMetersPerSecond - 0.0) <= 1e-12) {
                     // Goal angle doesn't matter. Just leave module at its current angle.
                     overrideSteering.set(i, Optional.of(prevSetpoint.mModuleStates[i].angle));
                     continue;

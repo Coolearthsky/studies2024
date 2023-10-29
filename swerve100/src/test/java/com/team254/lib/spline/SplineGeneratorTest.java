@@ -10,7 +10,6 @@ import org.team100.lib.geometry.GeometryUtil;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2dState;
 import com.team254.lib.trajectory.TrajectoryPoint;
-import com.team254.lib.util.Util;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -18,7 +17,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 
 public class SplineGeneratorTest {
-    public static final double kTestEpsilon = Util.kEpsilon;
+    public static final double kTestEpsilon = 1e-12;
 
     @Test
     public void test() {

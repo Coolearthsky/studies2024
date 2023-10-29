@@ -2,8 +2,7 @@ package com.team254.lib.geometry;
 
 import org.team100.lib.geometry.GeometryUtil;
 
-import com.team254.lib.util.Util;
-
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.spline.PoseWithCurvature;
 
@@ -39,8 +38,8 @@ public class Pose2dWithCurvature extends PoseWithCurvature implements State<Pose
     @Override
     public Pose2dWithCurvature interpolate2(final Pose2dWithCurvature other, double x) {
         Pose2d interpolatedPose = getPose().interpolate(other.getPose(), x);
-        double interpolatedCurvature = Util.interpolate(getCurvature(), other.getCurvature(), x);
-        double interpolatedCurvatureDs = Util.interpolate(getDCurvatureDs(), other.getDCurvatureDs(), x);
+        double interpolatedCurvature = MathUtil.interpolate(getCurvature(), other.getCurvature(), x);
+        double interpolatedCurvatureDs = MathUtil.interpolate(getDCurvatureDs(), other.getDCurvatureDs(), x);
         return new Pose2dWithCurvature(
                 interpolatedPose,
                 interpolatedCurvature,
@@ -60,7 +59,7 @@ public class Pose2dWithCurvature extends PoseWithCurvature implements State<Pose
             return false;
         }
         Pose2dWithCurvature p2dwc = (Pose2dWithCurvature) other;
-        return getPose().equals(p2dwc.getPose()) && Util.epsilonEquals(getCurvature(), p2dwc.getCurvature())
-                && Util.epsilonEquals(getDCurvatureDs(), p2dwc.getDCurvatureDs());
+        return getPose().equals(p2dwc.getPose()) && Math.abs(getCurvature() - p2dwc.getCurvature()) <= 1e-12
+                && Math.abs(getDCurvatureDs() - p2dwc.getDCurvatureDs()) <= 1e-12;
     }
 }

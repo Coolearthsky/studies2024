@@ -4,7 +4,6 @@ import com.team254.lib.geometry.Pose2dState;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2dState;
 import com.team254.lib.geometry.Twist2dWrapper;
-import com.team254.lib.util.Util;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -78,13 +77,13 @@ public class GeometryUtil {
         if (!GeometryUtil.isParallel(a.getRotation(), other.getRotation()))
             return false;
         final Twist2d twist = slog(transformBy(inverse(a), other));
-        return (Util.epsilonEquals(twist.dy, 0.0) && Util.epsilonEquals(twist.dtheta, 0.0));
+        return (Math.abs(twist.dy - 0.0) <= 1e-12 && Math.abs(twist.dtheta - 0.0) <= 1e-12);
     }
 
     // note parallel also means antiparallel.
     public static boolean isParallel(Rotation2d a, Rotation2d b) {
-        return Util.epsilonEquals(a.getRadians(), b.getRadians())
-                || Util.epsilonEquals(a.getRadians(), WrapRadians(b.getRadians() + Math.PI));
+        return Math.abs(a.getRadians() - b.getRadians()) <= 1e-12
+                || Math.abs(a.getRadians() - WrapRadians(b.getRadians() + Math.PI)) <= 1e-12;
     }
 
     public static double norm(Twist2dWrapper a) {
