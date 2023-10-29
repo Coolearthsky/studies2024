@@ -86,10 +86,13 @@ public class ArmTrajectory extends Command {
         double desiredYPos  = desiredState.poseMeters.getY();
         double desiredVecloity = desiredState.velocityMetersPerSecond;
         double theta = desiredState.poseMeters.getRotation().getRadians();
-        double desiredXVelocity = desiredVecloity*Math.cos(theta);
-        double desiredYVelocity = desiredVecloity*Math.cos(90-theta);
+        double desiredXVel = desiredVecloity*Math.cos(theta);
+        double desiredYVel = desiredVecloity*Math.cos(90-theta);
+        Translation2d vel = new Translation2d(desiredXVel, desiredYVel);
         Translation2d reference = new Translation2d(desiredXPos, desiredYPos);
-        m_robot.setReference(m_kinematics.inverse(reference));
+        ArmAngles inverse = m_kinematics.inverse(reference);
+        m_robot.setReference(inverse);
+        m_robot.setFeedForward(m_kinematics.inverseVel(inverse, vel));
         measurmentX.set(currentUpper);
         measurmentY.set(currentLower);
         setpointUpper.set(desiredYPos);
@@ -114,9 +117,4 @@ public class ArmTrajectory extends Command {
         }
         return false;
     }
-
-    // private double oscillator(double timeSec) {
-    //     return m_config.oscillatorScale * Math.sin(2 * Math.PI * m_config.oscillatorFrequencyHz * timeSec);
-    // }
-
 }

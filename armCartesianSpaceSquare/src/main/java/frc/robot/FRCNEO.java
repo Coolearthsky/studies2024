@@ -31,8 +31,18 @@ public class FRCNEO implements Sendable {
         this.motor.restoreFactoryDefaults();
     }
 
+    //Units are rots per minute, multiply your input by the gear ratiox 
     public void driveVelocity(double velocity) {
-        this.closedLoop.setReference(velocity, ControlType.kVelocity);
+        double Kn = 1;
+        double Ks = 0.001515;
+        double VSat = 11;
+        double revolutionsPerSec = velocity/60;
+        if (revolutionsPerSec<.575) {
+            Ks = .03;
+        }
+        double kFF = (Kn*revolutionsPerSec + Ks*Math.signum(revolutionsPerSec))/VSat;
+        System.out.println(kFF);   
+        this.closedLoop.setReference(0, ControlType.kVelocity, 0, kFF);
     }
 
     public void drivePercentOutput(double percentOutput) {
@@ -846,6 +856,10 @@ public class FRCNEO implements Sendable {
 
     public void set(double u2) {
         motor.set(u2);        
+    }
+
+    public void setVoltage(double u2) {
+        motor.setVoltage(u2);        
     }
 
 }

@@ -56,6 +56,7 @@ public class Robot extends TimedRobot {
   private AnalogEncoder lowerArmEncoder;
   private AnalogEncoder upperArmEncoder;
   private ArmAngles m_reference;
+  private ArmAngles m_feedForward;
   double u1;
   double u2;
   private RobotContainer m_robotContainer;
@@ -95,13 +96,21 @@ public class Robot extends TimedRobot {
         .withNeutralMode(IdleMode.kBrake)
         .withForwardSoftLimitEnabled(false)
         .build();
+        upperArmMotor.setkP(1);
+        upperArmMotor.setkI(0);
+        upperArmMotor.setkD(1);
+        upperArmMotor.setkF(0);
+        lowerArmMotor.setkP(1);
+        lowerArmMotor.setkI(0);
+        lowerArmMotor.setkD(1);
+        lowerArmMotor.setkF(0);
     lowerArmInput = new AnalogInput(1);
     lowerArmEncoder = new AnalogEncoder(lowerArmInput);
     upperArmInput = new AnalogInput(0);
     upperArmEncoder = new AnalogEncoder(upperArmInput);
-
     m_reference = getMeasurement();
-
+    ArmAngles e = new ArmAngles(0, 0);
+    m_feedForward = e;
     m_robotContainer = new RobotContainer();
   }
 
@@ -119,6 +128,9 @@ public class Robot extends TimedRobot {
   public void setReference(ArmAngles reference) {
     m_reference = reference;
   }
+  public void setFeedForward(ArmAngles feedForward) {
+    m_feedForward = feedForward;
+  }
 
   public ArmAngles getMeasurement() {
     return new ArmAngles(
@@ -130,8 +142,12 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     m_trajec.execute();
     ArmAngles measurement = getMeasurement();
-    u1 = m_lowerController.calculate(measurement.th1, m_reference.th1);
-     u2 = m_upperController.calculate(measurement.th2, m_reference.th2) + m_upperController.getSetpoint();
+    double lowerControllerOutput = m_lowerController.calculate(measurement.th1, m_reference.th1);
+    double lowerFeedForward = m_feedForward.th1/(Math.PI*2);
+    u1 = lowerControllerOutput+lowerFeedForward;
+    double upperControllerOutput = m_upperController.calculate(measurement.th2, m_reference.th2);
+    double upperFeedForward = m_feedForward.th2/(Math.PI*2);
+    u2 = upperControllerOutput+upperFeedForward;
     SmartDashboard.putNumber("Lower Encoder: ", measurement.th1);
     SmartDashboard.putNumber("Lower Ref: ", m_reference.th1);
     SmartDashboard.putNumber("Upper Encoder: ", measurement.th2);
@@ -198,8 +214,8 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     // System.out.println(u1);
     // System.out.println(u2);
-    lowerArmMotor.set(u1);
-    upperArmMotor.set(u2);
+    lowerArmMotor.driveVelocity(60);
+    // upperArmMotor.set(u2);
   }
 
   @Override
@@ -219,11 +235,13 @@ public class Robot extends TimedRobot {
     if (controller.getAButton()) {
     lowerArmMotor.set(.1);}
     if (controller.getBButton()) {
-    upperArmMotor.set(.1);}
+    // upperArmMotor.set(.1);
+}
     if (controller.getXButton()) {
     lowerArmMotor.set(-.1);}
     if (controller.getYButton()) {
-    upperArmMotor.set(-.1);}
+    // upperArmMotor.set(-.1);
+}
   }
 
   @Override

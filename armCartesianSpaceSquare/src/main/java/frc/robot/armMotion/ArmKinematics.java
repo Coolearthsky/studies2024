@@ -30,7 +30,9 @@ public class ArmKinematics {
                 l1 * Math.cos(a.th1) + l2 * Math.cos(a.th2),
                 l1 * Math.sin(a.th1) + l2 * Math.sin(a.th2));
     }
-
+// l1 * Math.cos(a.th1) + l2 * Math.cos(a.th2) = x
+// l1 * Math.sin(a.th1) + l2 * Math.sin(a.th2) = y
+// a.th2 = Math.arcsin((y-l1*Math.sin(a.th1))/l2)
     /**
      * Calculates the position of the elbow only, for visualization.
      */
@@ -60,21 +62,11 @@ public class ArmKinematics {
             return null;
         return new ArmAngles(th1, th2);
     }
-    public ArmAngles inverseVel(Translation2d pos, Translation2d vel) { 
-        double y = pos.getY();
-        double dx = vel.getX();
-        double dy = vel.getY();
-        ArmAngles theta = this.inverse(pos);
-        double th1Divider = 2*l2*l2*Math.sqrt(1-Math.pow(y-l1*Math.sin(theta.th1),2)/(l2*l2));
-        double th1LeftOfEquation = dx-dy/th1Divider;
-        double th1Math1 = -l1*Math.sin(theta.th1);
-        double th1Math2 = 2*(y-l1*Math.sin(theta.th1))*(-l1*Math.cos(theta.th1));
-        double changeInLower = th1LeftOfEquation/(th1Math1-th1Math2);
-        double th2Divider = 2*l1*l1*Math.sqrt(1-Math.pow(y-l2*Math.sin(theta.th2),2)/(l1*l1));
-        double th2LeftOfEquation = dx-dy/th2Divider;
-        double th2Math1 = -l2*Math.sin(theta.th2);
-        double th2Math2 = 2*(y-l2*Math.sin(theta.th2))*(-l1*Math.cos(theta.th2));
-        double changeInUpper = th2LeftOfEquation/(th2Math1-th2Math2);
+    public ArmAngles inverseVel(ArmAngles pos, Translation2d vel) { 
+        //Lower Arm Calculation
+        double changeInLower = (Math.sin(pos.th2)*vel.getY() + Math.cos(pos.th2)*vel.getX())/(l1*Math.sin(pos.th2-pos.th1));
+        //Upper Arm Calculation
+        double changeInUpper = (Math.sin(pos.th1)*vel.getY() + Math.cos(pos.th1)*vel.getX())/(l2*Math.sin(pos.th1-pos.th2));
         ArmAngles dtheta = new ArmAngles(changeInLower, changeInUpper);
         return dtheta;
     }
