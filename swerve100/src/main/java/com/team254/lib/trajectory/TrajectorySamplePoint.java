@@ -1,28 +1,27 @@
 package com.team254.lib.trajectory;
 
-import com.team254.lib.geometry.Pose2dWithCurvature;
-import com.team254.lib.geometry.Rotation2dState;
-import com.team254.lib.trajectory.timing.TimedState;
+import com.team254.lib.trajectory.timing.TimedPose;
+import com.team254.lib.trajectory.timing.TimedRotation;
 
 /** Represents a sample of a 2d path with heading and a schedule. */
 public class TrajectorySamplePoint {
-    protected final TimedState<Pose2dWithCurvature> state_;
-    protected final TimedState<Rotation2dState> heading_;
+    protected final TimedPose state_;
+    protected final TimedRotation heading_;
     protected final int index_floor_;
     protected final int index_ceil_;
 
-    public TrajectorySamplePoint(final TimedState<Pose2dWithCurvature> state, final TimedState<Rotation2dState> heading, int index_floor, int index_ceil) {
+    public TrajectorySamplePoint(final TimedPose state, final TimedRotation heading, int index_floor, int index_ceil) {
         state_ = state;
         heading_ = heading;
         index_floor_ = index_floor;
         index_ceil_ = index_ceil;
     }
 
-    public TimedState<Pose2dWithCurvature> state() {
+    public TimedPose state() {
         return state_;
     }
 
-    public TimedState<Rotation2dState> heading() {
+    public TimedRotation heading() {
         return heading_;
     }
 

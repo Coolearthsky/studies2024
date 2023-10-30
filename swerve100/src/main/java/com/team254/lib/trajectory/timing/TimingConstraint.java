@@ -1,11 +1,11 @@
 package com.team254.lib.trajectory.timing;
 
-import com.team254.lib.geometry.State;
+import com.team254.lib.geometry.Pose2dWithCurvature;
 
-public interface TimingConstraint<S extends State<S>> {
-    double getMaxVelocity(S state);
+public interface TimingConstraint {
+    double getMaxVelocity(Pose2dWithCurvature state);
 
-    MinMaxAcceleration getMinMaxAcceleration(S state, double velocity);
+    MinMaxAcceleration getMinMaxAcceleration(Pose2dWithCurvature state, double velocity);
 
     class MinMaxAcceleration {
         protected final double min_acceleration_;

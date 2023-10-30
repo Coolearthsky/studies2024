@@ -4,7 +4,7 @@ import org.team100.lib.geometry.GeometryUtil;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 
-public class Rotation2dState implements State<Rotation2dState> {
+public class Rotation2dState {
     private final Rotation2d rotation2d;
 
     public Rotation2d get() {
@@ -20,7 +20,7 @@ public class Rotation2dState implements State<Rotation2dState> {
     }
 
     public Rotation2dState(double x, double y) {
-        this(new Rotation2d(x,y));
+        this(new Rotation2d(x, y));
     }
 
     public Rotation2dState(final Rotation2d other) {
@@ -43,9 +43,7 @@ public class Rotation2dState implements State<Rotation2dState> {
         return new Rotation2d(a.getRadians() + Math.PI);
     }
 
-    @Override
-    public Rotation2dState interpolate2(final Rotation2dState other,
-            double x) {
+    public Rotation2dState interpolate2(final Rotation2dState other, double x) {
         if (x <= 0.0) {
             return new Rotation2dState(this.get());
         } else if (x >= 1.0) {
@@ -55,7 +53,6 @@ public class Rotation2dState implements State<Rotation2dState> {
         return new Rotation2dState(this.rotateBy(GeometryUtil.fromRadians(angle_diff * x)));
     }
 
-    @Override
     public double distance(final Rotation2dState other) {
         return get().unaryMinus().rotateBy(other.get()).getRadians();
     }
@@ -65,6 +62,6 @@ public class Rotation2dState implements State<Rotation2dState> {
         if (!(other instanceof Rotation2dState)) {
             return false;
         }
-        return rotation2d.equals(((Rotation2dState)other).rotation2d);
+        return rotation2d.equals(((Rotation2dState) other).rotation2d);
     }
 }

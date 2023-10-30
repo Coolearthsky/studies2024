@@ -1,29 +1,29 @@
 package com.team254.lib.trajectory.timing;
 
-import com.team254.lib.geometry.State;
+import com.team254.lib.geometry.Pose2dWithCurvature;
 
 import edu.wpi.first.math.MathUtil;
 
 import java.text.DecimalFormat;
 
-public class TimedState<S extends State<S>> implements State<TimedState<S>> {
-    protected final S state_;
+public class TimedPose {
+    protected final Pose2dWithCurvature state_;
     protected double t_; // Time we achieve this state.
     protected double velocity_; // ds/dt
     protected double acceleration_; // d^2s/dt^2
 
-    public TimedState(final S state) {
+    public TimedPose(final Pose2dWithCurvature state) {
         state_ = state;
     }
 
-    public TimedState(final S state, double t, double velocity, double acceleration) {
+    public TimedPose(final Pose2dWithCurvature state, double t, double velocity, double acceleration) {
         state_ = state;
         t_ = t;
         velocity_ = velocity;
         acceleration_ = acceleration;
     }
 
-    public S state() {
+    public Pose2dWithCurvature state() {
         return state_;
     }
 
@@ -58,8 +58,7 @@ public class TimedState<S extends State<S>> implements State<TimedState<S>> {
                 + fmt.format(acceleration());
     }
 
-    @Override
-    public TimedState<S> interpolate2(TimedState<S> other, double x) {
+    public TimedPose interpolate2(TimedPose other, double x) {
         final double new_t = MathUtil.interpolate(t(), other.t(), x);
         final double delta_t = new_t - t();
         if (delta_t < 0.0) {
@@ -72,7 +71,7 @@ public class TimedState<S extends State<S>> implements State<TimedState<S>> {
         // System.out.println("x: " + x + " , new_t: " + new_t + ", new_s: " + new_s + "
         // , distance: " + state()
         // .distance(other.state()));
-        return new TimedState<S>(state().interpolate2(other.state(), new_s / state().distance(other.state())),
+        return new TimedPose(state().interpolate2(other.state(), new_s / state().distance(other.state())),
                 new_t,
                 new_v,
                 acceleration());
@@ -83,18 +82,17 @@ public class TimedState<S extends State<S>> implements State<TimedState<S>> {
     //     return new TimedState<>(this.state().add(other.state()));
     // }
 
-    @Override
-    public double distance(TimedState<S> other) {
+    public double distance(TimedPose other) {
         return state().distance(other.state());
     }
 
     @Override
     public boolean equals(final Object other) {
-        if (other == null || !(other instanceof TimedState<?>)) {
+        if (other == null || !(other instanceof TimedPose)) {
             System.out.println("wrong type");
             return false;
         }
-        TimedState<?> ts = (TimedState<?>) other;
+        TimedPose ts = (TimedPose) other;
         boolean stateEqual = state().equals(ts.state());
         if (!stateEqual) {
             System.out.println("states not equal");

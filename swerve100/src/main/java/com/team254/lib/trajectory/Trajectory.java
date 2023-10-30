@@ -3,9 +3,8 @@ package com.team254.lib.trajectory;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.team254.lib.geometry.Pose2dWithCurvature;
-import com.team254.lib.geometry.Rotation2dState;
-import com.team254.lib.trajectory.timing.TimedState;
+import com.team254.lib.trajectory.timing.TimedPose;
+import com.team254.lib.trajectory.timing.TimedRotation;
 
 /**
  * Represents a 2d path with heading and a schedule.
@@ -13,7 +12,7 @@ import com.team254.lib.trajectory.timing.TimedState;
 public class Trajectory {
     protected final List<TrajectoryPoint> points_;
 
-    public Trajectory(final List<TimedState<Pose2dWithCurvature>> states, final List<TimedState<Rotation2dState>> headings) {
+    public Trajectory(final List<TimedPose> states, final List<TimedRotation> headings) {
         points_ = new ArrayList<>(states.size());
         for (int i = 0; i < states.size(); ++i) {
             points_.add(new TrajectoryPoint(states.get(i), headings.get(i), i));

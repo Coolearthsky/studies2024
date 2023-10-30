@@ -13,7 +13,8 @@ import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.TrajectoryTimeIterator;
 import com.team254.lib.trajectory.TrajectoryTimeSampler;
 import com.team254.lib.trajectory.timing.CentripetalAccelerationConstraint;
-import com.team254.lib.trajectory.timing.TimedState;
+import com.team254.lib.trajectory.timing.TimedPose;
+import com.team254.lib.trajectory.timing.TimedRotation;
 import com.team254.lib.trajectory.timing.TimingConstraint;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -74,7 +75,7 @@ public class FancyTrajectoryTest {
                 GeometryUtil.fromDegrees(90),
                 GeometryUtil.fromDegrees(180));
         // these don't actually do anything.
-        List<TimingConstraint<Pose2dWithCurvature>> constraints = List.of(
+        List<TimingConstraint> constraints = List.of(
                 new CentripetalAccelerationConstraint(60));
 
         // note there are static constraints in here.
@@ -119,8 +120,8 @@ public class FancyTrajectoryTest {
 
         Translation2d translational_error = mMotionPlanner.getTranslationalError();
         Rotation2dState heading_error = mMotionPlanner.getHeadingError();
-        TimedState<Pose2dWithCurvature> path_setpoint = mMotionPlanner.getPathSetpoint();
-        TimedState<Rotation2dState> heading_setpoint = mMotionPlanner.getHeadingSetpoint();
+        TimedPose path_setpoint = mMotionPlanner.getPathSetpoint();
+        TimedRotation heading_setpoint = mMotionPlanner.getHeadingSetpoint();
 
         // the DriveMotionPlanner has two ways to follow the trajectory: it could just
         // follow it,

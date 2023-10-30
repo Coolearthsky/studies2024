@@ -6,7 +6,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.spline.PoseWithCurvature;
 
-public class Pose2dWithCurvature extends PoseWithCurvature implements State<Pose2dWithCurvature> {
+public class Pose2dWithCurvature extends PoseWithCurvature {
     protected final double dcurvature_ds_;
 
     public Pose2dWithCurvature() {
@@ -35,7 +35,6 @@ public class Pose2dWithCurvature extends PoseWithCurvature implements State<Pose
         return dcurvature_ds_;
     }
 
-    @Override
     public Pose2dWithCurvature interpolate2(final Pose2dWithCurvature other, double x) {
         Pose2d interpolatedPose = getPose().interpolate(other.getPose(), x);
         double interpolatedCurvature = MathUtil.interpolate(getCurvature(), other.getCurvature(), x);
@@ -46,7 +45,6 @@ public class Pose2dWithCurvature extends PoseWithCurvature implements State<Pose
                 interpolatedCurvatureDs);
     }
 
-    @Override
     public double distance(final Pose2dWithCurvature other) {
         // this is not used
         return GeometryUtil.norm(
