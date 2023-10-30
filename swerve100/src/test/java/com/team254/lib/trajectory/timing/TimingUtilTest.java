@@ -13,10 +13,9 @@ import org.team100.lib.geometry.GeometryUtil;
 
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2dState;
-import com.team254.lib.geometry.State;
+import com.team254.lib.trajectory.Path;
 import com.team254.lib.trajectory.PathDistanceSampler;
 import com.team254.lib.trajectory.Trajectory;
-import com.team254.lib.trajectory.Path;
 import com.team254.lib.trajectory.timing.TimingConstraint.MinMaxAcceleration;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -43,7 +42,7 @@ public class TimingUtilTest {
     public Trajectory buildAndCheckTrajectory(
             final PathDistanceSampler dist_view,
             double step_size,
-            List<TimingConstraint<Pose2dWithCurvature>> constraints,
+            List<TimingConstraint> constraints,
             double start_vel,
             double end_vel,
             double max_vel,
@@ -55,9 +54,9 @@ public class TimingUtilTest {
         return timed_traj;
     }
 
-    public <S extends State<S>, T extends State<T>> void checkTrajectory(
+    public void checkTrajectory(
             final Trajectory traj,
-            List<TimingConstraint<Pose2dWithCurvature>> constraints,
+            List<TimingConstraint> constraints,
             double start_vel,
             double end_vel,
             double max_vel,
@@ -70,7 +69,7 @@ public class TimingUtilTest {
         // correct.
         for (int i = 0; i < traj.length(); ++i) {
             final TimedPose state = traj.getPoint(i).state();
-            for (final TimingConstraint<Pose2dWithCurvature> constraint : constraints) {
+            for (final TimingConstraint constraint : constraints) {
                 assertTrue(state.velocity() - kTestEpsilon <= constraint.getMaxVelocity(state.state()));
                 final MinMaxAcceleration accel_limits = constraint.getMinMaxAcceleration(state.state(),
                         state.velocity());
@@ -93,15 +92,15 @@ public class TimingUtilTest {
         // Triangle profile.
         Trajectory timed_traj = buildAndCheckTrajectory(dist_view,
                 1.0,
-                new ArrayList<TimingConstraint<Pose2dWithCurvature>>(), 0.0, 0.0, 20.0, 5.0);
+                new ArrayList<TimingConstraint>(), 0.0, 0.0, 20.0, 5.0);
         System.out.println(timed_traj);
 
         // Trapezoidal profile.
-        timed_traj = buildAndCheckTrajectory(dist_view, 1.0, new ArrayList<TimingConstraint<Pose2dWithCurvature>>(), 0.0, 0.0,
+        timed_traj = buildAndCheckTrajectory(dist_view, 1.0, new ArrayList<TimingConstraint>(), 0.0, 0.0,
                 10.0, 5.0);
 
         // Trapezoidal profile with start and end velocities.
-        timed_traj = buildAndCheckTrajectory(dist_view, 1.0, new ArrayList<TimingConstraint<Pose2dWithCurvature>>(), 5.0, 2.0,
+        timed_traj = buildAndCheckTrajectory(dist_view, 1.0, new ArrayList<TimingConstraint>(), 5.0, 2.0,
                 10.0, 5.0);
     }
 
@@ -110,7 +109,7 @@ public class TimingUtilTest {
         Path traj = new Path(kWaypoints, kHeadings);
         PathDistanceSampler dist_view = new PathDistanceSampler(traj);
 
-        class ConditionalTimingConstraint<S extends Pose2dWithCurvature> implements TimingConstraint<Pose2dWithCurvature> {
+        class ConditionalTimingConstraint<S extends Pose2dWithCurvature> implements TimingConstraint {
             @Override
             public double getMaxVelocity(Pose2dWithCurvature state) {
                 if (state.getPose().getTranslation().getX() >= 24.0) {
@@ -140,14 +139,14 @@ public class TimingUtilTest {
         Path traj = new Path(kWaypoints, kHeadings);
         PathDistanceSampler dist_view = new PathDistanceSampler(traj);
 
-        class ConditionalTimingConstraint<S extends State<S>> implements TimingConstraint<S> {
+        class ConditionalTimingConstraint implements TimingConstraint {
             @Override
-            public double getMaxVelocity(S state) {
+            public double getMaxVelocity(Pose2dWithCurvature state) {
                 return Double.POSITIVE_INFINITY;
             }
 
             @Override
-            public TimingConstraint.MinMaxAcceleration getMinMaxAcceleration(S state,
+            public TimingConstraint.MinMaxAcceleration getMinMaxAcceleration(Pose2dWithCurvature state,
                     double velocity) {
                 return new TimingConstraint.MinMaxAcceleration(-10.0, 10.0 / velocity);
             }
@@ -156,7 +155,7 @@ public class TimingUtilTest {
         // Trapezoidal profile.
         Trajectory timed_traj = buildAndCheckTrajectory(dist_view,
                 1.0,
-                Arrays.asList(new ConditionalTimingConstraint<>()), 0.0, 0.0, 10.0, 5.0);
+                Arrays.asList(new ConditionalTimingConstraint()), 0.0, 0.0, 10.0, 5.0);
         System.out.println(timed_traj);
     }
 

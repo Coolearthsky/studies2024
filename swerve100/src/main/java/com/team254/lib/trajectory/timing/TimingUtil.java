@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2dState;
-import com.team254.lib.geometry.State;
 import com.team254.lib.trajectory.PathDistanceSampler;
 import com.team254.lib.trajectory.Trajectory;
 
@@ -13,7 +12,7 @@ public class TimingUtil {
     public static  Trajectory timeParameterizeTrajectory(
             final PathDistanceSampler distance_view,
             double step_size,
-            final List<TimingConstraint<Pose2dWithCurvature>> constraints,
+            final List<TimingConstraint> constraints,
             double start_velocity,
             double end_velocity,
             double max_translational_velocity,
@@ -32,12 +31,12 @@ public class TimingUtil {
     public static Trajectory timeParameterizeTrajectory(
             final List<Pose2dWithCurvature> states,
             final List<Rotation2dState> headings,
-            final List<TimingConstraint<Pose2dWithCurvature>> constraints,
+            final List<TimingConstraint> constraints,
             double start_velocity,
             double end_velocity,
             double max_translational_velocity,
             double max_abs_acceleration) {
-        List<ConstrainedState<Pose2dWithCurvature, Rotation2dState>> constraint_states = new ArrayList<>(states.size());
+        List<ConstrainedState> constraint_states = new ArrayList<>(states.size());
         final double kEpsilon = 1e-6;
 
         // Forward pass. We look at pairs of consecutive states, where the start state has already been velocity
@@ -45,7 +44,7 @@ public class TimingUtil {
         // acceleration that is admissible at both the start and end state, as well as an admissible end velocity. If
         // there is no admissible end velocity or acceleration, we set the end velocity to the state's maximum allowed
         // velocity and will repair the acceleration during the backward pass (by slowing down the predecessor).
-        ConstrainedState<Pose2dWithCurvature, Rotation2dState> predecessor = new ConstrainedState<>();
+        ConstrainedState predecessor = new ConstrainedState();
         predecessor.state = states.get(0);
         predecessor.distance = 0.0;
         predecessor.heading = headings.get(0);
@@ -54,8 +53,8 @@ public class TimingUtil {
         predecessor.max_acceleration = max_abs_acceleration;
         for (int i = 0; i < states.size(); ++i) {
             // Add the new state.
-            constraint_states.add(new ConstrainedState<>());
-            ConstrainedState<Pose2dWithCurvature, Rotation2dState> constraint_state = constraint_states.get(i);
+            constraint_states.add(new ConstrainedState());
+            ConstrainedState constraint_state = constraint_states.get(i);
             constraint_state.state = states.get(i);
             constraint_state.heading = headings.get(i);
             final double ds = constraint_state.state.distance(predecessor.state);
@@ -81,7 +80,7 @@ public class TimingUtil {
                 // state max accel.
 
                 // Enforce all velocity constraints.
-                for (final TimingConstraint<Pose2dWithCurvature> constraint : constraints) {
+                for (final TimingConstraint constraint : constraints) {
                     constraint_state.max_translational_velocity = Math.min(constraint_state.max_translational_velocity,
                             constraint.getMaxVelocity(constraint_state.state));
                 }
@@ -91,7 +90,7 @@ public class TimingUtil {
                 }
 
                 // Now enforce all acceleration constraints.
-                for (final TimingConstraint<Pose2dWithCurvature> constraint : constraints) {
+                for (final TimingConstraint constraint : constraints) {
                     final TimingConstraint.MinMaxAcceleration min_max_accel = constraint.getMinMaxAcceleration(
                             constraint_state.state, constraint_state.max_translational_velocity);
                     if (!min_max_accel.valid()) {
@@ -134,7 +133,7 @@ public class TimingUtil {
         }
 
         // Backward pass.
-        ConstrainedState<Pose2dWithCurvature, Rotation2dState> successor = new ConstrainedState<>();
+        ConstrainedState successor = new ConstrainedState();
         successor.state = states.get(states.size() - 1);
         successor.heading = headings.get(headings.size() - 1);
         successor.distance = constraint_states.get(states.size() - 1).distance;
@@ -142,7 +141,7 @@ public class TimingUtil {
         successor.min_translational_acceleration = -max_abs_acceleration;
         successor.max_acceleration = max_abs_acceleration;
         for (int i = states.size() - 1; i >= 0; --i) {
-            ConstrainedState<Pose2dWithCurvature, Rotation2dState> constraint_state = constraint_states.get(i);
+            ConstrainedState constraint_state = constraint_states.get(i);
             final double ds = constraint_state.distance - successor.distance; // will be negative.
 
             while (true) {
@@ -160,7 +159,7 @@ public class TimingUtil {
                 }
 
                 // Now check all acceleration constraints with the lower max velocity.
-                for (final TimingConstraint<Pose2dWithCurvature> constraint : constraints) {
+                for (final TimingConstraint constraint : constraints) {
                     final TimingConstraint.MinMaxAcceleration min_max_accel = constraint.getMinMaxAcceleration(
                             constraint_state.state,
                             constraint_state.max_translational_velocity);
@@ -202,7 +201,7 @@ public class TimingUtil {
         double s = 0.0;
         double v = 0.0;
         for (int i = 0; i < states.size(); ++i) {
-            final ConstrainedState<Pose2dWithCurvature, Rotation2dState> constrained_state = constraint_states.get(i);
+            final ConstrainedState constrained_state = constraint_states.get(i);
             // Advance t.
             final double ds = constrained_state.distance - s;
             final double accel = (constrained_state.max_translational_velocity * constrained_state.max_translational_velocity - v * v) / (2.0 * ds);
@@ -230,16 +229,16 @@ public class TimingUtil {
         return new Trajectory(timed_states, timed_headings);
     }
 
-    protected static class ConstrainedState<S extends State<S>, T extends State<T>> {
-        public S state;
+    protected static class ConstrainedState {
+        public Pose2dWithCurvature state;
         public double distance;
-        public T heading;
+        public Rotation2dState heading;
         public double max_translational_velocity;
-        public T max_angular_velocity;
+        public Rotation2dState max_angular_velocity;
         public double min_translational_acceleration;
-        public T min_angular_acceleration;
+        public Rotation2dState min_angular_acceleration;
         public double max_acceleration;
-        public T max_angular_acceleration;
+        public Rotation2dState max_angular_acceleration;
 
         @Override
         public String toString() {

@@ -47,7 +47,7 @@ public class FancyTrajectory extends Command {
                 GeometryUtil.fromDegrees(0),
                 GeometryUtil.fromDegrees(0));
         // these don't actually do anything.
-        List<TimingConstraint<Pose2dWithCurvature>> constraints = List.of(
+        List<TimingConstraint> constraints = List.of(
                 new CentripetalAccelerationConstraint(60));
 
         // note there are static constraints in here.

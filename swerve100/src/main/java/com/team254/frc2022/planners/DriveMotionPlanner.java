@@ -139,7 +139,7 @@ public class DriveMotionPlanner {
     public Trajectory generateTrajectory(
             final List<Pose2d> waypoints,
             final List<Rotation2dState> headings,
-            final List<TimingConstraint<Pose2dWithCurvature>> constraints,
+            final List<TimingConstraint> constraints,
             double start_vel,
             double end_vel,
             double max_vel, // inches/s
@@ -171,7 +171,7 @@ public class DriveMotionPlanner {
         // without ever applying more
         // than the specified voltage.
         final SwerveDriveDynamicsConstraint drive_constraints = new SwerveDriveDynamicsConstraint(mModel, max_voltage);
-        List<TimingConstraint<Pose2dWithCurvature>> all_constraints = new ArrayList<>();
+        List<TimingConstraint> all_constraints = new ArrayList<>();
         all_constraints.add(drive_constraints);
         if (constraints != null) {
             all_constraints.addAll(constraints);
