@@ -9,7 +9,7 @@ import org.team100.lib.geometry.GeometryUtil;
 
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2dState;
-import com.team254.lib.trajectory.TrajectoryPoint;
+import com.team254.lib.trajectory.PathPoint;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -27,13 +27,12 @@ public class SplineGeneratorTest {
         Spline s = new QuinticHermiteSpline(p1, p2);
         List<Rotation2dState> headings = List.of(GeometryUtil.fromDegrees(0), GeometryUtil.fromDegrees(90));
 
-        List<TrajectoryPoint<Pose2dWithCurvature, Rotation2dState>> samples = SplineGenerator.parameterizeSpline(s,
-                headings);
+        List<PathPoint> samples = SplineGenerator.parameterizeSpline(s, headings);
 
         double arclength = 0;
         Rotation2dState cur_heading = new Rotation2dState();
         Pose2dWithCurvature cur_pose = samples.get(0).state();
-        for (TrajectoryPoint<Pose2dWithCurvature, Rotation2dState> point : samples) {
+        for (PathPoint point : samples) {
             Pose2dWithCurvature sample = point.state();
             final Twist2d t = GeometryUtil
                     .slog(GeometryUtil.transformBy(GeometryUtil.inverse(cur_pose.getPose()), sample.getPose()));

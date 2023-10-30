@@ -35,8 +35,8 @@ public class DistanceViewTest {
                 GeometryUtil.fromDegrees(180));
 
         // Create the reference trajectory (straight line motion between waypoints).
-        Trajectory<Pose2dWithCurvature, Rotation2dState> trajectory = new Trajectory<>(waypoints, headings);
-        final DistanceView distance_view = new DistanceView(trajectory);
+        Path trajectory = new Path(waypoints, headings);
+        final PathDistanceSampler distance_view = new PathDistanceSampler(trajectory);
 
         assertEquals(0.0, distance_view.first_interpolant(), kTestEpsilon);
         assertEquals(84.0, distance_view.last_interpolant(), kTestEpsilon);

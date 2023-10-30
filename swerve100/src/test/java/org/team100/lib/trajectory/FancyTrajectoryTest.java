@@ -9,9 +9,9 @@ import org.team100.lib.swerve.ChassisSpeeds;
 import com.team254.frc2022.planners.DriveMotionPlanner;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2dState;
-import com.team254.lib.trajectory.TimedTrajectoryIterator;
-import com.team254.lib.trajectory.TimedView;
 import com.team254.lib.trajectory.Trajectory;
+import com.team254.lib.trajectory.TrajectoryTimeIterator;
+import com.team254.lib.trajectory.TrajectoryTimeSampler;
 import com.team254.lib.trajectory.timing.CentripetalAccelerationConstraint;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.trajectory.timing.TimingConstraint;
@@ -82,23 +82,22 @@ public class FancyTrajectoryTest {
         double start_vel = 0;
         double end_vel = 0;
         // there's a bug in here; it doesn't use the constraints, nor the voltage.
-        Trajectory<TimedState<Pose2dWithCurvature>, TimedState<Rotation2dState>> trajectory = mMotionPlanner
-                .generateTrajectory(
-                        waypoints,
-                        headings,
-                        constraints,
-                        start_vel,
-                        end_vel,
-                        kMaxVel,
-                        kMaxAccel,
-                        kMaxVoltage);
+        Trajectory trajectory = mMotionPlanner.generateTrajectory(
+                waypoints,
+                headings,
+                constraints,
+                start_vel,
+                end_vel,
+                kMaxVel,
+                kMaxAccel,
+                kMaxVoltage);
         System.out.println(trajectory);
         System.out.println("TRAJECTORY LENGTH: " + trajectory.length());
         // assertEquals(10, trajectory.length());
 
-        TimedView view = new TimedView(trajectory);
+        TrajectoryTimeSampler view = new TrajectoryTimeSampler(trajectory);
 
-        TimedTrajectoryIterator iter = new TimedTrajectoryIterator(view);
+        TrajectoryTimeIterator iter = new TrajectoryTimeIterator(view);
 
         mMotionPlanner.setTrajectory(iter);
 

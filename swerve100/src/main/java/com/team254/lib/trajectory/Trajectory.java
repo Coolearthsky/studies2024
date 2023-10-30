@@ -3,23 +3,20 @@ package com.team254.lib.trajectory;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.team254.lib.geometry.State;
+import com.team254.lib.geometry.Pose2dWithCurvature;
+import com.team254.lib.geometry.Rotation2dState;
+import com.team254.lib.trajectory.timing.TimedState;
 
-public class Trajectory<S extends State<S>, T extends State<T>> {
-    protected final List<TrajectoryPoint<S, T>> points_;
+/**
+ * Represents a 2d path with heading and a schedule.
+ */
+public class Trajectory {
+    protected final List<TrajectoryPoint> points_;
 
-    public Trajectory(final List<S> states, final List<T> headings) {
+    public Trajectory(final List<TimedState<Pose2dWithCurvature>> states, final List<TimedState<Rotation2dState>> headings) {
         points_ = new ArrayList<>(states.size());
         for (int i = 0; i < states.size(); ++i) {
-            points_.add(new TrajectoryPoint<>(states.get(i), headings.get(i), i));
-        }
-    }
-
-    public Trajectory(final List<TrajectoryPoint<S, T>> points) {
-        // this renumbers the points.
-        points_ = new ArrayList<>(points.size());
-        for (int i = 0; i < points.size(); i++) {
-            points_.add(new TrajectoryPoint<>(points.get(i).state(), points.get(i).heading(), i));
+            points_.add(new TrajectoryPoint(states.get(i), headings.get(i), i));
         }
     }
 
@@ -31,39 +28,12 @@ public class Trajectory<S extends State<S>, T extends State<T>> {
         return points_.size();
     }
 
-    public TrajectoryPoint<S, T> getLastPoint() {
+    public TrajectoryPoint getLastPoint() {
         return points_.get(length() - 1);
     }
 
-    public TrajectoryPoint<S, T> getPoint(final int index) {
+    public TrajectoryPoint getPoint(final int index) {
         return points_.get(index);
-    }
-
-    public TrajectorySamplePoint<S, T> getInterpolated(final double index) {
-        if (isEmpty()) {
-            return null;
-        } else if (index <= 0.0) {
-            TrajectoryPoint<S, T> point = getPoint(0);
-            return new TrajectorySamplePoint<>(point.state(), point.heading(), point.index(), point.index());
-        } else if (index >= length() - 1) {
-            TrajectoryPoint<S, T> point = getPoint(length() - 1);
-            return new TrajectorySamplePoint<>(point.state(), point.heading(), point.index(), point.index());
-        }
-        final int i = (int) Math.floor(index);
-        final double frac = index - i;
-        if (frac <= Double.MIN_VALUE) {
-            TrajectoryPoint<S, T> point = getPoint(i);
-            return new TrajectorySamplePoint<>(point.state(), point.heading(), point.index(), point.index());
-        } else if (frac >= 1.0 - Double.MIN_VALUE) {
-            TrajectoryPoint<S, T> point = getPoint(i + 1);
-            return new TrajectorySamplePoint<>(point.state(), point.heading(), point.index(), point.index());
-        } else {
-            return new TrajectorySamplePoint<>(
-                    getPoint(i).state().interpolate2(getPoint(i + 1).state(), frac),
-                    getPoint(i).heading().interpolate2(getPoint(i + 1).heading(), frac),
-                    i,
-                    i + 1);
-        }
     }
 
     @Override

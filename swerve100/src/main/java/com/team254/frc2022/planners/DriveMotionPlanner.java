@@ -16,10 +16,11 @@ import com.team254.lib.physics.SwerveDrive;
 import com.team254.lib.spline.QuinticHermiteSpline;
 import com.team254.lib.spline.Spline;
 import com.team254.lib.spline.SplineGenerator;
-import com.team254.lib.trajectory.DistanceView;
-import com.team254.lib.trajectory.TimedTrajectoryIterator;
+import com.team254.lib.trajectory.PathDistanceSampler;
 import com.team254.lib.trajectory.Trajectory;
+import com.team254.lib.trajectory.TrajectoryTimeIterator;
 import com.team254.lib.trajectory.TrajectorySamplePoint;
+import com.team254.lib.trajectory.Path;
 import com.team254.lib.trajectory.timing.SwerveDriveDynamicsConstraint;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.trajectory.timing.TimingConstraint;
@@ -64,7 +65,7 @@ public class DriveMotionPlanner {
     private double defaultCook = 0.4;
     private boolean useDefaultCook = true;
 
-    private TimedTrajectoryIterator mCurrentTrajectory;
+    private TrajectoryTimeIterator mCurrentTrajectory;
     boolean mIsReversed = false;
     double mLastTime = Double.POSITIVE_INFINITY;
     public TimedState<Pose2dWithCurvature> mLastPathSetpoint = null;
@@ -97,15 +98,10 @@ public class DriveMotionPlanner {
         mModel = new SwerveDrive(
                 0.0942 / 2,
                 0.464 / 2.0 * kTrackScrubFactor);
-
-        SmartDashboard.putString("Steering Direction", "");
-        SmartDashboard.putString("Last Pose", "");
-        SmartDashboard.putString("Current Pose", "");
-        SmartDashboard.putNumber("Finished Traj?", -1.0);
-        SmartDashboard.putNumber("Adaptive Lookahead", -1.0);
     }
 
-    public void setTrajectory(final TimedTrajectoryIterator trajectory) {
+
+    public void setTrajectory(final TrajectoryTimeIterator trajectory) {
 
         mCurrentTrajectory = trajectory;
 
@@ -141,7 +137,7 @@ public class DriveMotionPlanner {
         mLastTime = Double.POSITIVE_INFINITY;
     }
 
-    public Trajectory<TimedState<Pose2dWithCurvature>, TimedState<Rotation2dState>> generateTrajectory(
+    public Trajectory generateTrajectory(
             final List<Pose2d> waypoints,
             final List<Rotation2dState> headings,
             final List<TimingConstraint<Pose2dWithCurvature>> constraints,
@@ -167,8 +163,7 @@ public class DriveMotionPlanner {
         QuinticHermiteSpline.optimizeSpline(splines);
         final List<? extends Spline> splines1 = splines;
 
-        Trajectory<Pose2dWithCurvature, Rotation2dState> trajectory = new Trajectory<>(
-                SplineGenerator.parameterizeSplines(splines1, headings, kMaxDx, kMaxDy, kMaxDTheta));
+        Path trajectory = new Path(SplineGenerator.parameterizeSplines(splines1, headings, kMaxDx, kMaxDy, kMaxDTheta));
 
         //////
         /////
@@ -184,7 +179,7 @@ public class DriveMotionPlanner {
         }
 
         // Generate the timed trajectory.
-        DistanceView distance_view = new DistanceView(trajectory);
+        PathDistanceSampler distance_view = new PathDistanceSampler(trajectory);
         return TimingUtil.timeParameterizeTrajectory(distance_view, kMaxDx, Arrays.asList(),
                 start_vel, end_vel, max_vel, max_accel);
     }
@@ -330,7 +325,7 @@ public class DriveMotionPlanner {
 
         mDt = timestamp - mLastTime;
         mLastTime = timestamp;
-        TrajectorySamplePoint<TimedState<Pose2dWithCurvature>, TimedState<Rotation2dState>> sample_point;
+        TrajectorySamplePoint sample_point;
 
         mHeadingSetpoint = new TimedState<>(
                 new Rotation2dState(mInitialHeading.rotateBy(mRotationDiff.times(Math.min(1.0,
@@ -399,10 +394,7 @@ public class DriveMotionPlanner {
                 }
                 sample_point = mCurrentTrajectory.advance(previewQuantity);
                 mPathSetpoint = sample_point.state();
-                SmartDashboard.putString("Current Pose", mCurrentState.toString());
-                SmartDashboard.putString("Last Pose",
-                        mCurrentTrajectory.trajectory().getLastPoint().state().state().getPose().toString());
-                SmartDashboard.putNumber("Finished Traj?", mPathSetpoint.velocity());
+                log(mCurrentTrajectory);
 
                 mOutput = updatePurePursuit(current_state, mDTheta);
 
@@ -414,7 +406,15 @@ public class DriveMotionPlanner {
         return mOutput;
     }
 
-    public ChassisSpeeds update(   TimedTrajectoryIterator trajectory,  double timestamp, Pose2d current_state) {
+
+    private void log(TrajectoryTimeIterator trajectory) {
+        SmartDashboard.putString("Current Pose", mCurrentState.toString());
+        SmartDashboard.putString("Last Pose",
+                trajectory.trajectory().getLastPoint().state().state().getPose().toString());
+        SmartDashboard.putNumber("Finished Traj?", mPathSetpoint.velocity());
+    }
+
+    public ChassisSpeeds update(   TrajectoryTimeIterator trajectory,  double timestamp, Pose2d current_state) {
         if (trajectory == null) {
             // System.out.println("YOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
             return null;
@@ -443,7 +443,7 @@ public class DriveMotionPlanner {
 
         mDt = timestamp - mLastTime;
         mLastTime = timestamp;
-        TrajectorySamplePoint<TimedState<Pose2dWithCurvature>, TimedState<Rotation2dState>> sample_point;
+        TrajectorySamplePoint sample_point;
 
         mHeadingSetpoint = new TimedState<>(
                 new Rotation2dState(mInitialHeading.rotateBy(mRotationDiff.times(Math.min(1.0,
@@ -499,10 +499,7 @@ public class DriveMotionPlanner {
                 }
                 sample_point = trajectory.advance(previewQuantity);
                 mPathSetpoint = sample_point.state();
-                SmartDashboard.putString("Current Pose", mCurrentState.toString());
-                SmartDashboard.putString("Last Pose",
-                        trajectory.trajectory().getLastPoint().state().state().getPose().toString());
-                SmartDashboard.putNumber("Finished Traj?", mPathSetpoint.velocity());
+                log(trajectory);
 
                 mOutput = updatePurePursuit(current_state, mDTheta);
 
@@ -513,6 +510,8 @@ public class DriveMotionPlanner {
         }
         return mOutput;
     }
+
+
 
     public double getVelocitySetpoint() {
         return mVelocitym;

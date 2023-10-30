@@ -10,11 +10,10 @@ import org.team100.lib.telemetry.Telemetry;
 import com.team254.frc2022.planners.DriveMotionPlanner;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2dState;
-import com.team254.lib.trajectory.TimedTrajectoryIterator;
-import com.team254.lib.trajectory.TimedView;
 import com.team254.lib.trajectory.Trajectory;
+import com.team254.lib.trajectory.TrajectoryTimeIterator;
+import com.team254.lib.trajectory.TrajectoryTimeSampler;
 import com.team254.lib.trajectory.timing.CentripetalAccelerationConstraint;
-import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.trajectory.timing.TimingConstraint;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -56,7 +55,7 @@ public class FancyTrajectory extends Command {
         double start_vel = 0;
         double end_vel = 0;
         // there's a bug in here; it doesn't use the constraints, nor the voltage.
-        Trajectory<TimedState<Pose2dWithCurvature>, TimedState<Rotation2dState>> trajectory = mMotionPlanner
+        Trajectory trajectory = mMotionPlanner
                 .generateTrajectory(
                         waypoints,
                         headings,
@@ -70,7 +69,7 @@ public class FancyTrajectory extends Command {
         System.out.println("TRAJECTORY LENGTH: " + trajectory.length());
         // assertEquals(10, trajectory.length());
 
-        TimedTrajectoryIterator iter = new TimedTrajectoryIterator(new TimedView(trajectory));
+        TrajectoryTimeIterator iter = new TrajectoryTimeIterator(new TrajectoryTimeSampler(trajectory));
 
         mMotionPlanner.reset();
         mMotionPlanner.setTrajectory(iter);

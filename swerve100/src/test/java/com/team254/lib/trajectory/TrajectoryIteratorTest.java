@@ -35,8 +35,8 @@ public class TrajectoryIteratorTest {
 
     @Test
     void test() {
-        Trajectory<Pose2dWithCurvature, Rotation2dState> traj = new Trajectory<>(kWaypoints, kHeadings);
-        IndexTrajectoryIterator iterator = new IndexTrajectoryIterator(new IndexView(traj));
+        Path traj = new Path(kWaypoints, kHeadings);
+        PathIndexIterator iterator = new PathIndexIterator(new PathIndexSampler(traj));
 
         // Initial conditions.
         assertEquals(0.0, iterator.getProgress(), kTestEpsilon);
@@ -49,7 +49,7 @@ public class TrajectoryIteratorTest {
         assertEquals(kWaypoints.get(0).interpolate2(kWaypoints.get(1), 0.5), iterator.preview(0.5).state());
         assertEquals(kHeadings.get(0).get().interpolate(kHeadings.get(1).get(), 0.5),
                 iterator.preview(0.5).heading().get());
-        TrajectorySamplePoint<Pose2dWithCurvature, Rotation2dState> newPoint = iterator.advance(0.5);
+        PathSamplePoint newPoint = iterator.advance(0.5);
         assertEquals(kWaypoints.get(0).interpolate2(kWaypoints.get(1), 0.5), newPoint.state());
         assertEquals(kHeadings.get(0).get().interpolate(kHeadings.get(1).get(), 0.5), newPoint.heading().get());
         assertEquals(0.5, iterator.getProgress(), kTestEpsilon);
