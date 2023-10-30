@@ -1,7 +1,7 @@
 package com.team254.lib.trajectory;
 
-import com.team254.lib.geometry.Pose2dWithCurvature;
-import com.team254.lib.geometry.Rotation2dState;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.spline.PoseWithCurvature;
 
 /**
  * Allows iterating over the index points of a path.
@@ -35,11 +35,11 @@ public class PathIndexIterator {
         return current_sample_;
     }
 
-    public Pose2dWithCurvature getState() {
+    public PoseWithCurvature getState() {
         return getSample().state();
     }
 
-    public Rotation2dState getHeading() {
+    public Rotation2d getHeading() {
         return getSample().heading();
     }
 

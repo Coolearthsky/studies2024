@@ -1,29 +1,31 @@
 package com.team254.lib.trajectory.timing;
 
-import com.team254.lib.geometry.Pose2dWithCurvature;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.spline.PoseWithCurvature;
 
 import java.text.DecimalFormat;
 
+import org.team100.lib.geometry.GeometryUtil;
+
 public class TimedPose {
-    protected final Pose2dWithCurvature state_;
+    protected final PoseWithCurvature state_;
     protected double t_; // Time we achieve this state.
     protected double velocity_; // ds/dt
     protected double acceleration_; // d^2s/dt^2
 
-    public TimedPose(final Pose2dWithCurvature state) {
+    public TimedPose(final PoseWithCurvature state) {
         state_ = state;
     }
 
-    public TimedPose(final Pose2dWithCurvature state, double t, double velocity, double acceleration) {
+    public TimedPose(final PoseWithCurvature state, double t, double velocity, double acceleration) {
         state_ = state;
         t_ = t;
         velocity_ = velocity;
         acceleration_ = acceleration;
     }
 
-    public Pose2dWithCurvature state() {
+    public PoseWithCurvature state() {
         return state_;
     }
 
@@ -71,7 +73,7 @@ public class TimedPose {
         // System.out.println("x: " + x + " , new_t: " + new_t + ", new_s: " + new_s + "
         // , distance: " + state()
         // .distance(other.state()));
-        return new TimedPose(state().interpolate2(other.state(), new_s / state().distance(other.state())),
+        return new TimedPose(GeometryUtil.interpolate2(state(), other.state(), new_s / GeometryUtil.distance(state(), other.state())),
                 new_t,
                 new_v,
                 acceleration());
@@ -83,7 +85,7 @@ public class TimedPose {
     // }
 
     public double distance(TimedPose other) {
-        return state().distance(other.state());
+        return GeometryUtil.distance(state(), other.state());
     }
 
     @Override
@@ -93,9 +95,9 @@ public class TimedPose {
             return false;
         }
         TimedPose ts = (TimedPose) other;
-        boolean stateEqual = state().equals(ts.state());
+        boolean stateEqual = GeometryUtil.poseWithCurvatureEquals(state(), ts.state());
         if (!stateEqual) {
-            System.out.println("states not equal");
+            System.out.println("state not equal");
             return false;
         }
         boolean timeEqual = Math.abs(t() - ts.t()) <= 1e-12;
@@ -103,6 +105,6 @@ public class TimedPose {
             System.out.println("time not equal");
             return false;
         }
-        return stateEqual && timeEqual;
+        return true;
     }
 }

@@ -1,6 +1,6 @@
 package com.team254.lib.trajectory.timing;
 
-import com.team254.lib.geometry.Pose2dWithCurvature;
+import edu.wpi.first.math.spline.PoseWithCurvature;
 
 public class CentripetalAccelerationConstraint implements TimingConstraint {
     final double mMaxCentripetalAccel;
@@ -10,12 +10,12 @@ public class CentripetalAccelerationConstraint implements TimingConstraint {
     }
 
     @Override
-    public double getMaxVelocity(final Pose2dWithCurvature state) {
-        return Math.sqrt(Math.abs(mMaxCentripetalAccel / state.getCurvature()));
+    public double getMaxVelocity(final PoseWithCurvature state) {
+        return Math.sqrt(Math.abs(mMaxCentripetalAccel / state.curvatureRadPerMeter));
     }
 
     @Override
-    public MinMaxAcceleration getMinMaxAcceleration(final Pose2dWithCurvature state, final double velocity) {
+    public MinMaxAcceleration getMinMaxAcceleration(final PoseWithCurvature state, final double velocity) {
         return MinMaxAcceleration.kNoLimits;
     }
 }

@@ -6,7 +6,6 @@ import java.util.Optional;
 
 import org.team100.lib.geometry.GeometryUtil;
 
-import com.team254.lib.geometry.Rotation2dState;
 import com.team254.lib.swerve.SwerveModuleState;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -201,13 +200,13 @@ public class AsymSwerveSetpointGenerator {
             prev_vy[i] = prevSetpoint.mModuleStates[i].angle.getSin() * prevSetpoint.mModuleStates[i].speedMetersPerSecond;
             prev_heading[i] = prevSetpoint.mModuleStates[i].angle;
             if (prevSetpoint.mModuleStates[i].speedMetersPerSecond < 0.0) {
-                prev_heading[i] = Rotation2dState.flip(prev_heading[i]);
+                prev_heading[i] = GeometryUtil.flip(prev_heading[i]);
             }
             desired_vx[i] = desiredModuleState[i].angle.getCos() * desiredModuleState[i].speedMetersPerSecond;
             desired_vy[i] = desiredModuleState[i].angle.getSin() * desiredModuleState[i].speedMetersPerSecond;
             desired_heading[i] = desiredModuleState[i].angle;
             if (desiredModuleState[i].speedMetersPerSecond < 0.0) {
-                desired_heading[i] =  Rotation2dState.flip(desired_heading[i]);
+                desired_heading[i] =  GeometryUtil.flip(desired_heading[i]);
             }
             if (all_modules_should_flip) {
                 double required_rotation_rad = Math
@@ -268,7 +267,7 @@ public class AsymSwerveSetpointGenerator {
                 var necessaryRotation = prevSetpoint.mModuleStates[i].angle.unaryMinus().rotateBy(
                         desiredModuleState[i].angle);
                 if (flipHeading(necessaryRotation)) {
-                    necessaryRotation = necessaryRotation.rotateBy(GeometryUtil.kPi.get());
+                    necessaryRotation = necessaryRotation.rotateBy(GeometryUtil.kPi);
                 }
                 // getRadians() bounds to +/- Pi.
                 final double numStepsNeeded = Math.abs(necessaryRotation.getRadians()) / max_theta_step;
@@ -340,7 +339,7 @@ public class AsymSwerveSetpointGenerator {
             }
             final var deltaRotation = prevSetpoint.mModuleStates[i].angle.unaryMinus().rotateBy(retStates[i].angle);
             if (flipHeading(deltaRotation)) {
-                retStates[i].angle =  Rotation2dState.flip(retStates[i].angle);
+                retStates[i].angle =  GeometryUtil.flip(retStates[i].angle);
                 retStates[i].speedMetersPerSecond *= -1.0;
             }
         }

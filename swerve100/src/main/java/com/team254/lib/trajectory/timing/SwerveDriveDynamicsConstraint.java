@@ -1,7 +1,8 @@
 package com.team254.lib.trajectory.timing;
 
-import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.physics.SwerveDrive;
+
+import edu.wpi.first.math.spline.PoseWithCurvature;
 
 public class SwerveDriveDynamicsConstraint implements TimingConstraint {
     public static final double kMaxVelocityMetersPerSecond = 4.959668;
@@ -16,12 +17,12 @@ public class SwerveDriveDynamicsConstraint implements TimingConstraint {
     }
 
     @Override
-    public double getMaxVelocity(Pose2dWithCurvature state) {
-        return kMaxVelocityMetersPerSecond / (1 + Math.abs(4.0 * state.getCurvature()));// from 1323 TODO verify or fix
+    public double getMaxVelocity(PoseWithCurvature state) {
+        return kMaxVelocityMetersPerSecond / (1 + Math.abs(4.0 * state.curvatureRadPerMeter));// from 1323 TODO verify or fix
     }
 
     @Override
-    public MinMaxAcceleration getMinMaxAcceleration(Pose2dWithCurvature state,
+    public MinMaxAcceleration getMinMaxAcceleration(PoseWithCurvature state,
             double velocity) {
         return new MinMaxAcceleration(-kMaxDriveAcceleration, kMaxDriveAcceleration);
     }

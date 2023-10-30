@@ -1,7 +1,6 @@
 package org.team100.lib.swerve;
 
-import com.team254.lib.geometry.Rotation2dState;
-
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 
 /**
@@ -61,10 +60,10 @@ public class ChassisSpeeds {
             double vxMetersPerSecond,
             double vyMetersPerSecond,
             double omegaRadiansPerSecond,
-            Rotation2dState robotAngle) {
+            Rotation2d robotAngle) {
         return new ChassisSpeeds(
-                vxMetersPerSecond * robotAngle.get().getCos() + vyMetersPerSecond * robotAngle.get().getSin(),
-                -vxMetersPerSecond * robotAngle.get().getSin() + vyMetersPerSecond * robotAngle.get().getCos(),
+                vxMetersPerSecond * robotAngle.getCos() + vyMetersPerSecond * robotAngle.getSin(),
+                -vxMetersPerSecond * robotAngle.getSin() + vyMetersPerSecond * robotAngle.getCos(),
                 omegaRadiansPerSecond);
     }
 

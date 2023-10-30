@@ -7,8 +7,6 @@ import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.swerve.ChassisSpeeds;
 
 import com.team254.frc2022.planners.DriveMotionPlanner;
-import com.team254.lib.geometry.Pose2dWithCurvature;
-import com.team254.lib.geometry.Rotation2dState;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.TrajectoryTimeIterator;
 import com.team254.lib.trajectory.TrajectoryTimeSampler;
@@ -71,7 +69,7 @@ public class FancyTrajectoryTest {
                 new Pose2d(0, 0, Rotation2d.fromDegrees(270)),
                 new Pose2d(10, -10, Rotation2d.fromDegrees(0)));
         // while turning 180
-        List<Rotation2dState> headings = List.of(
+        List<Rotation2d> headings = List.of(
                 GeometryUtil.fromDegrees(90),
                 GeometryUtil.fromDegrees(180));
         // these don't actually do anything.
@@ -119,7 +117,7 @@ public class FancyTrajectoryTest {
         ChassisSpeeds output = mMotionPlanner.update(now, actualPose);
 
         Translation2d translational_error = mMotionPlanner.getTranslationalError();
-        Rotation2dState heading_error = mMotionPlanner.getHeadingError();
+        Rotation2d heading_error = mMotionPlanner.getHeadingError();
         TimedPose path_setpoint = mMotionPlanner.getPathSetpoint();
         TimedRotation heading_setpoint = mMotionPlanner.getHeadingSetpoint();
 

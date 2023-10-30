@@ -8,8 +8,6 @@ import org.team100.lib.swerve.ChassisSpeeds;
 import org.team100.lib.telemetry.Telemetry;
 
 import com.team254.frc2022.planners.DriveMotionPlanner;
-import com.team254.lib.geometry.Pose2dWithCurvature;
-import com.team254.lib.geometry.Rotation2dState;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.TrajectoryTimeIterator;
 import com.team254.lib.trajectory.TrajectoryTimeSampler;
@@ -43,7 +41,7 @@ public class FancyTrajectory extends Command {
                 new Pose2d(0, 0, Rotation2d.fromDegrees(90)),
                 new Pose2d(80, 80, Rotation2d.fromDegrees(0)));
         // while turning 180
-        List<Rotation2dState> headings = List.of(
+        List<Rotation2d> headings = List.of(
                 GeometryUtil.fromDegrees(0),
                 GeometryUtil.fromDegrees(0));
         // these don't actually do anything.

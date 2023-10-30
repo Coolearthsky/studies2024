@@ -1,5 +1,7 @@
 package com.team254.lib.trajectory;
 
+import org.team100.lib.geometry.GeometryUtil;
+
 /**
  * Allows sampling a path by distance along it.
  */
@@ -13,7 +15,7 @@ public class PathDistanceSampler {
         distances_[0] = 0.0;
         for (int i = 1; i < trajectory_.length(); ++i) {
             distances_[i] = distances_[i - 1]
-                    + trajectory_.getPoint(i - 1).state().distance(trajectory_.getPoint(i).state());
+                    + GeometryUtil.distance(trajectory_.getPoint(i - 1).state(), trajectory_.getPoint(i).state());
         }
     }
 
@@ -37,9 +39,9 @@ public class PathDistanceSampler {
                     return new PathSamplePoint(point.state(), point.heading(), point.index(), point.index());
                 } else {
                     return new PathSamplePoint(
-                            prev_s.state().interpolate2(point.state(),
+                        GeometryUtil.interpolate2(prev_s.state(), point.state(),
                                     (distance - distances_[i - 1]) / (distances_[i] - distances_[i - 1])),
-                            prev_s.heading().interpolate2(point.heading(),
+                            GeometryUtil.interpolate2(prev_s.heading(), point.heading(),
                                     (distance - distances_[i - 1]) / (distances_[i] - distances_[i - 1])),
                             i - 1, i);
                 }
