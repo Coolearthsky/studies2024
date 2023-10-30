@@ -57,7 +57,7 @@ public class AsymSwerveSetpointGeneratorTest {
             AsymSwerveSetpointGenerator generator) {
         System.out.println("Driving to goal state " + goal);
         System.out.println("Initial state: " + prevSetpoint);
-        while (!prevSetpoint.mChassisSpeeds.toTwist2d().epsilonEquals(goal.toTwist2d(), 1e-12)) {
+        while (!prevSetpoint.mChassisSpeeds.toTwist2d().equals(goal.toTwist2d())) {
             var newsetpoint = generator.generateSetpoint(kKinematicLimits, prevSetpoint, goal, kDt);
             System.out.println(newsetpoint);
             SatisfiesConstraints(prevSetpoint, newsetpoint);

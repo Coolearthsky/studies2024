@@ -180,7 +180,7 @@ public class AsymSwerveSetpointGenerator {
         // Special case: desiredState is a complete stop. In this case, module angle is
         // arbitrary, so just use the previous angle.
         boolean need_to_steer = true;
-        if (desiredState.toTwist2d().epsilonEquals(GeometryUtil.kTwist2dIdentity, 1e-12)) {
+        if (desiredState.toTwist2d().equals(GeometryUtil.kTwist2dIdentity)) {
             need_to_steer = false;
             for (int i = 0; i < modules.length; ++i) {
                 desiredModuleState[i].angle = prevSetpoint.mModuleStates[i].angle;
@@ -218,8 +218,8 @@ public class AsymSwerveSetpointGenerator {
             }
         }
         if (all_modules_should_flip &&
-                !prevSetpoint.mChassisSpeeds.toTwist2d().epsilonEquals(GeometryUtil.kTwist2dIdentity, 1e-12) &&
-                !desiredState.toTwist2d().epsilonEquals(GeometryUtil.kTwist2dIdentity, 1e-12)) {
+                !prevSetpoint.mChassisSpeeds.toTwist2d().equals(GeometryUtil.kTwist2dIdentity) &&
+                !desiredState.toTwist2d().equals(GeometryUtil.kTwist2dIdentity)) {
             // It will (likely) be faster to stop the robot, rotate the modules in place to
             // the complement of the desired
             // angle, and accelerate again.

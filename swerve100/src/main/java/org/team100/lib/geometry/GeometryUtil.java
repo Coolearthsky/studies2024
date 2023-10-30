@@ -1,9 +1,7 @@
 package org.team100.lib.geometry;
 
-import com.team254.lib.geometry.Pose2dState;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2dState;
-import com.team254.lib.geometry.Twist2dWrapper;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -18,7 +16,7 @@ public class GeometryUtil {
     public static final Pose2d kPose2dIdentity = new Pose2d();
     public static final Translation2d kTranslation2dIdentity = new Translation2d();
     public static final Pose2dWithCurvature kPose2dWithCurvatureIdentity = new Pose2dWithCurvature();
-    public static final Twist2dWrapper kTwist2dIdentity = new Twist2dWrapper(0.0, 0.0, 0.0);
+    public static final Twist2d kTwist2dIdentity = new Twist2d(0.0, 0.0, 0.0);
 
     private GeometryUtil() {
     }
@@ -69,10 +67,6 @@ public class GeometryUtil {
         return radians;
     }
 
-    public static Pose2d inverse(Pose2dState a) {
-        return inverse(a.get());
-    }
-
     public static boolean isColinear(Pose2d a, final Pose2d other) {
         if (!GeometryUtil.isParallel(a.getRotation(), other.getRotation()))
             return false;
@@ -84,13 +78,6 @@ public class GeometryUtil {
     public static boolean isParallel(Rotation2d a, Rotation2d b) {
         return Math.abs(a.getRadians() - b.getRadians()) <= 1e-12
                 || Math.abs(a.getRadians() - WrapRadians(b.getRadians() + Math.PI)) <= 1e-12;
-    }
-
-    public static double norm(Twist2dWrapper a) {
-        // Common case of dy == 0
-        if (a.dy == 0.0)
-            return Math.abs(a.dx);
-        return Math.hypot(a.dx, a.dy);
     }
 
     public static double norm(Twist2d a) {
