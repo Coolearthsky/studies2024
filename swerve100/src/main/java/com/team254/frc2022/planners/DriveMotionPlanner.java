@@ -20,7 +20,8 @@ import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.TrajectorySamplePoint;
 import com.team254.lib.trajectory.TrajectoryTimeIterator;
 import com.team254.lib.trajectory.timing.SwerveDriveDynamicsConstraint;
-import com.team254.lib.trajectory.timing.TimedState;
+import com.team254.lib.trajectory.timing.TimedPose;
+import com.team254.lib.trajectory.timing.TimedRotation;
 import com.team254.lib.trajectory.timing.TimingConstraint;
 import com.team254.lib.trajectory.timing.TimingUtil;
 
@@ -67,10 +68,10 @@ public class DriveMotionPlanner {
     private TrajectoryTimeIterator mCurrentTrajectory;
     boolean mIsReversed = false;
     double mLastTime = Double.POSITIVE_INFINITY;
-    public TimedState<Pose2dWithCurvature> mLastPathSetpoint = null;
-    public TimedState<Pose2dWithCurvature> mPathSetpoint = new TimedState<>(new Pose2dWithCurvature());
-    public TimedState<Rotation2dState> mHeadingSetpoint = null;
-    public TimedState<Rotation2dState> mLastHeadingSetpoint = new TimedState<>(new Rotation2dState());
+    public TimedPose mLastPathSetpoint = null;
+    public TimedPose mPathSetpoint = new TimedPose(new Pose2dWithCurvature());
+    public TimedRotation mHeadingSetpoint = null;
+    public TimedRotation mLastHeadingSetpoint = new TimedRotation(new Rotation2dState());
 
     public double mVelocitym = 0;
     Pose2d mError = GeometryUtil.kPose2dIdentity;
@@ -201,7 +202,7 @@ public class DriveMotionPlanner {
     protected ChassisSpeeds updatePurePursuit(Pose2d current_state, double feedforwardOmegaRadiansPerSecond) {
         double lookahead_time = kPathLookaheadTime;
         final double kLookaheadSearchDt = 0.01;
-        TimedState<Pose2dWithCurvature> lookahead_state = mCurrentTrajectory.preview(lookahead_time).state();
+        TimedPose lookahead_state = mCurrentTrajectory.preview(lookahead_time).state();
 
         Pose2dWithCurvature lookstate = lookahead_state.state();
         Pose2dWithCurvature setpointstate = mPathSetpoint.state();
@@ -234,7 +235,7 @@ public class DriveMotionPlanner {
         // If the Lookahead Point's Distance is less than the Lookahead Distance
         // transform it so it is the lookahead distance away
         if (actual_lookahead_distance < adaptive_lookahead_distance) {
-            lookahead_state = new TimedState<>(
+            lookahead_state = new TimedPose(
                     new Pose2dWithCurvature(
                             GeometryUtil.transformBy(lookahead_state.state().getPose(),
                                     GeometryUtil.fromTranslation(
@@ -325,7 +326,7 @@ public class DriveMotionPlanner {
         mLastTime = timestamp;
         TrajectorySamplePoint sample_point;
 
-        mHeadingSetpoint = new TimedState<>(
+        mHeadingSetpoint = new TimedRotation(
                 new Rotation2dState(mInitialHeading.rotateBy(mRotationDiff.times(Math.min(1.0,
                         (timestamp - mStartTime) / mTotalTime)))));
         mCurrentState = current_state;
@@ -440,7 +441,7 @@ public class DriveMotionPlanner {
         mLastTime = timestamp;
         TrajectorySamplePoint sample_point;
 
-        mHeadingSetpoint = new TimedState<>(
+        mHeadingSetpoint = new TimedRotation(
                 new Rotation2dState(mInitialHeading.rotateBy(mRotationDiff.times(Math.min(1.0,
                         (timestamp - mStartTime) / mTotalTime)))));
         mCurrentState = current_state;
@@ -527,11 +528,11 @@ public class DriveMotionPlanner {
                 .norm(GeometryUtil.slog(GeometryUtil.transformBy(GeometryUtil.inverse(pose), current_state)));
     }
 
-    public synchronized TimedState<Pose2dWithCurvature> getPathSetpoint() {
+    public synchronized TimedPose getPathSetpoint() {
         return mPathSetpoint;
     }
 
-    public synchronized TimedState<Rotation2dState> getHeadingSetpoint() {
+    public synchronized TimedRotation getHeadingSetpoint() {
         return mHeadingSetpoint;
     }
 }

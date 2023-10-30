@@ -1,8 +1,7 @@
 package com.team254.lib.trajectory;
 
-import com.team254.lib.geometry.Pose2dWithCurvature;
-import com.team254.lib.geometry.Rotation2dState;
-import com.team254.lib.trajectory.timing.TimedState;
+import com.team254.lib.trajectory.timing.TimedPose;
+import com.team254.lib.trajectory.timing.TimedRotation;
 
 /** 
  * Allows iterating over the schedule of a trajectory. 
@@ -40,11 +39,11 @@ public class TrajectoryTimeIterator {
         return current_sample_;
     }
 
-    public TimedState<Pose2dWithCurvature> getState() {
+    public TimedPose getState() {
         return getSample().state();
     }
 
-    public TimedState<Rotation2dState> getHeading() {
+    public TimedRotation getHeading() {
         return getSample().heading();
     }
 

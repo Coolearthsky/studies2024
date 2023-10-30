@@ -196,8 +196,8 @@ public class TimingUtil {
         }
 
         // Integrate the constrained states forward in time to obtain the TimedStates.
-        List<TimedState<Pose2dWithCurvature>> timed_states = new ArrayList<>(states.size());
-        List<TimedState<Rotation2dState>> timed_headings = new ArrayList<>(states.size());
+        List<TimedPose> timed_states = new ArrayList<>(states.size());
+        List<TimedRotation> timed_headings = new ArrayList<>(states.size());
         double t = 0.0;
         double s = 0.0;
         double v = 0.0;
@@ -224,8 +224,8 @@ public class TimingUtil {
 
             v = constrained_state.max_translational_velocity;
             s = constrained_state.distance;
-            timed_states.add(new TimedState<>(constrained_state.state, t, v,  accel));
-            timed_headings.add(new TimedState<>(constrained_state.heading, t, v, accel)); // todo verify
+            timed_states.add(new TimedPose(constrained_state.state, t, v,  accel));
+            timed_headings.add(new TimedRotation(constrained_state.heading, t, v, accel)); // todo verify
         }
         return new Trajectory(timed_states, timed_headings);
     }

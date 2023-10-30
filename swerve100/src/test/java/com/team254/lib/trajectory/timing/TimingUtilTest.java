@@ -69,7 +69,7 @@ public class TimingUtilTest {
         // Go state by state, verifying all constraints are satisfied and integration is
         // correct.
         for (int i = 0; i < traj.length(); ++i) {
-            final TimedState<Pose2dWithCurvature> state = traj.getPoint(i).state();
+            final TimedPose state = traj.getPoint(i).state();
             for (final TimingConstraint<Pose2dWithCurvature> constraint : constraints) {
                 assertTrue(state.velocity() - kTestEpsilon <= constraint.getMaxVelocity(state.state()));
                 final MinMaxAcceleration accel_limits = constraint.getMinMaxAcceleration(state.state(),
@@ -78,7 +78,7 @@ public class TimingUtilTest {
                 assertTrue(state.acceleration() + kTestEpsilon >= accel_limits.min_acceleration());
             }
             if (i > 0) {
-                final TimedState<Pose2dWithCurvature> prev_state = traj.getPoint(i - 1).state();
+                final TimedPose prev_state = traj.getPoint(i - 1).state();
                 assertEquals(state.velocity(),
                         prev_state.velocity() + (state.t() - prev_state.t()) * prev_state.acceleration(), kTestEpsilon);
             }
