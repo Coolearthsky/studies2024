@@ -1,9 +1,10 @@
-package com.team254.lib.trajectory.timing;
+package org.team100.lib.timing;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.GeometryUtil;
+import org.team100.lib.timing.TimedPose;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.spline.PoseWithCurvature;

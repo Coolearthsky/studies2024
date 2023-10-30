@@ -1,4 +1,4 @@
-package com.team254.lib.trajectory.timing;
+package org.team100.lib.timing;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,6 @@
-package com.team254.lib.trajectory.timing;
+package org.team100.lib.timing;
+
+import org.team100.lib.timing.TimingConstraint.MinMaxAcceleration;
 
 import com.team254.lib.physics.SwerveDrive;
 

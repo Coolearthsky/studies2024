@@ -1,4 +1,4 @@
-package com.team254.lib.trajectory.timing;
+package org.team100.lib.timing;
 
 import edu.wpi.first.math.spline.PoseWithCurvature;
 

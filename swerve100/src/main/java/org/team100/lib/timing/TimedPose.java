@@ -1,30 +1,30 @@
-package com.team254.lib.trajectory.timing;
+package org.team100.lib.timing;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.spline.PoseWithCurvature;
 
 import java.text.DecimalFormat;
 
 import org.team100.lib.geometry.GeometryUtil;
 
-public class TimedRotation {
-    protected final Rotation2d state_;
+public class TimedPose {
+    protected final PoseWithCurvature state_;
     protected double t_; // Time we achieve this state.
     protected double velocity_; // ds/dt
     protected double acceleration_; // d^2s/dt^2
 
-    public TimedRotation(final Rotation2d state) {
+    public TimedPose(final PoseWithCurvature state) {
         state_ = state;
     }
 
-    public TimedRotation(final Rotation2d state, double t, double velocity, double acceleration) {
+    public TimedPose(final PoseWithCurvature state, double t, double velocity, double acceleration) {
         state_ = state;
         t_ = t;
         velocity_ = velocity;
         acceleration_ = acceleration;
     }
 
-    public Rotation2d state() {
+    public PoseWithCurvature state() {
         return state_;
     }
 
@@ -59,7 +59,7 @@ public class TimedRotation {
                 + fmt.format(acceleration());
     }
 
-    public TimedRotation interpolate2(TimedRotation other, double x) {
+    public TimedPose interpolate2(TimedPose other, double x) {
         final double new_t = MathUtil.interpolate(t(), other.t(), x);
         final double delta_t = new_t - t();
         if (delta_t < 0.0) {
@@ -72,7 +72,9 @@ public class TimedRotation {
         // System.out.println("x: " + x + " , new_t: " + new_t + ", new_s: " + new_s + "
         // , distance: " + state()
         // .distance(other.state()));
-        return new TimedRotation(GeometryUtil.interpolate2(state(), other.state(), new_s / GeometryUtil.distance(state(), other.state())),
+        return new TimedPose(
+                GeometryUtil.interpolate2(state(), other.state(),
+                        new_s / GeometryUtil.distance(state(), other.state())),
                 new_t,
                 new_v,
                 acceleration());
@@ -80,23 +82,23 @@ public class TimedRotation {
 
     // @Override
     // public TimedState<S> add(TimedState<S> other) {
-    //     return new TimedState<>(this.state().add(other.state()));
+    // return new TimedState<>(this.state().add(other.state()));
     // }
 
-    public double distance(TimedRotation other) {
+    public double distance(TimedPose other) {
         return GeometryUtil.distance(state(), other.state());
     }
 
     @Override
     public boolean equals(final Object other) {
-        if (other == null || !(other instanceof TimedRotation)) {
+        if (other == null || !(other instanceof TimedPose)) {
             System.out.println("wrong type");
             return false;
         }
-        TimedRotation ts = (TimedRotation) other;
-        boolean stateEqual = state().equals(ts.state());
+        TimedPose ts = (TimedPose) other;
+        boolean stateEqual = GeometryUtil.poseWithCurvatureEquals(state(), ts.state());
         if (!stateEqual) {
-            System.out.println("states not equal");
+            System.out.println("state not equal");
             return false;
         }
         boolean timeEqual = Math.abs(t() - ts.t()) <= 1e-12;
@@ -104,6 +106,6 @@ public class TimedRotation {
             System.out.println("time not equal");
             return false;
         }
-        return stateEqual && timeEqual;
+        return true;
     }
 }

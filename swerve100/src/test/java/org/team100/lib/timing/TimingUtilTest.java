@@ -1,4 +1,4 @@
-package com.team254.lib.trajectory.timing;
+package org.team100.lib.timing;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -10,11 +10,13 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.GeometryUtil;
+import org.team100.lib.timing.TimedPose;
+import org.team100.lib.timing.TimingConstraint;
+import org.team100.lib.timing.TimingConstraint.MinMaxAcceleration;
 
 import com.team254.lib.trajectory.Path;
 import com.team254.lib.trajectory.PathDistanceSampler;
 import com.team254.lib.trajectory.Trajectory;
-import com.team254.lib.trajectory.timing.TimingConstraint.MinMaxAcceleration;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -119,7 +121,7 @@ public class TimingUtilTest {
             }
 
             @Override
-            public TimingConstraint.MinMaxAcceleration getMinMaxAcceleration(PoseWithCurvature state,
+            public MinMaxAcceleration getMinMaxAcceleration(PoseWithCurvature state,
                     double velocity) {
                 return new TimingConstraint.MinMaxAcceleration(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
             }
@@ -145,7 +147,7 @@ public class TimingUtilTest {
             }
 
             @Override
-            public TimingConstraint.MinMaxAcceleration getMinMaxAcceleration(PoseWithCurvature state,
+            public MinMaxAcceleration getMinMaxAcceleration(PoseWithCurvature state,
                     double velocity) {
                 return new TimingConstraint.MinMaxAcceleration(-10.0, 10.0 / velocity);
             }
