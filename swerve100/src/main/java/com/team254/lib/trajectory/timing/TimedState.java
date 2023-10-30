@@ -1,7 +1,8 @@
 package com.team254.lib.trajectory.timing;
 
 import com.team254.lib.geometry.State;
-import com.team254.lib.util.Util;
+
+import edu.wpi.first.math.MathUtil;
 
 import java.text.DecimalFormat;
 
@@ -58,34 +59,29 @@ public class TimedState<S extends State<S>> implements State<TimedState<S>> {
     }
 
     @Override
-    public String toCSV() {
-        final DecimalFormat fmt = new DecimalFormat("#0.000");
-        return state().toCSV() + "," + fmt.format(t()) + "," + fmt.format(velocity()) + ","
-                + fmt.format(acceleration());
-    }
-
-    @Override
-    public TimedState<S> interpolate(TimedState<S> other, double x) {
-        final double new_t = Util.interpolate(t(), other.t(), x);
+    public TimedState<S> interpolate2(TimedState<S> other, double x) {
+        final double new_t = MathUtil.interpolate(t(), other.t(), x);
         final double delta_t = new_t - t();
         if (delta_t < 0.0) {
-            return other.interpolate(this, 1.0 - x);
+            return other.interpolate2(this, 1.0 - x);
         }
-        boolean reversing = velocity() < 0.0 || (Util.epsilonEquals(velocity(), 0.0) && acceleration() < 0.0);
+        boolean reversing = velocity() < 0.0 || (Math.abs(velocity() - 0.0) <= 1e-12 && acceleration() < 0.0);
         final double new_v = velocity() + acceleration() * delta_t;
-        final double new_s = (reversing ? -1.0 : 1.0) * (velocity() * delta_t + .5 * acceleration() * delta_t * delta_t);
-        // System.out.println("x: " + x + " , new_t: " + new_t + ", new_s: " + new_s + " , distance: " + state()
+        final double new_s = (reversing ? -1.0 : 1.0)
+                * (velocity() * delta_t + .5 * acceleration() * delta_t * delta_t);
+        // System.out.println("x: " + x + " , new_t: " + new_t + ", new_s: " + new_s + "
+        // , distance: " + state()
         // .distance(other.state()));
-        return new TimedState<S>(state().interpolate(other.state(), new_s / state().distance(other.state())),
+        return new TimedState<S>(state().interpolate2(other.state(), new_s / state().distance(other.state())),
                 new_t,
                 new_v,
                 acceleration());
     }
 
-    @Override
-    public TimedState<S> add(TimedState<S> other) {
-        return new TimedState<>(this.state().add(other.state()));
-    }
+    // @Override
+    // public TimedState<S> add(TimedState<S> other) {
+    //     return new TimedState<>(this.state().add(other.state()));
+    // }
 
     @Override
     public double distance(TimedState<S> other) {
@@ -94,8 +90,21 @@ public class TimedState<S extends State<S>> implements State<TimedState<S>> {
 
     @Override
     public boolean equals(final Object other) {
-        if (other == null || !(other instanceof TimedState<?>)) return false;
+        if (other == null || !(other instanceof TimedState<?>)) {
+            System.out.println("wrong type");
+            return false;
+        }
         TimedState<?> ts = (TimedState<?>) other;
-        return state().equals(ts.state()) && Util.epsilonEquals(t(), ts.t());
+        boolean stateEqual = state().equals(ts.state());
+        if (!stateEqual) {
+            System.out.println("states not equal");
+            return false;
+        }
+        boolean timeEqual = Math.abs(t() - ts.t()) <= 1e-12;
+        if (!timeEqual) {
+            System.out.println("time not equal");
+            return false;
+        }
+        return stateEqual && timeEqual;
     }
 }

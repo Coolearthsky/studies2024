@@ -1,12 +1,7 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
+package org.team100.lib.swerve;
 
-
-package com.team254.lib.swerve;
-
-import com.team254.lib.geometry.Rotation2d;
-import com.team254.lib.geometry.Twist2d;
+import com.team254.lib.geometry.Rotation2dState;
+import com.team254.lib.geometry.Twist2dWrapper;
 
 /**
  * Represents the speed of a robot chassis. Although this struct contains similar members compared
@@ -65,10 +60,10 @@ public class ChassisSpeeds {
             double vxMetersPerSecond,
             double vyMetersPerSecond,
             double omegaRadiansPerSecond,
-            Rotation2d robotAngle) {
+            Rotation2dState robotAngle) {
         return new ChassisSpeeds(
-                vxMetersPerSecond * robotAngle.cos() + vyMetersPerSecond * robotAngle.sin(),
-                -vxMetersPerSecond * robotAngle.sin() + vyMetersPerSecond * robotAngle.cos(),
+                vxMetersPerSecond * robotAngle.get().getCos() + vyMetersPerSecond * robotAngle.get().getSin(),
+                -vxMetersPerSecond * robotAngle.get().getSin() + vyMetersPerSecond * robotAngle.get().getCos(),
                 omegaRadiansPerSecond);
     }
 
@@ -79,8 +74,8 @@ public class ChassisSpeeds {
         return new ChassisSpeeds(vxMetersPerSecond, vyMetersPerSecond, omegaRadiansPerSecond);
     }
 
-    public Twist2d toTwist2d() {
-        return new Twist2d(vxMetersPerSecond, vyMetersPerSecond, omegaRadiansPerSecond);
+    public Twist2dWrapper toTwist2d() {
+        return new Twist2dWrapper(vxMetersPerSecond, vyMetersPerSecond, omegaRadiansPerSecond);
     }
 
     @Override

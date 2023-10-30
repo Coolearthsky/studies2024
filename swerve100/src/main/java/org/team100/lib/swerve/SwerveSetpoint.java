@@ -1,4 +1,6 @@
-package com.team254.lib.swerve;
+package org.team100.lib.swerve;
+
+import com.team254.lib.swerve.SwerveModuleState;
 
 public class SwerveSetpoint {
     public ChassisSpeeds mChassisSpeeds;

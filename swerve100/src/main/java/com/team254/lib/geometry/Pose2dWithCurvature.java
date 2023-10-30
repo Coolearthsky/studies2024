@@ -1,95 +1,56 @@
 package com.team254.lib.geometry;
 
-import com.team254.lib.util.Util;
+import org.team100.lib.geometry.GeometryUtil;
 
-import java.text.DecimalFormat;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.spline.PoseWithCurvature;
 
-public class Pose2dWithCurvature implements IPose2d<Pose2dWithCurvature>, ICurvature<Pose2dWithCurvature> {
-    protected static final Pose2dWithCurvature kIdentity = new Pose2dWithCurvature();
-
-    public static Pose2dWithCurvature identity() {
-        return kIdentity;
-    }
-
-    protected final Pose2d pose_;
-    protected final double curvature_;
+public class Pose2dWithCurvature extends PoseWithCurvature implements State<Pose2dWithCurvature> {
     protected final double dcurvature_ds_;
 
     public Pose2dWithCurvature() {
-        pose_ = new Pose2d();
-        curvature_ = 0.0;
+        super();
         dcurvature_ds_ = 0.0;
     }
 
     public Pose2dWithCurvature(final Pose2d pose, double curvature) {
-        pose_ = pose;
-        curvature_ = curvature;
-        dcurvature_ds_ = 0.0;
+        this(pose, curvature, 0.0);
     }
 
     public Pose2dWithCurvature(final Pose2d pose, double curvature, double dcurvature_ds) {
-        pose_ = pose;
-        curvature_ = curvature;
+        super(pose, curvature);
         dcurvature_ds_ = dcurvature_ds;
     }
 
-    public Pose2dWithCurvature(final Translation2d translation, final Rotation2d rotation, double curvature) {
-        pose_ = new Pose2d(translation, rotation);
-        curvature_ = curvature;
-        dcurvature_ds_ = 0.0;
-    }
-
-    public Pose2dWithCurvature(final Translation2d translation, final Rotation2d rotation, double curvature, double dcurvature_ds) {
-        pose_ = new Pose2d(translation, rotation);
-        curvature_ = curvature;
-        dcurvature_ds_ = dcurvature_ds;
-    }
-
-    @Override
     public final Pose2d getPose() {
-        return pose_;
+        return poseMeters;
     }
 
-    @Override
-    public Pose2dWithCurvature transformBy(Pose2d transform) {
-        return new Pose2dWithCurvature(getPose().transformBy(transform), getCurvature(), getDCurvatureDs());
-    }
-
-    @Override
-    public Pose2dWithCurvature mirror() {
-        return new Pose2dWithCurvature(getPose().mirror().getPose(), -getCurvature(), -getDCurvatureDs());
-    }
-
-    @Override
     public double getCurvature() {
-        return curvature_;
+        return super.curvatureRadPerMeter;
     }
 
-    @Override
     public double getDCurvatureDs() {
         return dcurvature_ds_;
     }
 
     @Override
-    public final Translation2d getTranslation() {
-        return getPose().getTranslation();
-    }
-
-    @Override
-    public final Rotation2d getRotation() {
-        return getPose().getRotation();
-    }
-
-    @Override
-    public Pose2dWithCurvature interpolate(final Pose2dWithCurvature other, double x) {
-        return new Pose2dWithCurvature(getPose().interpolate(other.getPose(), x),
-                Util.interpolate(getCurvature(), other.getCurvature(), x),
-                Util.interpolate(getDCurvatureDs(), other.getDCurvatureDs(), x));
+    public Pose2dWithCurvature interpolate2(final Pose2dWithCurvature other, double x) {
+        Pose2d interpolatedPose = getPose().interpolate(other.getPose(), x);
+        double interpolatedCurvature = MathUtil.interpolate(getCurvature(), other.getCurvature(), x);
+        double interpolatedCurvatureDs = MathUtil.interpolate(getDCurvatureDs(), other.getDCurvatureDs(), x);
+        return new Pose2dWithCurvature(
+                interpolatedPose,
+                interpolatedCurvature,
+                interpolatedCurvatureDs);
     }
 
     @Override
     public double distance(final Pose2dWithCurvature other) {
-        return getPose().distance(other.getPose());
+        // this is not used
+        return GeometryUtil.norm(
+                GeometryUtil.slog(GeometryUtil.transformBy(GeometryUtil.inverse(getPose()), other.getPose())));
     }
 
     @Override
@@ -97,31 +58,8 @@ public class Pose2dWithCurvature implements IPose2d<Pose2dWithCurvature>, ICurva
         if (!(other instanceof Pose2dWithCurvature)) {
             return false;
         }
-
         Pose2dWithCurvature p2dwc = (Pose2dWithCurvature) other;
-        return getPose().equals(p2dwc.getPose()) && Util.epsilonEquals(getCurvature(), p2dwc.getCurvature()) && Util.epsilonEquals(getDCurvatureDs(), p2dwc.getDCurvatureDs());
-    }
-
-    @Override
-    public String toString() {
-        final DecimalFormat fmt = new DecimalFormat("#0.000");
-        return getPose().toString() + ", curvature: " + fmt.format(getCurvature()) + ", dcurvature_ds: " + fmt.format(getDCurvatureDs());
-    }
-
-    @Override
-    public String toCSV() {
-        final DecimalFormat fmt = new DecimalFormat("#0.000");
-        return getPose().toCSV() + "," + fmt.format(getCurvature()) + "," + fmt.format(getDCurvatureDs());
-    }
-
-    @Override
-    public Pose2dWithCurvature rotateBy(Rotation2d other) {
-        return new Pose2dWithCurvature(getPose().rotateBy(other), getCurvature(), getDCurvatureDs());
-    }
-
-
-    @Override
-    public Pose2dWithCurvature add(Pose2dWithCurvature other) {
-        return this.transformBy(other.getPose());   // todo make work
+        return getPose().equals(p2dwc.getPose()) && Math.abs(getCurvature() - p2dwc.getCurvature()) <= 1e-12
+                && Math.abs(getDCurvatureDs() - p2dwc.getDCurvatureDs()) <= 1e-12;
     }
 }

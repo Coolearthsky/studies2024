@@ -1,7 +1,5 @@
 package org.team100.lib.motion.drivetrain;
 
-import java.io.FileWriter;
-
 import org.team100.lib.commands.DriveUtil;
 import org.team100.lib.controller.HolonomicDriveController2;
 import org.team100.lib.controller.HolonomicDriveRegulator;
@@ -151,7 +149,7 @@ public class SwerveDriveSubsystem extends Subsystem implements SwerveDriveSubsys
         m_swerveLocal.setChassisSpeeds(targetChassisSpeeds);
     }
 
-    public void setChassisSpeeds(com.team254.lib.swerve.ChassisSpeeds speeds) {
+    public void setChassisSpeeds(org.team100.lib.swerve.ChassisSpeeds speeds) {
         m_swerveLocal.setChassisSpeeds254(speeds);
     }
 
@@ -180,8 +178,8 @@ public class SwerveDriveSubsystem extends Subsystem implements SwerveDriveSubsys
         m_swerveLocal.defense();
     }
 
-    public void test(double[][] desiredOutputs, FileWriter writer) {
-        m_swerveLocal.test(desiredOutputs, writer);
+    public void test(double[][] desiredOutputs) {
+        m_swerveLocal.test(desiredOutputs);
     }
 
     @Override

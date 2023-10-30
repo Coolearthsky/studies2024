@@ -8,13 +8,12 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.team254.lib.geometry.Pose2d;
-import com.team254.lib.geometry.Rotation2d;
-import com.team254.lib.geometry.Translation2d;
-import com.team254.lib.util.Util;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 
 public class QuinticHermiteOptimizerTest {
-    private static double kEpsilon = Util.kEpsilon;
+    private static double kEpsilon = 1e-12;
 
     @Test
     public void test() {

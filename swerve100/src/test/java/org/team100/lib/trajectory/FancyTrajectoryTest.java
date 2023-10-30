@@ -3,20 +3,22 @@ package org.team100.lib.trajectory;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.team100.lib.geometry.GeometryUtil;
+import org.team100.lib.swerve.ChassisSpeeds;
 
 import com.team254.frc2022.planners.DriveMotionPlanner;
-import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
-import com.team254.lib.geometry.Rotation2d;
-import com.team254.lib.geometry.Translation2d;
-import com.team254.lib.swerve.ChassisSpeeds;
-import com.team254.lib.trajectory.TimedView;
+import com.team254.lib.geometry.Rotation2dState;
 import com.team254.lib.trajectory.Trajectory;
-import com.team254.lib.trajectory.TrajectoryIterator;
+import com.team254.lib.trajectory.TrajectoryTimeIterator;
+import com.team254.lib.trajectory.TrajectoryTimeSampler;
 import com.team254.lib.trajectory.timing.CentripetalAccelerationConstraint;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.trajectory.timing.TimingConstraint;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Timer;
 
 /**
@@ -68,41 +70,39 @@ public class FancyTrajectoryTest {
                 new Pose2d(0, 0, Rotation2d.fromDegrees(270)),
                 new Pose2d(10, -10, Rotation2d.fromDegrees(0)));
         // while turning 180
-        List<Rotation2d> headings = List.of(
-                Rotation2d.fromDegrees(90),
-                Rotation2d.fromDegrees(180));
+        List<Rotation2dState> headings = List.of(
+                GeometryUtil.fromDegrees(90),
+                GeometryUtil.fromDegrees(180));
         // these don't actually do anything.
         List<TimingConstraint<Pose2dWithCurvature>> constraints = List.of(
                 new CentripetalAccelerationConstraint(60));
 
         // note there are static constraints in here.
         DriveMotionPlanner mMotionPlanner = new DriveMotionPlanner();
-        boolean reversed = false;
         double start_vel = 0;
         double end_vel = 0;
         // there's a bug in here; it doesn't use the constraints, nor the voltage.
-        Trajectory<TimedState<Pose2dWithCurvature>, TimedState<Rotation2d>> trajectory = mMotionPlanner
-                .generateTrajectory(
-                        reversed,
-                        waypoints,
-                        headings,
-                        constraints,
-                        start_vel,
-                        end_vel,
-                        kMaxVel,
-                        kMaxAccel,
-                        kMaxVoltage);
+        Trajectory trajectory = mMotionPlanner.generateTrajectory(
+                waypoints,
+                headings,
+                constraints,
+                start_vel,
+                end_vel,
+                kMaxVel,
+                kMaxAccel,
+                kMaxVoltage);
         System.out.println(trajectory);
         System.out.println("TRAJECTORY LENGTH: " + trajectory.length());
         // assertEquals(10, trajectory.length());
 
-        TrajectoryIterator<TimedState<Pose2dWithCurvature>, TimedState<Rotation2d>> iter = new TrajectoryIterator<>(
-                new TimedView<>(trajectory));
+        TrajectoryTimeSampler view = new TrajectoryTimeSampler(trajectory);
+
+        TrajectoryTimeIterator iter = new TrajectoryTimeIterator(view);
 
         mMotionPlanner.setTrajectory(iter);
 
         // in the drive loop, this happens:
-        Pose2d actualPose = Pose2d.identity();
+        Pose2d actualPose = GeometryUtil.kPose2dIdentity;
         double fpgatime = 0;
         final double now = Timer.getFPGATimestamp();
         // this stuff doesn't work, and i don't want to break the build so i'm
@@ -118,9 +118,9 @@ public class FancyTrajectoryTest {
         ChassisSpeeds output = mMotionPlanner.update(now, actualPose);
 
         Translation2d translational_error = mMotionPlanner.getTranslationalError();
-        Rotation2d heading_error = mMotionPlanner.getHeadingError();
+        Rotation2dState heading_error = mMotionPlanner.getHeadingError();
         TimedState<Pose2dWithCurvature> path_setpoint = mMotionPlanner.getPathSetpoint();
-        TimedState<Rotation2d> heading_setpoint = mMotionPlanner.getHeadingSetpoint();
+        TimedState<Rotation2dState> heading_setpoint = mMotionPlanner.getHeadingSetpoint();
 
         // the DriveMotionPlanner has two ways to follow the trajectory: it could just
         // follow it,

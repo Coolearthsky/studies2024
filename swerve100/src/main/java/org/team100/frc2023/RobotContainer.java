@@ -1,6 +1,5 @@
 package org.team100.frc2023;
 
-import java.io.FileWriter;
 import java.io.IOException;
 
 import org.team100.frc2023.autonomous.Autonomous;
@@ -106,9 +105,6 @@ public class RobotContainer {
     // HID CONTROL
     private final Control control;
 
-    // LOGGING
-    private final FileWriter myWriter;
-
     // AUTON
     private final Command m_auton;
 
@@ -184,8 +180,6 @@ public class RobotContainer {
         // TODO: control selection using names
         control = new DualXboxControl();
         // control = new JoystickControl();
-
-        myWriter = logFile();
 
         ////////////////////////////
         // DRIVETRAIN COMMANDS
@@ -330,7 +324,7 @@ public class RobotContainer {
                 { rearLeft ? driveControl : 0, rearLeft ? turnControl : 0 },
                 { rearRight ? driveControl : 0, rearRight ? turnControl : 0 }
         };
-        m_robotDrive.test(desiredOutputs, myWriter);
+        m_robotDrive.test(desiredOutputs);
 
     }
 
@@ -352,15 +346,6 @@ public class RobotContainer {
 
     public void green() {
         m_indicator.set(State.GREEN);
-    }
-
-    private static FileWriter logFile() {
-        try {
-            return new FileWriter("/home/lvuser/logs.txt", true);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     private DriveToAprilTag toTag(

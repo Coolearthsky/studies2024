@@ -1,13 +1,22 @@
 package com.team254.lib.trajectory;
 
-import com.team254.lib.geometry.State;
+import com.team254.lib.geometry.Pose2dWithCurvature;
+import com.team254.lib.geometry.Rotation2dState;
+import com.team254.lib.trajectory.timing.TimedState;
 
-public class TrajectoryIterator<S extends State<S>, T extends State<T>> {
-    protected final TrajectoryView<S, T> view_;
+/** 
+ * Allows iterating over the schedule of a trajectory. 
+ * */
+public class TrajectoryTimeIterator {
+    protected final TrajectoryTimeSampler view_;
     protected double progress_ = 0.0;
-    protected TrajectorySamplePoint<S, T> current_sample_;
+    protected TrajectorySamplePoint current_sample_;
 
-    public TrajectoryIterator(final TrajectoryView<S, T> view) {
+    public TrajectoryTimeIterator() {
+        view_=null;
+    }
+
+    public TrajectoryTimeIterator(final TrajectoryTimeSampler view) {
         view_ = view;
 
         // No effect if view is empty.
@@ -27,32 +36,32 @@ public class TrajectoryIterator<S extends State<S>, T extends State<T>> {
         return Math.max(0.0, view_.last_interpolant() - progress_);
     }
 
-    public TrajectorySamplePoint<S, T> getSample() {
+    public TrajectorySamplePoint getSample() {
         return current_sample_;
     }
 
-    public S getState() {
+    public TimedState<Pose2dWithCurvature> getState() {
         return getSample().state();
     }
 
-    public T getHeading() {
+    public TimedState<Rotation2dState> getHeading() {
         return getSample().heading();
     }
 
-    public TrajectorySamplePoint<S, T> advance(double additional_progress) {
+    public TrajectorySamplePoint advance(double additional_progress) {
         progress_ = Math.max(view_.first_interpolant(),
                 Math.min(view_.last_interpolant(), progress_ + additional_progress));
         current_sample_ = view_.sample(progress_);
         return current_sample_;
     }
 
-    public TrajectorySamplePoint<S, T> preview(double additional_progress) {
+    public TrajectorySamplePoint preview(double additional_progress) {
         final double progress = Math.max(view_.first_interpolant(),
                 Math.min(view_.last_interpolant(), progress_ + additional_progress));
         return view_.sample(progress);
     }
 
-    public Trajectory<S, T> trajectory() {
+    public Trajectory trajectory() {
         return view_.trajectory();
     }
 }

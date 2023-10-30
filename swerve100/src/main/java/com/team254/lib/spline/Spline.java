@@ -1,9 +1,10 @@
 package com.team254.lib.spline;
 
-import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
-import com.team254.lib.geometry.Rotation2d;
-import com.team254.lib.geometry.Translation2d;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 
 public abstract class Spline {
     public abstract Translation2d getPoint(double t);
@@ -25,7 +26,4 @@ public abstract class Spline {
     public Pose2dWithCurvature getPose2dWithCurvature(double t) {
         return new Pose2dWithCurvature(getPose2d(t), getCurvature(t), getDCurvature(t) / getVelocity(t));
     }
-
-    // TODO add toString
-    // public abstract String toString();
 }

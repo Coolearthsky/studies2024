@@ -3,44 +3,20 @@ package com.team254.lib.trajectory;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.team254.lib.geometry.State;
+import com.team254.lib.geometry.Pose2dWithCurvature;
+import com.team254.lib.geometry.Rotation2dState;
+import com.team254.lib.trajectory.timing.TimedState;
 
-public class Trajectory<S extends State<S>, T extends State<T>>  {
-    protected final List<TrajectoryPoint<S, T>> points_;
-    protected final IndexView index_view_ = new IndexView();
-    protected double default_velocity_;
+/**
+ * Represents a 2d path with heading and a schedule.
+ */
+public class Trajectory {
+    protected final List<TrajectoryPoint> points_;
 
-    /**
-     * Create an empty trajectory.
-     */
-    public Trajectory() {
-        points_ = new ArrayList<>();
-    }
-
-    public void setDefaultVelocity(double velocity) {
-        default_velocity_ = velocity;
-    }
-
-    public double getDefaultVelocity() {
-        return default_velocity_;
-    }
-
-    /**
-     * Create a trajectory from the given states and transforms.
-     *
-     * @param states The states of the trajectory.
-     */
-    public Trajectory(final List<S> states, final List<T> headings) {
+    public Trajectory(final List<TimedState<Pose2dWithCurvature>> states, final List<TimedState<Rotation2dState>> headings) {
         points_ = new ArrayList<>(states.size());
         for (int i = 0; i < states.size(); ++i) {
-            points_.add(new TrajectoryPoint<>(states.get(i), headings.get(i), i));
-        }
-    }
-
-    public Trajectory(final List<TrajectoryPoint<S, T>> points) {
-        points_ = new ArrayList<>(points.size());
-        for (int i = 0; i < points.size(); i++) {
-            points_.add(new TrajectoryPoint<>(points.get(i).state(), points.get(i).heading(), i));
+            points_.add(new TrajectoryPoint(states.get(i), headings.get(i), i));
         }
     }
 
@@ -52,36 +28,12 @@ public class Trajectory<S extends State<S>, T extends State<T>>  {
         return points_.size();
     }
 
-    public TrajectoryPoint<S, T> getLastPoint() {
+    public TrajectoryPoint getLastPoint() {
         return points_.get(length() - 1);
     }
 
-    public TrajectoryPoint<S, T> getPoint(final int index) {
+    public TrajectoryPoint getPoint(final int index) {
         return points_.get(index);
-    }
-
-    public TrajectorySamplePoint<S, T> getInterpolated(final double index) {
-        if (isEmpty()) {
-            return null;
-        } else if (index <= 0.0) {
-            return new TrajectorySamplePoint<>(getPoint(0));
-        } else if (index >= length() - 1) {
-            return new TrajectorySamplePoint<>(getPoint(length() - 1));
-        }
-        final int i = (int) Math.floor(index);
-        final double frac = index - i;
-        if (frac <= Double.MIN_VALUE) {
-            return new TrajectorySamplePoint<>(getPoint(i));
-        } else if (frac >= 1.0 - Double.MIN_VALUE) {
-            return new TrajectorySamplePoint<>(getPoint(i + 1));
-        } else {
-            return new TrajectorySamplePoint<>(getPoint(i).state().interpolate(getPoint(i + 1).state(), frac),
-                    getPoint(i).heading().interpolate(getPoint(i + 1).heading(), frac), i, i + 1);
-        }
-    }
-
-    public IndexView getIndexView() {
-        return index_view_;
     }
 
     @Override
@@ -95,27 +47,5 @@ public class Trajectory<S extends State<S>, T extends State<T>>  {
             builder.append(System.lineSeparator());
         }
         return builder.toString();
-    }
-
-    public class IndexView implements TrajectoryView<S, T> {
-        @Override
-        public TrajectorySamplePoint<S, T> sample(double index) {
-            return Trajectory.this.getInterpolated(index);
-        }
-
-        @Override
-        public double last_interpolant() {
-            return Math.max(0.0, Trajectory.this.length() - 1);
-        }
-
-        @Override
-        public double first_interpolant() {
-            return 0.0;
-        }
-
-        @Override
-        public Trajectory<S, T> trajectory() {
-            return Trajectory.this;
-        }
     }
 }

@@ -1,8 +1,11 @@
 package com.team254.lib.physics;
 
-import com.team254.lib.geometry.Rotation2d;
-import com.team254.lib.geometry.Translation2d;
 import java.text.DecimalFormat;
+
+import org.team100.lib.geometry.GeometryUtil;
+
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 
 public class SwerveDrive {
     // All units must be SI!
@@ -32,19 +35,19 @@ public class SwerveDrive {
 
         public ChassisState(Translation2d movement) {
             this.movement = movement;
-            this.heading = Rotation2d.identity();
+            this.heading = GeometryUtil.kRotationIdentity;
         }
 
 
         public ChassisState() {
-            this.movement = Translation2d.identity();
-            this.heading = Rotation2d.identity();
+            this.movement = GeometryUtil.kTranslation2dIdentity;
+            this.heading = GeometryUtil.kRotationIdentity;
         }
 
         @Override
         public String toString() {
             DecimalFormat fmt = new DecimalFormat("#0.000");
-            return fmt.format(movement.norm())/* + ", " + fmt.format(heading.getRadians())*/;
+            return fmt.format(movement.getNorm())/* + ", " + fmt.format(heading.getRadians())*/;
         }
     }
 }
