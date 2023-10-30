@@ -5,23 +5,23 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.team100.lib.geometry.GeometryUtil;
+import org.team100.lib.path.Path;
+import org.team100.lib.path.PathDistanceSampler;
 import org.team100.lib.swerve.ChassisSpeeds;
 import org.team100.lib.timing.SwerveDriveDynamicsConstraint;
 import org.team100.lib.timing.TimedPose;
 import org.team100.lib.timing.TimedRotation;
 import org.team100.lib.timing.TimingConstraint;
 import org.team100.lib.timing.TimingUtil;
+import org.team100.lib.trajectory.Trajectory;
+import org.team100.lib.trajectory.TrajectorySamplePoint;
+import org.team100.lib.trajectory.TrajectoryTimeIterator;
 
 import com.team254.lib.control.Lookahead;
 import com.team254.lib.physics.SwerveDrive;
 import com.team254.lib.spline.QuinticHermiteSpline;
 import com.team254.lib.spline.Spline;
 import com.team254.lib.spline.SplineGenerator;
-import com.team254.lib.trajectory.Path;
-import com.team254.lib.trajectory.PathDistanceSampler;
-import com.team254.lib.trajectory.Trajectory;
-import com.team254.lib.trajectory.TrajectorySamplePoint;
-import com.team254.lib.trajectory.TrajectoryTimeIterator;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -145,14 +145,7 @@ public class DriveMotionPlanner {
             double max_accel, // inches/s^2
             double max_voltage) {
 
-        // Create a trajectory from splines.
-
-        // This isn't actually a trajectory at all, they're just using a trajectory as a
-        // container for
-        // the path, so get rid of it.
-
-        /////
-        ////
+        // Create a path from splines.
 
         List<QuinticHermiteSpline> splines = new ArrayList<>(waypoints.size() - 1);
         for (int i1 = 1; i1 < waypoints.size(); ++i1) {
@@ -162,9 +155,6 @@ public class DriveMotionPlanner {
         final List<? extends Spline> splines1 = splines;
 
         Path trajectory = new Path(SplineGenerator.parameterizeSplines(splines1, headings, kMaxDx, kMaxDy, kMaxDTheta));
-
-        //////
-        /////
 
         // Create the constraint that the robot must be able to traverse the trajectory
         // without ever applying more

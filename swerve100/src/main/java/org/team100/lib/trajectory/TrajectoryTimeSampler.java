@@ -1,4 +1,4 @@
-package com.team254.lib.trajectory;
+package org.team100.lib.trajectory;
 
 /**
  * Allows sampling a trajectory by its schedule.

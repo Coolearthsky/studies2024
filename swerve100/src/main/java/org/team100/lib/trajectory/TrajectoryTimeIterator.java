@@ -1,17 +1,21 @@
-package com.team254.lib.trajectory;
+package org.team100.lib.trajectory;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.spline.PoseWithCurvature;
+import org.team100.lib.timing.TimedPose;
+import org.team100.lib.timing.TimedRotation;
 
-/**
- * Allows iterating over the index points of a path.
- */
-public class PathIndexIterator {
-    protected final PathIndexSampler view_;
+/** 
+ * Allows iterating over the schedule of a trajectory. 
+ * */
+public class TrajectoryTimeIterator {
+    protected final TrajectoryTimeSampler view_;
     protected double progress_ = 0.0;
-    protected PathSamplePoint current_sample_;
+    protected TrajectorySamplePoint current_sample_;
 
-    public PathIndexIterator(final PathIndexSampler view) {
+    public TrajectoryTimeIterator() {
+        view_=null;
+    }
+
+    public TrajectoryTimeIterator(final TrajectoryTimeSampler view) {
         view_ = view;
 
         // No effect if view is empty.
@@ -31,28 +35,32 @@ public class PathIndexIterator {
         return Math.max(0.0, view_.last_interpolant() - progress_);
     }
 
-    public PathSamplePoint getSample() {
+    public TrajectorySamplePoint getSample() {
         return current_sample_;
     }
 
-    public PoseWithCurvature getState() {
+    public TimedPose getState() {
         return getSample().state();
     }
 
-    public Rotation2d getHeading() {
+    public TimedRotation getHeading() {
         return getSample().heading();
     }
 
-    public PathSamplePoint advance(double additional_progress) {
+    public TrajectorySamplePoint advance(double additional_progress) {
         progress_ = Math.max(view_.first_interpolant(),
                 Math.min(view_.last_interpolant(), progress_ + additional_progress));
         current_sample_ = view_.sample(progress_);
         return current_sample_;
     }
 
-    public PathSamplePoint preview(double additional_progress) {
+    public TrajectorySamplePoint preview(double additional_progress) {
         final double progress = Math.max(view_.first_interpolant(),
                 Math.min(view_.last_interpolant(), progress_ + additional_progress));
         return view_.sample(progress);
+    }
+
+    public Trajectory trajectory() {
+        return view_.trajectory();
     }
 }

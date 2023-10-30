@@ -10,9 +10,6 @@ import org.team100.lib.timing.CentripetalAccelerationConstraint;
 import org.team100.lib.timing.TimingConstraint;
 
 import com.team254.frc2022.planners.DriveMotionPlanner;
-import com.team254.lib.trajectory.Trajectory;
-import com.team254.lib.trajectory.TrajectoryTimeIterator;
-import com.team254.lib.trajectory.TrajectoryTimeSampler;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;

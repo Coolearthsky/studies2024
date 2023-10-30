@@ -1,4 +1,4 @@
-package com.team254.lib.trajectory;
+package org.team100.lib.path;
 
 import java.util.ArrayList;
 import java.util.List;

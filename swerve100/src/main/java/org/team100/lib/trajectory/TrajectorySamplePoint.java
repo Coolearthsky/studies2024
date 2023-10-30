@@ -1,4 +1,4 @@
-package com.team254.lib.trajectory;
+package org.team100.lib.trajectory;
 
 import org.team100.lib.timing.TimedPose;
 import org.team100.lib.timing.TimedRotation;

@@ -10,13 +10,12 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.GeometryUtil;
+import org.team100.lib.path.Path;
+import org.team100.lib.path.PathDistanceSampler;
 import org.team100.lib.timing.TimedPose;
 import org.team100.lib.timing.TimingConstraint;
 import org.team100.lib.timing.TimingConstraint.MinMaxAcceleration;
-
-import com.team254.lib.trajectory.Path;
-import com.team254.lib.trajectory.PathDistanceSampler;
-import com.team254.lib.trajectory.Trajectory;
+import org.team100.lib.trajectory.Trajectory;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
