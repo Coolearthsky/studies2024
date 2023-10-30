@@ -10,17 +10,15 @@ import org.team100.lib.swerve.ChassisSpeeds;
 import com.team254.lib.control.Lookahead;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2dState;
-import com.team254.lib.geometry.Translation2dState;
-import com.team254.lib.geometry.Twist2dWrapper;
 import com.team254.lib.physics.SwerveDrive;
 import com.team254.lib.spline.QuinticHermiteSpline;
 import com.team254.lib.spline.Spline;
 import com.team254.lib.spline.SplineGenerator;
+import com.team254.lib.trajectory.Path;
 import com.team254.lib.trajectory.PathDistanceSampler;
 import com.team254.lib.trajectory.Trajectory;
-import com.team254.lib.trajectory.TrajectoryTimeIterator;
 import com.team254.lib.trajectory.TrajectorySamplePoint;
-import com.team254.lib.trajectory.Path;
+import com.team254.lib.trajectory.TrajectoryTimeIterator;
 import com.team254.lib.trajectory.timing.SwerveDriveDynamicsConstraint;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.trajectory.timing.TimingConstraint;
@@ -29,6 +27,7 @@ import com.team254.lib.trajectory.timing.TimingUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -99,7 +98,6 @@ public class DriveMotionPlanner {
                 0.0942 / 2,
                 0.464 / 2.0 * kTrackScrubFactor);
     }
-
 
     public void setTrajectory(final TrajectoryTimeIterator trajectory) {
 
@@ -358,18 +356,16 @@ public class DriveMotionPlanner {
                 final Rotation2d rotation = mPathSetpoint.state().getPose().getRotation();
 
                 // In field frame
-                var chassis_v = new Translation2dState(rotation.getCos() * velocity_m, rotation.getSin() * velocity_m);
+                Translation2d chassis_v = new Translation2d(rotation.getCos() * velocity_m,
+                        rotation.getSin() * velocity_m);
                 // Convert to robot frame
-                chassis_v = new Translation2dState(
-                        chassis_v.get().rotateBy(mHeadingSetpoint.state().get().unaryMinus()));
+                chassis_v = chassis_v.rotateBy(mHeadingSetpoint.state().get().unaryMinus());
 
-                var chassis_twist = new Twist2dWrapper(
-                        chassis_v.get().getX(),
-                        chassis_v.get().getY(), mDTheta);
+                Twist2d chassis_twist = new Twist2d(chassis_v.getX(), chassis_v.getY(), mDTheta);
 
                 // System.out.println(chassis_twist);
 
-                var chassis_speeds = new ChassisSpeeds(
+                ChassisSpeeds chassis_speeds = new ChassisSpeeds(
                         chassis_twist.dx, chassis_twist.dy, chassis_twist.dtheta);
                 // PID is in robot frame
 
@@ -406,7 +402,6 @@ public class DriveMotionPlanner {
         return mOutput;
     }
 
-
     private void log(TrajectoryTimeIterator trajectory) {
         SmartDashboard.putString("Current Pose", mCurrentState.toString());
         SmartDashboard.putString("Last Pose",
@@ -414,7 +409,7 @@ public class DriveMotionPlanner {
         SmartDashboard.putNumber("Finished Traj?", mPathSetpoint.velocity());
     }
 
-    public ChassisSpeeds update(   TrajectoryTimeIterator trajectory,  double timestamp, Pose2d current_state) {
+    public ChassisSpeeds update(TrajectoryTimeIterator trajectory, double timestamp, Pose2d current_state) {
         if (trajectory == null) {
             // System.out.println("YOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
             return null;
@@ -466,17 +461,14 @@ public class DriveMotionPlanner {
                 final Rotation2d rotation = mPathSetpoint.state().getPose().getRotation();
 
                 // In field frame
-                var chassis_v = new Translation2dState(rotation.getCos() * velocity_m, rotation.getSin() * velocity_m);
+                Translation2d chassis_v = new Translation2d(rotation.getCos() * velocity_m,
+                        rotation.getSin() * velocity_m);
                 // Convert to robot frame
-                chassis_v = new Translation2dState(
-                        chassis_v.get().rotateBy(mHeadingSetpoint.state().get().unaryMinus()));
+                chassis_v = chassis_v.rotateBy(mHeadingSetpoint.state().get().unaryMinus());
 
-                var chassis_twist = new Twist2dWrapper(
-                        chassis_v.get().getX(),
-                        chassis_v.get().getY(), mDTheta);
+                Twist2d chassis_twist = new Twist2d(chassis_v.getX(), chassis_v.getY(), mDTheta);
 
-                var chassis_speeds = new ChassisSpeeds(
-                        chassis_twist.dx, chassis_twist.dy, chassis_twist.dtheta);
+                ChassisSpeeds chassis_speeds = new ChassisSpeeds(chassis_twist.dx, chassis_twist.dy, chassis_twist.dtheta);
                 // PID is in robot frame
                 mOutput = updatePIDChassis(chassis_speeds);
             } else if (mFollowerType == FollowerType.PURE_PURSUIT) {
@@ -510,8 +502,6 @@ public class DriveMotionPlanner {
         }
         return mOutput;
     }
-
-
 
     public double getVelocitySetpoint() {
         return mVelocitym;
