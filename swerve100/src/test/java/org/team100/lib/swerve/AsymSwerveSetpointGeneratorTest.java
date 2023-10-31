@@ -74,7 +74,7 @@ public class AsymSwerveSetpointGeneratorTest {
     }
 
     @Test
-    public void testGenerateSetpoint() {
+    void testGenerateSetpoint() {
         SwerveModuleState[] initialStates = {
                 new SwerveModuleState(),
                 new SwerveModuleState(),
@@ -83,7 +83,7 @@ public class AsymSwerveSetpointGeneratorTest {
         };
         SwerveSetpoint setpoint = new SwerveSetpoint(new ChassisSpeeds(), initialStates);
 
-        var generator = new AsymSwerveSetpointGenerator(kKinematics, moduleTranslations);
+        var generator = new AsymSwerveSetpointGenerator(kKinematics);
 
         var goalSpeeds = new ChassisSpeeds(0.0, 0.0, 1.0);
         setpoint = driveToGoal(setpoint, goalSpeeds, generator);

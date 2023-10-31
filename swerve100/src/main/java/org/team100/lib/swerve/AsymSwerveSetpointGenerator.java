@@ -32,12 +32,9 @@ public class AsymSwerveSetpointGenerator {
     }
 
     private final SwerveDriveKinematics mKinematics;
-    final Translation2d[] modules;
 
-    public AsymSwerveSetpointGenerator(final SwerveDriveKinematics kinematics,
-            Translation2d[] moduleTranslations) {
+    public AsymSwerveSetpointGenerator(final SwerveDriveKinematics kinematics) {
         this.mKinematics = kinematics;
-        modules = moduleTranslations;
     }
 
     /**
@@ -185,21 +182,21 @@ public class AsymSwerveSetpointGenerator {
         boolean need_to_steer = true;
         if (chassisSpeedsToTwist2d(desiredState).equals(GeometryUtil.kTwist2dIdentity)) {
             need_to_steer = false;
-            for (int i = 0; i < modules.length; ++i) {
+            for (int i = 0; i < prevSetpoint.mModuleStates.length; ++i) {
                 desiredModuleState[i].angle = prevSetpoint.mModuleStates[i].angle;
                 desiredModuleState[i].speedMetersPerSecond = 0.0;
             }
         }
 
         // For each module, compute local Vx and Vy vectors.
-        double[] prev_vx = new double[modules.length];
-        double[] prev_vy = new double[modules.length];
-        Rotation2d[] prev_heading = new Rotation2d[modules.length];
-        double[] desired_vx = new double[modules.length];
-        double[] desired_vy = new double[modules.length];
-        Rotation2d[] desired_heading = new Rotation2d[modules.length];
+        double[] prev_vx = new double[prevSetpoint.mModuleStates.length];
+        double[] prev_vy = new double[prevSetpoint.mModuleStates.length];
+        Rotation2d[] prev_heading = new Rotation2d[prevSetpoint.mModuleStates.length];
+        double[] desired_vx = new double[prevSetpoint.mModuleStates.length];
+        double[] desired_vy = new double[prevSetpoint.mModuleStates.length];
+        Rotation2d[] desired_heading = new Rotation2d[prevSetpoint.mModuleStates.length];
         boolean all_modules_should_flip = true;
-        for (int i = 0; i < modules.length; ++i) {
+        for (int i = 0; i < prevSetpoint.mModuleStates.length; ++i) {
             prev_vx[i] = prevSetpoint.mModuleStates[i].angle.getCos()
                     * prevSetpoint.mModuleStates[i].speedMetersPerSecond;
             prev_vy[i] = prevSetpoint.mModuleStates[i].angle.getSin()
@@ -247,14 +244,14 @@ public class AsymSwerveSetpointGenerator {
         // steering angle to command (since
         // inverse kinematics doesn't care about angle, we can be opportunistically
         // lazy).
-        List<Optional<Rotation2d>> overrideSteering = new ArrayList<>(modules.length);
+        List<Optional<Rotation2d>> overrideSteering = new ArrayList<>(prevSetpoint.mModuleStates.length);
         // Enforce steering velocity limits. We do this by taking the derivative of
         // steering angle at the current angle,
         // and then backing out the maximum interpolant between start and goal states.
         // We remember the minimum across all modules, since
         // that is the active constraint.
         final double max_theta_step = dt * limits.kMaxSteeringVelocity;
-        for (int i = 0; i < modules.length; ++i) {
+        for (int i = 0; i < prevSetpoint.mModuleStates.length; ++i) {
             if (!need_to_steer) {
                 overrideSteering.add(Optional.of(prevSetpoint.mModuleStates[i].angle));
                 continue;
@@ -306,7 +303,7 @@ public class AsymSwerveSetpointGenerator {
 
         // Enforce drive wheel acceleration limits.
         // final double max_vel_step = dt * limits.kMaxDriveAcceleration;
-        for (int i = 0; i < modules.length; ++i) {
+        for (int i = 0; i < prevSetpoint.mModuleStates.length; ++i) {
             if (min_s == 0.0) {
                 // No need to carry on.
                 break;
@@ -334,7 +331,7 @@ public class AsymSwerveSetpointGenerator {
                 prevSetpoint.mChassisSpeeds.vyMetersPerSecond + min_s * dy,
                 prevSetpoint.mChassisSpeeds.omegaRadiansPerSecond + min_s * dtheta);
         var retStates = mKinematics.toSwerveModuleStates(retSpeeds);
-        for (int i = 0; i < modules.length; ++i) {
+        for (int i = 0; i < prevSetpoint.mModuleStates.length; ++i) {
             final var maybeOverride = overrideSteering.get(i);
             if (maybeOverride.isPresent()) {
                 var override = maybeOverride.get();

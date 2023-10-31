@@ -159,7 +159,7 @@ public class SwerveDriveSubsystem extends Subsystem implements SwerveDriveSubsys
     }
 
     public void setChassisSpeeds(ChassisSpeeds speeds) {
-        m_swerveLocal.setChassisSpeeds254(speeds);
+        m_swerveLocal.setChassisSpeeds(speeds);
     }
 
     /**

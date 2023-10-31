@@ -17,23 +17,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 
 /**
- * Experiments with the 254 trajectory classes.
- * 
- * The 254 representation is different from the WPI one:
- * 
- * what they call a "trajectory" is parameterized by state.
- * 
- * usually the parameter is a "timed state", which simply combines a state
- * with time, like the WPI trajectory state. again the timed state is
- * parameterized, usually instantiated with Pose2dWithCurvature and Rotation2d.
- * 
- * sometimes the parameter does not include time, e.g. it's just pose and
- * rotation, and in those cases the resulting trajectory is really a "path", and
- * it is converted later, using TimingUtil.timeParameterizeTrajectory.
- * 
- * a trajectory represents the path with poses, like WPI, and it also includes
- * heading.
- * 
  * Some of the trajectory-related stuff uses *inches* as the length measure but
  * i think it's actually unitless, i.e. whatever you give in the waypoints is
  * the same as the velocity limits etc.
