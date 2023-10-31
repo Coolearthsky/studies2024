@@ -7,7 +7,7 @@ import org.team100.frc2023.commands.GoalOffset;
 import org.team100.lib.config.Identity;
 import org.team100.lib.controller.DriveControllers;
 import org.team100.lib.controller.DriveControllersFactory;
-import org.team100.lib.controller.HolonomicDriveController2;
+import org.team100.lib.controller.HolonomicDriveController3;
 import org.team100.lib.controller.State100;
 import org.team100.lib.motion.drivetrain.SpeedLimits;
 import org.team100.lib.motion.drivetrain.SwerveDriveSubsystem;
@@ -67,7 +67,7 @@ public class DriveToWaypoint3 extends Command {
     private final PIDController xController;
     private final PIDController yController;
     // private final HolonomicLQR m_controller;
-    private final HolonomicDriveController2 m_controller;
+    private final HolonomicDriveController3 m_controller;
 
     private GoalOffset previousOffset;
     private Trajectory m_trajectory;
@@ -149,7 +149,7 @@ public class DriveToWaypoint3 extends Command {
 
         DriveControllers controllers = new DriveControllersFactory().get(identity, speedLimits);
 
-        m_controller = new HolonomicDriveController2(controllers);
+        m_controller = new HolonomicDriveController3(controllers);
         // m_rotationController, m_gyro);
 
         // globalGoalTranslation = new Translation2d();
@@ -228,21 +228,21 @@ public class DriveToWaypoint3 extends Command {
 
         // System.out.println(desiredState);
 
-        if(currentPose.getX() > m_goal.getX() - 0.2 && currentPose.getX() < m_goal.getX() + 0.2){
-            if(currentPose.getY() > m_goal.getY() - 0.2 && currentPose.getY() < m_goal.getY() + 0.2){
-                System.out.println("AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
+        if(currentPose.getX() > m_goal.getX() - 0.1 && currentPose.getX() < m_goal.getX() + 0.1){
+            if(currentPose.getY() > m_goal.getY() - 0.1 && currentPose.getY() < m_goal.getY() + 0.1){
+                // System.out.println("AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
                 System.out.println(desiredState.poseMeters.getY());
                 System.out.println(m_goal.getY());
 
                 
                 isFinished = true;
             } else{
-                System.out.println("NOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+                // System.out.println("NOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
                 isFinished = false;
             }
         } else {
             isFinished = false;
-            System.out.println("BAHAHAHAHAHAHAHAHAHH");
+            // System.out.println("BAHAHAHAHAHAHAHAHAHH");
         }
 
         
@@ -255,7 +255,7 @@ public class DriveToWaypoint3 extends Command {
         SwerveState des = new SwerveState(
             new State100(desiredState.poseMeters.getX(), 0, 0),
             new State100(desiredState.poseMeters.getY(), 0, 0),
-            new State100(currentPose.getRotation().getRadians(), 0, 0));
+            new State100(0, 0, 0));
         
         
         Twist2d fieldRelativeTarget = m_controller.calculate(
