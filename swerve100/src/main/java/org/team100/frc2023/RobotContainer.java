@@ -253,7 +253,7 @@ public class RobotContainer {
         control.oscillate(new ArmTrajectory(ArmPosition.SUB, m_arm, true));
         // control.armSafeSequential(armSafeWaypoint, armSafe);
         // control.armMid(new ArmTrajectory(ArmPosition.LOW, armController));
-        control.driveWith254Trajec(new FancyTrajectory(m_robotDrive));
+        control.driveWithFancyTrajec(new FancyTrajectory(m_robotDrive));
 
         //////////////////////////
         // MISC COMMANDS

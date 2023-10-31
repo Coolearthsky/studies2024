@@ -178,7 +178,7 @@ public interface Control {
     default void armSubSafe(Command command) {
     }
 
-    default void driveWith254Trajec(Command command){
+    default void driveWithFancyTrajec(Command command){
     }
     
     default void circle(Command command){    
