@@ -1,4 +1,4 @@
-package com.team254.lib.trajectory;
+package org.team100.lib.path;
 
 /**
  * Allows sampling a path by the index of points that make up a path.

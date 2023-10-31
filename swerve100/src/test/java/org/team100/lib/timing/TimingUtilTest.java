@@ -1,4 +1,4 @@
-package com.team254.lib.trajectory.timing;
+package org.team100.lib.timing;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -10,30 +10,30 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.GeometryUtil;
-
-import com.team254.lib.geometry.Pose2dWithCurvature;
-import com.team254.lib.geometry.Rotation2dState;
-import com.team254.lib.trajectory.Path;
-import com.team254.lib.trajectory.PathDistanceSampler;
-import com.team254.lib.trajectory.Trajectory;
-import com.team254.lib.trajectory.timing.TimingConstraint.MinMaxAcceleration;
+import org.team100.lib.path.Path;
+import org.team100.lib.path.PathDistanceSampler;
+import org.team100.lib.timing.TimedPose;
+import org.team100.lib.timing.TimingConstraint;
+import org.team100.lib.timing.TimingConstraint.MinMaxAcceleration;
+import org.team100.lib.trajectory.Trajectory;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.spline.PoseWithCurvature;
 
 public class TimingUtilTest {
 
     public static final double kTestEpsilon = 1e-12;
     
-    public static final List<Pose2dWithCurvature> kWaypoints = Arrays.asList(
-            new Pose2dWithCurvature(new Pose2d(new Translation2d(0.0, 0.0), new Rotation2d()), 0),
-            new Pose2dWithCurvature(new Pose2d(new Translation2d(24.0, 0.0), new Rotation2d()), 0),
-            new Pose2dWithCurvature(new Pose2d(new Translation2d(36.0, 12.0), new Rotation2d()), 0),
-            new Pose2dWithCurvature(new Pose2d(new Translation2d(60.0, 12.0), new Rotation2d()), 0));
+    public static final List<PoseWithCurvature> kWaypoints = Arrays.asList(
+            new PoseWithCurvature(new Pose2d(new Translation2d(0.0, 0.0), new Rotation2d()), 0),
+            new PoseWithCurvature(new Pose2d(new Translation2d(24.0, 0.0), new Rotation2d()), 0),
+            new PoseWithCurvature(new Pose2d(new Translation2d(36.0, 12.0), new Rotation2d()), 0),
+            new PoseWithCurvature(new Pose2d(new Translation2d(60.0, 12.0), new Rotation2d()), 0));
 
 
-    public static final List<Rotation2dState> kHeadings = List.of(
+    public static final List<Rotation2d> kHeadings = List.of(
             GeometryUtil.fromDegrees(0),
             GeometryUtil.fromDegrees(0),
             GeometryUtil.fromDegrees(0),
@@ -109,10 +109,10 @@ public class TimingUtilTest {
         Path traj = new Path(kWaypoints, kHeadings);
         PathDistanceSampler dist_view = new PathDistanceSampler(traj);
 
-        class ConditionalTimingConstraint<S extends Pose2dWithCurvature> implements TimingConstraint {
+        class ConditionalTimingConstraint<S extends PoseWithCurvature> implements TimingConstraint {
             @Override
-            public double getMaxVelocity(Pose2dWithCurvature state) {
-                if (state.getPose().getTranslation().getX() >= 24.0) {
+            public double getMaxVelocity(PoseWithCurvature state) {
+                if (state.poseMeters.getTranslation().getX() >= 24.0) {
                     return 5.0;
                 } else {
                     return Double.POSITIVE_INFINITY;
@@ -120,7 +120,7 @@ public class TimingUtilTest {
             }
 
             @Override
-            public TimingConstraint.MinMaxAcceleration getMinMaxAcceleration(Pose2dWithCurvature state,
+            public MinMaxAcceleration getMinMaxAcceleration(PoseWithCurvature state,
                     double velocity) {
                 return new TimingConstraint.MinMaxAcceleration(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
             }
@@ -141,12 +141,12 @@ public class TimingUtilTest {
 
         class ConditionalTimingConstraint implements TimingConstraint {
             @Override
-            public double getMaxVelocity(Pose2dWithCurvature state) {
+            public double getMaxVelocity(PoseWithCurvature state) {
                 return Double.POSITIVE_INFINITY;
             }
 
             @Override
-            public TimingConstraint.MinMaxAcceleration getMinMaxAcceleration(Pose2dWithCurvature state,
+            public MinMaxAcceleration getMinMaxAcceleration(PoseWithCurvature state,
                     double velocity) {
                 return new TimingConstraint.MinMaxAcceleration(-10.0, 10.0 / velocity);
             }

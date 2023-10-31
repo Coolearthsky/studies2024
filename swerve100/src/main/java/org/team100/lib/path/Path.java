@@ -1,10 +1,12 @@
-package com.team254.lib.trajectory;
+package org.team100.lib.path;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.team254.lib.geometry.Pose2dWithCurvature;
-import com.team254.lib.geometry.Rotation2dState;
+import org.team100.lib.geometry.GeometryUtil;
+
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.spline.PoseWithCurvature;
 
 /**
  * Represents a 2d path with heading.
@@ -14,7 +16,7 @@ import com.team254.lib.geometry.Rotation2dState;
 public class Path {
     protected final List<PathPoint> points_;
 
-    public Path(final List<Pose2dWithCurvature> states, final List<Rotation2dState> headings) {
+    public Path(final List<PoseWithCurvature> states, final List<Rotation2d> headings) {
         points_ = new ArrayList<>(states.size());
         for (int i = 0; i < states.size(); ++i) {
             points_.add(new PathPoint(states.get(i), headings.get(i), i));
@@ -61,8 +63,8 @@ public class Path {
             return new PathSamplePoint(point.state(), point.heading(), point.index(), point.index());
         } else {
             return new PathSamplePoint(
-                    getPoint(i).state().interpolate2(getPoint(i + 1).state(), frac),
-                    getPoint(i).heading().interpolate2(getPoint(i + 1).heading(), frac),
+                    GeometryUtil.interpolate2(getPoint(i).state(), getPoint(i + 1).state(), frac),
+                    GeometryUtil.interpolate2(getPoint(i).heading(), getPoint(i + 1).heading(), frac),
                     i,
                     i + 1);
         }

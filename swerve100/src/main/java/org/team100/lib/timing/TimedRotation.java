@@ -1,29 +1,30 @@
-package com.team254.lib.trajectory.timing;
-
-import com.team254.lib.geometry.Rotation2dState;
+package org.team100.lib.timing;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Rotation2d;
 
 import java.text.DecimalFormat;
 
+import org.team100.lib.geometry.GeometryUtil;
+
 public class TimedRotation {
-    protected final Rotation2dState state_;
+    protected final Rotation2d state_;
     protected double t_; // Time we achieve this state.
     protected double velocity_; // ds/dt
     protected double acceleration_; // d^2s/dt^2
 
-    public TimedRotation(final Rotation2dState state) {
+    public TimedRotation(final Rotation2d state) {
         state_ = state;
     }
 
-    public TimedRotation(final Rotation2dState state, double t, double velocity, double acceleration) {
+    public TimedRotation(final Rotation2d state, double t, double velocity, double acceleration) {
         state_ = state;
         t_ = t;
         velocity_ = velocity;
         acceleration_ = acceleration;
     }
 
-    public Rotation2dState state() {
+    public Rotation2d state() {
         return state_;
     }
 
@@ -71,7 +72,7 @@ public class TimedRotation {
         // System.out.println("x: " + x + " , new_t: " + new_t + ", new_s: " + new_s + "
         // , distance: " + state()
         // .distance(other.state()));
-        return new TimedRotation(state().interpolate2(other.state(), new_s / state().distance(other.state())),
+        return new TimedRotation(GeometryUtil.interpolate2(state(), other.state(), new_s / GeometryUtil.distance(state(), other.state())),
                 new_t,
                 new_v,
                 acceleration());
@@ -83,7 +84,7 @@ public class TimedRotation {
     // }
 
     public double distance(TimedRotation other) {
-        return state().distance(other.state());
+        return GeometryUtil.distance(state(), other.state());
     }
 
     @Override

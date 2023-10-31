@@ -1,13 +1,13 @@
-package com.team254.lib.trajectory.timing;
+package org.team100.lib.timing;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.GeometryUtil;
-
-import com.team254.lib.geometry.Pose2dWithCurvature;
+import org.team100.lib.timing.TimedPose;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.spline.PoseWithCurvature;
 
 public class TimedStateTest {
     public static final double kTestEpsilon = 1e-12;
@@ -16,13 +16,13 @@ public class TimedStateTest {
     public void test() {
         // At (0,0,0), t=0, v=0, acceleration=1
         final TimedPose start_state = new TimedPose(
-                new Pose2dWithCurvature(
+                new PoseWithCurvature(
                         GeometryUtil.fromTranslation(new Translation2d(0.0, 0.0)), 0.0),
                 0.0, 0.0, 1.0);
 
         // At (.5,0,0), t=1, v=1, acceleration=0
         final TimedPose end_state = new TimedPose(
-                new Pose2dWithCurvature(
+                new PoseWithCurvature(
                         GeometryUtil.fromTranslation(new Translation2d(0.5, 0.0)), 0.0),
                 1.0, 1.0, 0.0);
 
@@ -37,6 +37,6 @@ public class TimedStateTest {
         assertEquals(0.5, intermediate_state.t(), kTestEpsilon);
         assertEquals(start_state.acceleration(), intermediate_state.acceleration(), kTestEpsilon);
         assertEquals(0.5, intermediate_state.velocity(), kTestEpsilon);
-        assertEquals(0.125, intermediate_state.state().getPose().getTranslation().getX(), kTestEpsilon);
+        assertEquals(0.125, intermediate_state.state().poseMeters.getTranslation().getX(), kTestEpsilon);
     }
 }

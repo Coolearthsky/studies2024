@@ -1,10 +1,9 @@
 package com.team254.lib.spline;
 
-import com.team254.lib.geometry.Pose2dWithCurvature;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.spline.PoseWithCurvature;
 
 public abstract class Spline {
     public abstract Translation2d getPoint(double t);
@@ -23,7 +22,13 @@ public abstract class Spline {
         return new Pose2d(getPoint(t), getHeading(t));
     }
 
-    public Pose2dWithCurvature getPose2dWithCurvature(double t) {
-        return new Pose2dWithCurvature(getPose2d(t), getCurvature(t), getDCurvature(t) / getVelocity(t));
+    // this used to also calculate the rate of change of curvature, presumably so it
+    // would be useful for centripetal acceleration? anyway i removed it.
+    public PoseWithCurvature getPose2dWithCurvature(double t) {
+        return new PoseWithCurvature(getPose2d(t), getCurvature(t));
+        // return new Pose2dWithCurvature(getPose2d(t), getCurvature(t),
+        // getDCurvature(t) / getVelocity(t));
+
     }
+
 }

@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.team100.lib.geometry.GeometryUtil;
-
-import com.team254.lib.geometry.Rotation2dState;
-import com.team254.lib.trajectory.PathPoint;
+import org.team100.lib.path.PathPoint;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -29,7 +27,7 @@ public class SplineGenerator {
      */
     public static List<PathPoint> parameterizeSpline(
             Spline s,
-            List<? extends Rotation2dState> headings,
+            List<? extends Rotation2d> headings,
             double maxDx,
             double maxDy,
             double maxDTheta,
@@ -49,13 +47,13 @@ public class SplineGenerator {
      */
     public static List<PathPoint> parameterizeSpline(
             Spline s,
-            List<? extends Rotation2dState> headings) {
+            List<? extends Rotation2d> headings) {
         return parameterizeSpline(s, headings, kMaxDX, kMaxDY, kMaxDTheta, 0.0, 1.0);
     }
 
     public static List<PathPoint> parameterizeSpline(
             Spline s,
-            List<? extends Rotation2dState> headings,
+            List<? extends Rotation2d> headings,
             double maxDx,
             double maxDy,
             double maxDTheta) {
@@ -64,13 +62,13 @@ public class SplineGenerator {
 
     public static List<PathPoint> parameterizeSplines(
             List<Spline> splines,
-            List<? extends Rotation2dState> headings) {
+            List<? extends Rotation2d> headings) {
         return parameterizeSplines(splines, headings, kMaxDX, kMaxDY, kMaxDTheta);
     }
 
     public static List<PathPoint> parameterizeSplines(
             List<? extends Spline> splines,
-            List<? extends Rotation2dState> headings,
+            List<? extends Rotation2d> headings,
             double maxDx,
             double maxDy,
             double maxDTheta) {
@@ -80,7 +78,7 @@ public class SplineGenerator {
         rv.add(new PathPoint(splines.get(0).getPose2dWithCurvature(0.0), headings.get(0), 0));
         for (int i = 0; i < splines.size(); i++) {
             Spline s = splines.get(i);
-            List<Rotation2dState> spline_rots = new ArrayList<>();
+            List<Rotation2d> spline_rots = new ArrayList<>();
             spline_rots.add(headings.get(i));
             spline_rots.add(headings.get(i + 1));
 
@@ -93,7 +91,7 @@ public class SplineGenerator {
 
     private static void getSegmentArc(
             Spline s,
-            List<? extends Rotation2dState> headings,
+            List<? extends Rotation2d> headings,
             List<PathPoint> rv,
             double t0,
             double t1,
@@ -113,11 +111,11 @@ public class SplineGenerator {
             getSegmentArc(s, headings, rv, (t0 + t1) / 2, t1, maxDx, maxDy, maxDTheta, totalTime);
         } else {
             // Interpolate heading
-            Rotation2d diff = headings.get(1).rotateBy(headings.get(0).get().unaryMinus()).get();
+            Rotation2d diff = headings.get(1).rotateBy(headings.get(0).unaryMinus());
             if (diff.getRadians() > Math.PI) {
                 diff = diff.unaryMinus().rotateBy(Rotation2d.fromRadians(Math.PI));
             }
-            Rotation2dState interpolated_heading = headings.get(0).rotateBy(diff.times(t1 / totalTime));
+            Rotation2d interpolated_heading = headings.get(0).rotateBy(diff.times(t1 / totalTime));
 
             rv.add(new PathPoint(s.getPose2dWithCurvature(t1), interpolated_heading, rv.size() - 1));
         }

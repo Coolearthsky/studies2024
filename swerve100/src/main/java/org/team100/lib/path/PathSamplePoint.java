@@ -1,20 +1,20 @@
-package com.team254.lib.trajectory;
+package org.team100.lib.path;
 
-import com.team254.lib.geometry.Pose2dWithCurvature;
-import com.team254.lib.geometry.Rotation2dState;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.spline.PoseWithCurvature;
 
 /**
  * Represents a sample of a 2d path with heading.
  */
 public class PathSamplePoint {
-    private final Pose2dWithCurvature state_;
-    private final Rotation2dState heading_;
+    private final PoseWithCurvature state_;
+    private final Rotation2d heading_;
     private final int index_floor_;
     private final int index_ceil_;
 
     public PathSamplePoint(
-            final Pose2dWithCurvature state,
-            final Rotation2dState heading,
+            final PoseWithCurvature state,
+            final Rotation2d heading,
             int index_floor,
             int index_ceil) {
         state_ = state;
@@ -23,11 +23,11 @@ public class PathSamplePoint {
         index_ceil_ = index_ceil;
     }
 
-    public Pose2dWithCurvature state() {
+    public PoseWithCurvature state() {
         return state_;
     }
 
-    public Rotation2dState heading() {
+    public Rotation2d heading() {
         return heading_;
     }
 

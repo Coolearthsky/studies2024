@@ -1,21 +1,20 @@
 package org.team100.lib.geometry;
 
-import com.team254.lib.geometry.Pose2dWithCurvature;
-import com.team254.lib.geometry.Rotation2dState;
-
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
+import edu.wpi.first.math.spline.PoseWithCurvature;
 
 public class GeometryUtil {
 
     public static final Rotation2d kRotationIdentity = new Rotation2d();
-    public static final Rotation2dState kPi = new Rotation2dState(Math.PI);
+    public static final Rotation2d kPi = new Rotation2d(Math.PI);
     public static final Pose2d kPose2dIdentity = new Pose2d();
     public static final Translation2d kTranslation2dIdentity = new Translation2d();
-    public static final Pose2dWithCurvature kPose2dWithCurvatureIdentity = new Pose2dWithCurvature();
+    public static final PoseWithCurvature kPose2dWithCurvatureIdentity = new PoseWithCurvature();
     public static final Twist2d kTwist2dIdentity = new Twist2d(0.0, 0.0, 0.0);
 
     private GeometryUtil() {
@@ -50,11 +49,11 @@ public class GeometryUtil {
         return new Pose2d(translation, new Rotation2d());
     }
 
-    public static Rotation2dState fromRadians(double angle_radians) {
-        return new Rotation2dState(angle_radians);
+    public static Rotation2d fromRadians(double angle_radians) {
+        return new Rotation2d(angle_radians);
     }
 
-    public static Rotation2dState fromDegrees(double angle_degrees) {
+    public static Rotation2d fromDegrees(double angle_degrees) {
         return fromRadians(Math.toRadians(angle_degrees));
     }
 
@@ -85,5 +84,48 @@ public class GeometryUtil {
         if (a.dy == 0.0)
             return Math.abs(a.dx);
         return Math.hypot(a.dx, a.dy);
+    }
+
+    public static Rotation2d flip(Rotation2d a) {
+        return new Rotation2d(a.getRadians() + Math.PI);
+    }
+
+    public static double distance(Rotation2d a, final Rotation2d other) {
+        return a.unaryMinus().rotateBy(other).getRadians();
+    }
+
+    public static Rotation2d interpolate2(Rotation2d a, final Rotation2d b, double x) {
+        if (x <= 0.0) {
+            return a;
+        } else if (x >= 1.0) {
+            return b;
+        }
+        double angle_diff = a.unaryMinus().rotateBy(b).getRadians();
+        return a.rotateBy(Rotation2d.fromRadians(angle_diff * x));
+    }
+
+    public static double distance(PoseWithCurvature a, PoseWithCurvature b) {
+        // this is not used
+        return norm(slog(transformBy(inverse(a.poseMeters), b.poseMeters)));
+    }
+
+    public static PoseWithCurvature interpolate2(PoseWithCurvature a, final PoseWithCurvature other, double x) {
+        Pose2d interpolatedPose = a.poseMeters.interpolate(other.poseMeters, x);
+        double interpolatedCurvature = MathUtil.interpolate(a.curvatureRadPerMeter, other.curvatureRadPerMeter, x);
+        return new PoseWithCurvature(interpolatedPose, interpolatedCurvature);
+    }
+
+    public static boolean poseWithCurvatureEquals(PoseWithCurvature a, PoseWithCurvature b) {
+        boolean poseEqual = a.poseMeters.equals(b.poseMeters);
+        if (!poseEqual) {
+            System.out.println("pose not equal");
+            return false;
+        }
+        boolean curvatureEqual = Math.abs(a.curvatureRadPerMeter - b.curvatureRadPerMeter) <= 1e-12;
+        if (!curvatureEqual) {
+            System.out.println("curvature not equal");
+            return false;
+        }
+        return true;
     }
 }

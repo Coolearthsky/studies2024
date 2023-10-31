@@ -1,12 +1,14 @@
-package com.team254.lib.trajectory.timing;
+package org.team100.lib.timing;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.team254.lib.geometry.Pose2dWithCurvature;
-import com.team254.lib.geometry.Rotation2dState;
-import com.team254.lib.trajectory.PathDistanceSampler;
-import com.team254.lib.trajectory.Trajectory;
+import org.team100.lib.geometry.GeometryUtil;
+import org.team100.lib.path.PathDistanceSampler;
+import org.team100.lib.trajectory.Trajectory;
+
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.spline.PoseWithCurvature;
 
 public class TimingUtil {
     public static  Trajectory timeParameterizeTrajectory(
@@ -18,8 +20,8 @@ public class TimingUtil {
             double max_translational_velocity,
             double max_abs_acceleration) {
         final int num_states = (int) Math.ceil(distance_view.last_interpolant() / step_size + 1);
-        List<Pose2dWithCurvature> states = new ArrayList<>(num_states);
-        List<Rotation2dState> headings = new ArrayList<>(num_states);
+        List<PoseWithCurvature> states = new ArrayList<>(num_states);
+        List<Rotation2d> headings = new ArrayList<>(num_states);
         for (int i = 0; i < num_states; ++i) {
             states.add(distance_view.sample(Math.min(i * step_size, distance_view.last_interpolant())).state());
             headings.add(distance_view.sample(Math.min(i * step_size, distance_view.last_interpolant())).heading());
@@ -29,8 +31,8 @@ public class TimingUtil {
     }
 
     public static Trajectory timeParameterizeTrajectory(
-            final List<Pose2dWithCurvature> states,
-            final List<Rotation2dState> headings,
+            final List<PoseWithCurvature> states,
+            final List<Rotation2d> headings,
             final List<TimingConstraint> constraints,
             double start_velocity,
             double end_velocity,
@@ -57,7 +59,7 @@ public class TimingUtil {
             ConstrainedState constraint_state = constraint_states.get(i);
             constraint_state.state = states.get(i);
             constraint_state.heading = headings.get(i);
-            final double ds = constraint_state.state.distance(predecessor.state);
+            final double ds = GeometryUtil.distance(constraint_state.state, predecessor.state);
             constraint_state.distance = ds + predecessor.distance;
 
             // We may need to iterate to find the maximum end velocity and common acceleration, since acceleration
@@ -230,15 +232,15 @@ public class TimingUtil {
     }
 
     protected static class ConstrainedState {
-        public Pose2dWithCurvature state;
+        public PoseWithCurvature state;
         public double distance;
-        public Rotation2dState heading;
+        public Rotation2d heading;
         public double max_translational_velocity;
-        public Rotation2dState max_angular_velocity;
+        public Rotation2d max_angular_velocity;
         public double min_translational_acceleration;
-        public Rotation2dState min_angular_acceleration;
+        public Rotation2d min_angular_acceleration;
         public double max_acceleration;
-        public Rotation2dState max_angular_acceleration;
+        public Rotation2d max_angular_acceleration;
 
         @Override
         public String toString() {

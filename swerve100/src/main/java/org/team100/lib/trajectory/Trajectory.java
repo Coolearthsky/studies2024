@@ -1,10 +1,10 @@
-package com.team254.lib.trajectory;
+package org.team100.lib.trajectory;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.team254.lib.trajectory.timing.TimedPose;
-import com.team254.lib.trajectory.timing.TimedRotation;
+import org.team100.lib.timing.TimedPose;
+import org.team100.lib.timing.TimedRotation;
 
 /**
  * Represents a 2d path with heading and a schedule.
