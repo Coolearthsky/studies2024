@@ -33,7 +33,7 @@ public class AprilTagFieldLayoutWithCorrectOrientation {
     // this is private because i don't want the red/blue enum in our code.
     private AprilTagFieldLayoutWithCorrectOrientation(OriginPosition origin) throws IOException {
         // TODO: extract this filename
-        Path path = Filesystem.getDeployDirectory().toPath().resolve("2023-chargedup.json");
+        Path path = Filesystem.getDeployDirectory().toPath().resolve("2023-studies.json");
         layout = new AprilTagFieldLayout(path);
         layout.setOrigin(origin);
     }

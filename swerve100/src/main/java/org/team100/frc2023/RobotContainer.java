@@ -77,7 +77,8 @@ public class RobotContainer {
         //
         //////////////////////////////////////
 
-        public double kDriveCurrentLimit = SHOW_MODE ? 20 : 60;
+        public double kDriveCurrentLimit = 30;
+        // public double kDriveCurrentLimit = SHOW_MODE ? 20 : 60;
 
         public boolean useSetpointGenerator = false;
     }
@@ -149,11 +150,12 @@ public class RobotContainer {
                 VecBuilder.fill(0.5, 0.5, 0.5),
                 VecBuilder.fill(0.4, 0.4, 0.4)); // note tight rotation variance here, used to be MAX_VALUE
 
-        if (m_allianceSelector.alliance() == DriverStation.Alliance.Blue) {
+        // TODO: make this override work better
+        // if (m_allianceSelector.alliance() == DriverStation.Alliance.Blue) {
             layout = AprilTagFieldLayoutWithCorrectOrientation.blueLayout();
-        } else { // red
-            layout = AprilTagFieldLayoutWithCorrectOrientation.redLayout();
-        }
+        // } else { // red
+        //     layout = AprilTagFieldLayoutWithCorrectOrientation.redLayout();
+        // }
 
         // hunting the memory leak
         VisionDataProvider visionDataProvider = new VisionDataProvider(
@@ -184,17 +186,17 @@ public class RobotContainer {
         ////////////////////////////
         // DRIVETRAIN COMMANDS
         // control.autoLevel(new AutoLevel(false, m_robotDrive, ahrsclass));
-        if (m_allianceSelector.alliance() == DriverStation.Alliance.Blue) {
-            control.driveToLeftGrid(toTag(6, 1.25, 0));
-            control.driveToCenterGrid(toTag(7, 0.95, .55));
-            control.driveToRightGrid(toTag(8, 0.95, .55));
-            control.driveToSubstation(toTag(4, 0.53, -0.749));
-        } else {
-            control.driveToLeftGrid(toTag(1, 0.95, .55));
-            control.driveToCenterGrid(toTag(2, 0.95, .55));
-            control.driveToRightGrid(toTag(3, 0.95, .55));
-            control.driveToSubstation(toTag(5, 0.9, -0.72));
-        }
+        // if (m_allianceSelector.alliance() == DriverStation.Alliance.Blue) {
+        //     control.driveToLeftGrid(toTag(6, 1.25, 0));
+        //     control.driveToCenterGrid(toTag(7, 0.95, .55));
+        //     control.driveToRightGrid(toTag(8, 0.95, .55));
+        //     control.driveToSubstation(toTag(4, 0.53, -0.749));
+        // } else {
+        //     control.driveToLeftGrid(toTag(1, 0.95, .55));
+        //     control.driveToCenterGrid(toTag(2, 0.95, .55));
+        //     control.driveToRightGrid(toTag(3, 0.95, .55));
+        //     control.driveToSubstation(toTag(5, 0.9, -0.72));
+        // }
         control.defense(new Defense(m_robotDrive));
         control.resetRotation0(new ResetRotation(m_robotDrive, new Rotation2d(0)));
         control.resetRotation180(new ResetRotation(m_robotDrive, Rotation2d.fromDegrees(180)));
@@ -202,7 +204,9 @@ public class RobotContainer {
         control.driveSlow(new DriveScaled(control::twist, m_robotDrive, slow));
         SpeedLimits medium = new SpeedLimits(2.0, 2.0, 0.5, 1.0);
         control.driveMedium(new DriveScaled(control::twist, m_robotDrive, medium));
-        control.resetPose(new ResetPose(m_robotDrive, 0, 0, 0));
+        // TODO: make the reset configurable
+        // control.resetPose(new ResetPose(m_robotDrive, 0, 0, 0));
+        control.resetPose(new ResetPose(m_robotDrive, 0, 0, Math.PI));
         control.rotate0(new Rotate(m_robotDrive, m_heading, speedLimits, new Timer(), 0));
 
         control.moveConeWidthLeft(new MoveConeWidth(m_robotDrive, speedLimits, new Timer(), true));
@@ -255,7 +259,8 @@ public class RobotContainer {
                     new DriveScaled(
                             control::twist,
                             m_robotDrive,
-                            speedLimits));
+                            SpeedLimitsFactory.get(identity, false))
+            );
         } else {
             if (m_config.useSetpointGenerator) {
                 m_robotDrive.setDefaultCommand(

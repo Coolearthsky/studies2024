@@ -12,7 +12,6 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -27,7 +26,7 @@ public class SwerveDriveSubsystem extends Subsystem implements SwerveDriveSubsys
     private final SwerveLocal m_swerveLocal;
     private final HolonomicDriveController2 m_controller;
     private final HolonomicDriveRegulator m_regulator = new HolonomicDriveRegulator();
-
+    private ChassisSpeeds m_targetChasis = new ChassisSpeeds();
     // TODO: this looks broken
     public double keyList = -1;
 
@@ -76,7 +75,10 @@ public class SwerveDriveSubsystem extends Subsystem implements SwerveDriveSubsys
     /**
      * Give the controller a new reference state.
      */
-    public void setDesiredState(SwerveState desiredState) {
+    public void 
+    
+    
+    setDesiredState(SwerveState desiredState) {
         m_desiredState = desiredState;
     }
 
@@ -97,8 +99,6 @@ public class SwerveDriveSubsystem extends Subsystem implements SwerveDriveSubsys
         return this;
     }
 
-    ////////////////////////////////////////////////////////////////////
-
     private void updateOdometry() {
         m_poseEstimator.update(m_heading.getHeadingNWU(), m_swerveLocal.positions());
         // {
@@ -115,8 +115,8 @@ public class SwerveDriveSubsystem extends Subsystem implements SwerveDriveSubsys
                 newEstimate.getY(),
                 newEstimate.getRotation().getDegrees()
         });
-        t.log("/current pose/x inch", Units.metersToInches(newEstimate.getX()));
-        t.log("/current pose/y inch", Units.metersToInches(newEstimate.getY()));
+        t.log("/current pose/x m", newEstimate.getX());
+        t.log("/current pose/y m", newEstimate.getY());
         t.log("/current pose/theta rad", newEstimate.getRotation().getRadians());
         t.log("/current pose/Heading NWU rad_s", m_heading.getHeadingRateNWU());
     }
@@ -146,6 +146,15 @@ public class SwerveDriveSubsystem extends Subsystem implements SwerveDriveSubsys
     private void driveInFieldCoords(Twist2d twist) {
         ChassisSpeeds targetChassisSpeeds = m_frameTransform.fromFieldRelativeSpeeds(
                 twist.dx, twist.dy, twist.dtheta, getPose().getRotation());
+
+        // System.out.println(targetChassisSpeeds);
+
+        m_targetChasis = targetChassisSpeeds;
+
+        t.log("/chassis/x m", twist.dx);
+        t.log("/chassis/y m", twist.dy);
+        t.log("/chassis/theta rad", twist.dtheta);
+
         m_swerveLocal.setChassisSpeeds(targetChassisSpeeds);
     }
 

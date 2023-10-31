@@ -113,7 +113,7 @@ deploy {
 
                 // Static files artifact
                 frcStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
-                    files = project.fileTree('src/main/deploy')
+                    files = project.fileTree('src/main/deploy/2023-studies.json')
                     directory = '/home/lvuser/deploy'
                 }
                 // kernel parameters
