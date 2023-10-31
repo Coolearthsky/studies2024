@@ -6,8 +6,6 @@ import java.util.Optional;
 
 import org.team100.lib.geometry.GeometryUtil;
 
-import com.team254.lib.swerve.SwerveModuleState;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 

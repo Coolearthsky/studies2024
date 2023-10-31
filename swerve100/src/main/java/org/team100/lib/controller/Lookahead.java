@@ -1,4 +1,4 @@
-package com.team254.lib.control;
+package org.team100.lib.controller;
 
 /**
  * A utility class for interpolating lookahead distance based on current speed.

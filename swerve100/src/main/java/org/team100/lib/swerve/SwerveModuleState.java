@@ -1,4 +1,4 @@
-package com.team254.lib.swerve;
+package org.team100.lib.swerve;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 

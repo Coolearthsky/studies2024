@@ -32,11 +32,11 @@ public class AsymSwerveSetpointGeneratorTest {
         c254.vxMetersPerSecond = 0;
         c254.vyMetersPerSecond = 0;
         c254.omegaRadiansPerSecond = 0;
-        com.team254.lib.swerve.SwerveModuleState[] s254 = new com.team254.lib.swerve.SwerveModuleState[] {
-                new com.team254.lib.swerve.SwerveModuleState(0, 0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity),
-                new com.team254.lib.swerve.SwerveModuleState(0, 0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity),
-                new com.team254.lib.swerve.SwerveModuleState(0, 0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity),
-                new com.team254.lib.swerve.SwerveModuleState(0, 0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity)
+        org.team100.lib.swerve.SwerveModuleState[] s254 = new org.team100.lib.swerve.SwerveModuleState[] {
+                new org.team100.lib.swerve.SwerveModuleState(0, 0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity),
+                new org.team100.lib.swerve.SwerveModuleState(0, 0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity),
+                new org.team100.lib.swerve.SwerveModuleState(0, 0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity),
+                new org.team100.lib.swerve.SwerveModuleState(0, 0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity)
         };
         SwerveSetpoint setpoint = new SwerveSetpoint(c254, s254);
         org.team100.lib.swerve.ChassisSpeeds cDesired254 = new org.team100.lib.swerve.ChassisSpeeds();

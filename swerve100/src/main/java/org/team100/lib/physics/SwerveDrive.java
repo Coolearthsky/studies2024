@@ -1,4 +1,4 @@
-package com.team254.lib.physics;
+package org.team100.lib.physics;
 
 import java.text.DecimalFormat;
 

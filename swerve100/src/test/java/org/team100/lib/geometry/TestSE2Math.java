@@ -1,4 +1,4 @@
-package com.team254.lib.geometry;
+package org.team100.lib.geometry;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

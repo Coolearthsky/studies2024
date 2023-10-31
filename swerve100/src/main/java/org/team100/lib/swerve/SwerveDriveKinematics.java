@@ -1,7 +1,5 @@
 package org.team100.lib.swerve;
 
-import com.team254.lib.swerve.SwerveModuleState;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 

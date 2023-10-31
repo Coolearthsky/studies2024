@@ -1,12 +1,16 @@
-package com.team254.frc2022.planners;
+package org.team100.lib.planners;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.team100.lib.controller.Lookahead;
 import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.path.Path;
 import org.team100.lib.path.PathDistanceSampler;
+import org.team100.lib.physics.SwerveDrive;
+import org.team100.lib.spline.Spline;
+import org.team100.lib.spline.SplineGenerator;
 import org.team100.lib.swerve.ChassisSpeeds;
 import org.team100.lib.timing.SwerveDriveDynamicsConstraint;
 import org.team100.lib.timing.TimedPose;
@@ -17,11 +21,7 @@ import org.team100.lib.trajectory.Trajectory;
 import org.team100.lib.trajectory.TrajectorySamplePoint;
 import org.team100.lib.trajectory.TrajectoryTimeIterator;
 
-import com.team254.lib.control.Lookahead;
-import com.team254.lib.physics.SwerveDrive;
-import com.team254.lib.spline.QuinticHermiteSpline;
-import com.team254.lib.spline.Spline;
-import com.team254.lib.spline.SplineGenerator;
+import org.team100.lib.spline.QuinticHermiteSpline;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;

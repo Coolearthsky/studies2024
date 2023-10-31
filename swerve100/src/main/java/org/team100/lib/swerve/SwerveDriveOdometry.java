@@ -1,8 +1,6 @@
-package com.team254.lib.swerve;
+package org.team100.lib.swerve;
 
 import org.team100.lib.geometry.GeometryUtil;
-import org.team100.lib.swerve.ChassisSpeeds;
-import org.team100.lib.swerve.SwerveDriveKinematics;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;

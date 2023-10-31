@@ -1,4 +1,4 @@
-package com.team254.lib.spline;
+package org.team100.lib.spline;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;

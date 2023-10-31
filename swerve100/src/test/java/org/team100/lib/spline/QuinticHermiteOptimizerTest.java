@@ -1,4 +1,4 @@
-package com.team254.lib.spline;
+package org.team100.lib.spline;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
