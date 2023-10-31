@@ -87,7 +87,7 @@ public class ArmTrajectory extends Command {
         double desiredVecloity = desiredState.velocityMetersPerSecond;
         double theta = desiredState.poseMeters.getRotation().getRadians();
         double desiredXVel = desiredVecloity*Math.cos(theta);
-        double desiredYVel = desiredVecloity*Math.cos(90-theta);
+        double desiredYVel = desiredVecloity*Math.cos(Math.PI/2-theta);
         Translation2d vel = new Translation2d(desiredXVel, desiredYVel);
         Translation2d reference = new Translation2d(desiredXPos, desiredYPos);
         ArmAngles inverse = m_kinematics.inverse(reference);

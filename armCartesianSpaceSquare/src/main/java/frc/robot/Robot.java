@@ -79,7 +79,7 @@ public class Robot extends TimedRobot {
         .withSensorPhase(false)
         .withTimeout(10)
         .withCurrentLimitEnabled(true)
-        .withCurrentLimit(1)
+        .withCurrentLimit(8)
         .withPeakOutputForward(0.5)
         .withPeakOutputReverse(-0.5)
         .withNeutralMode(IdleMode.kBrake)
@@ -95,15 +95,7 @@ public class Robot extends TimedRobot {
         .withPeakOutputReverse(-0.5)
         .withNeutralMode(IdleMode.kBrake)
         .withForwardSoftLimitEnabled(false)
-        .build();
-        upperArmMotor.setkP(1);
-        upperArmMotor.setkI(0);
-        upperArmMotor.setkD(1);
-        upperArmMotor.setkF(0);
-        lowerArmMotor.setkP(1);
-        lowerArmMotor.setkI(0);
-        lowerArmMotor.setkD(1);
-        lowerArmMotor.setkF(0);
+.build();
     lowerArmInput = new AnalogInput(1);
     lowerArmEncoder = new AnalogEncoder(lowerArmInput);
     upperArmInput = new AnalogInput(0);
@@ -143,12 +135,16 @@ public class Robot extends TimedRobot {
     m_trajec.execute();
     ArmAngles measurement = getMeasurement();
     double lowerControllerOutput = m_lowerController.calculate(measurement.th1, m_reference.th1);
-    double lowerFeedForward = m_feedForward.th1/(Math.PI*2);
-    u1 = lowerControllerOutput+lowerFeedForward;
+    double lowerFeedForward = m_feedForward.th1/(Math.PI*2)*3;
+    u1 = lowerFeedForward+lowerControllerOutput;
     double upperControllerOutput = m_upperController.calculate(measurement.th2, m_reference.th2);
-    double upperFeedForward = m_feedForward.th2/(Math.PI*2);
-    u2 = upperControllerOutput+upperFeedForward;
+    double upperFeedForward = m_feedForward.th2/(Math.PI*2)*3;
+    u2 = upperFeedForward+upperControllerOutput;
     SmartDashboard.putNumber("Lower Encoder: ", measurement.th1);
+    SmartDashboard.putNumber("Lower FF ", lowerFeedForward);
+    SmartDashboard.putNumber("Lower Controller Output: ", lowerControllerOutput);
+    SmartDashboard.putNumber("Upper FF ", upperFeedForward);
+    SmartDashboard.putNumber("Upper Controller Output: ", upperControllerOutput);
     SmartDashboard.putNumber("Lower Ref: ", m_reference.th1);
     SmartDashboard.putNumber("Upper Encoder: ", measurement.th2);
     SmartDashboard.putNumber("Upper Ref: ", m_reference.th2);
@@ -203,7 +199,7 @@ public class Robot extends TimedRobot {
     m_upperController = new PIDController(m_config.normalUpperP, m_config.normalUpperI, m_config.normalUpperD);
     m_lowerController.setTolerance(m_config.tolerance);
     m_upperController.setTolerance(m_config.tolerance);
-    lowerArmMotor.setCurrentLimit(1);
+    lowerArmMotor.setCurrentLimit(8);
     upperArmMotor.setCurrentLimit(1);
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
@@ -214,8 +210,8 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     // System.out.println(u1);
     // System.out.println(u2);
-    lowerArmMotor.driveVelocity(60);
-    // upperArmMotor.set(u2);
+    lowerArmMotor.set(u1);
+    upperArmMotor.set(u2);
   }
 
   @Override
@@ -235,12 +231,12 @@ public class Robot extends TimedRobot {
     if (controller.getAButton()) {
     lowerArmMotor.set(.1);}
     if (controller.getBButton()) {
-    // upperArmMotor.set(.1);
+    upperArmMotor.set(.1);
 }
     if (controller.getXButton()) {
     lowerArmMotor.set(-.1);}
     if (controller.getYButton()) {
-    // upperArmMotor.set(-.1);
+    upperArmMotor.set(-.1);
 }
   }
 

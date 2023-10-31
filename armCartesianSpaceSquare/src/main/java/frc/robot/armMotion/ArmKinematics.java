@@ -30,9 +30,10 @@ public class ArmKinematics {
                 l1 * Math.cos(a.th1) + l2 * Math.cos(a.th2),
                 l1 * Math.sin(a.th1) + l2 * Math.sin(a.th2));
     }
-// l1 * Math.cos(a.th1) + l2 * Math.cos(a.th2) = x
-// l1 * Math.sin(a.th1) + l2 * Math.sin(a.th2) = y
-// a.th2 = Math.arcsin((y-l1*Math.sin(a.th1))/l2)
+// -da.th1*l1 * Math.sin(a.th1) + -da.th2*l2 * Math.sin(a.th2) = dx
+// da.th1*l1 * Math.cos(a.th1) + da.th2*l2 * Math.cos(a.th2) = dy
+// da.th1 = (dx - da.th2*l2 * Math.cos(a.th2))/(l1 * Math.cos(a.th1))
+// da.th2 = (dy - da.th1*l1 * Math.cos(a.th1))/()
     /**
      * Calculates the position of the elbow only, for visualization.
      */

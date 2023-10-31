@@ -11,18 +11,20 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.SparkMaxPIDController.ArbFFUnits;
 
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class Robot extends TimedRobot {
   //This value of the goal for the controller. The units are rotations, so -1 to 1. You can feed something to this value over time to change the goal of the PID controller
-  private double goal = 0.25;
+  private double goal = 30;
 
   //The ratio of the motor gearing. If the motor spins more than the output of the motor this value should be greater than 1 this case I had a 45:1 motor gearing
   //TODO For now I am just multiplying this by the goal, but there may be a way to give this value to the motor controller, but I could not seem to find a way
-  private final int motorGearing = 45;
+  private final int motorGearing = 1;
 
   //The type of control you want the Spark Max PID controller to do. In this case it is position
   private final ControlType controlType = CANSparkMax.ControlType.kVelocity;
@@ -39,7 +41,7 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     m_robotContainer = new RobotContainer();
     //The can ID of the motor
-    final int CanID = 30;
+    final int CanID = 2;
     m_motor = new CANSparkMax(CanID, MotorType.kBrushless);
     //The restoreFactoryDefaults method can be used to reset the configuration parameters in the SPARK MAX to their factory default state. If no argument is passed, these parameters will not persist between power cycles
       m_motor.restoreFactoryDefaults();
@@ -133,7 +135,7 @@ public class Robot extends TimedRobot {
       lowerPidController.setOutputRange(min, max); 
       kMinOutput = min; kMaxOutput = max; }
       //Give motor goal and controlType
-      lowerPidController.setReference(motorGearing * goal, controlType);
+      lowerPidController.setReference(0, controlType, 0, .1, ArbFFUnits.kVoltage);
     
     SmartDashboard.putNumber("SetPoint", rotations);
     SmartDashboard.putNumber("ProcessVariable", m_encoder.getPosition());
