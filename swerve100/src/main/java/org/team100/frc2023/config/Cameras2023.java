@@ -18,11 +18,11 @@ public class Cameras2023 {
 
         switch (cam) {
 
-            case A: // FRONT
+            case B: // FRONT
                 return new Transform3d(
                         new Translation3d(0, 0.2413, 0.3937),
                         new Rotation3d(0, 0, 0));
-            case B: // LEFT
+            case A: // LEFT
                 return new Transform3d(
                         new Translation3d(0, 0.26035, 0.3937),
                         new Rotation3d(0, 0, 1.57));

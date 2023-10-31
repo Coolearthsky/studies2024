@@ -88,9 +88,9 @@ public class DualXboxControl implements Control {
 
     @Override
     public Twist2d twist() {
-        double dx = expo(deadband(1.0 * clamp(controller0.getRightY(), 1), m_config.kDeadband, 1), m_config.kExpo);
-        double dy = expo(deadband(1.0 * clamp(controller0.getRightX(), 1), m_config.kDeadband, 1), m_config.kExpo);
-        double dtheta = expo(deadband(1.0 * clamp(controller0.getLeftX(), 1), m_config.kDeadband, 1), m_config.kExpo);
+        double dx = expo(deadband(-1.0 * clamp(controller0.getRightY(), 1), m_config.kDeadband, 1), m_config.kExpo);
+        double dy = expo(deadband(-1.0 * clamp(controller0.getRightX(), 1), m_config.kDeadband, 1), m_config.kExpo);
+        double dtheta = expo(deadband(-1.0 * clamp(controller0.getLeftX(), 1), m_config.kDeadband, 1), m_config.kExpo);
         t.log("/Xbox/right y",  controller0.getRightY());
         t.log("/Xbox/right x",  controller0.getRightX());
         t.log("/Xbox/left x",  controller0.getLeftX());
@@ -186,6 +186,11 @@ public class DualXboxControl implements Control {
 
     @Override
     public void driveWith254Trajec(Command command){
+        //controller0.a().whileTrue(command);
+    }
+
+    @Override
+    public void circle(Command command){
         controller0.a().whileTrue(command);
     }
 

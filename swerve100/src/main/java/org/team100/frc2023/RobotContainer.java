@@ -50,6 +50,7 @@ import org.team100.lib.motion.drivetrain.kinematics.SwerveDriveKinematicsFactory
 import org.team100.lib.sensors.RedundantGyro;
 import org.team100.lib.sensors.RedundantGyroInterface;
 import org.team100.lib.telemetry.Telemetry;
+import org.team100.lib.trajectory.DrawCircle;
 import org.team100.lib.trajectory.FancyTrajectory;
 
 import edu.wpi.first.math.VecBuilder;
@@ -148,7 +149,7 @@ public class RobotContainer {
                 m_modules.positions(),
                 new Pose2d(),
                 VecBuilder.fill(0.5, 0.5, 0.5),
-                VecBuilder.fill(0.4, 0.4, 0.4)); // note tight rotation variance here, used to be MAX_VALUE
+                VecBuilder.fill(0.1, 0.1, 0.4)); // note tight rotation variance here, used to be MAX_VALUE
 
         // TODO: make this override work better
         // if (m_allianceSelector.alliance() == DriverStation.Alliance.Blue) {
@@ -223,6 +224,22 @@ public class RobotContainer {
 
         ////////////////////////////
         // ARM COMMANDS
+
+
+        //new Circle(new Pose2d(1, 1, Rotation2d.fromDegrees(180))), m_robotDrive, m_kinematics
+
+        // Circle circle = 
+
+        
+        Pose2d[] goalArr = {  new Pose2d(-2.199237, -0.400119, Rotation2d.fromDegrees(180)),
+                              new Pose2d(-2.199237, 1, Rotation2d.fromDegrees(180)),
+                              new Pose2d(-3.312756, 1, Rotation2d.fromDegrees(180)),
+                              new Pose2d(-3.312756,  -0.400119, Rotation2d.fromDegrees(180)),
+                              new Pose2d(-2.199237, -0.400119, Rotation2d.fromDegrees(180))
+
+                            };
+        // control.circle(new Circle(new Pose2d(-2, 0, Rotation2d.fromDegrees(180)), m_robotDrive, m_kinematics));
+        control.circle(new DrawCircle(goalArr, m_robotDrive, m_kinematics));
         control.armHigh(new ArmTrajectory(ArmPosition.HIGH, m_arm, false));
         control.armSafe(new ArmTrajectory(ArmPosition.SAFE, m_arm, false));
         control.armSubstation(new ArmTrajectory(ArmPosition.SUB, m_arm, false));
