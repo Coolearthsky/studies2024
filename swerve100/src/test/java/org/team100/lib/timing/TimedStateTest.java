@@ -4,16 +4,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.GeometryUtil;
-import org.team100.lib.timing.TimedPose;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.spline.PoseWithCurvature;
 
 public class TimedStateTest {
-    public static final double kTestEpsilon = 1e-12;
+    private static final double kTestEpsilon = 1e-12;
 
     @Test
-    public void test() {
+    void test() {
         // At (0,0,0), t=0, v=0, acceleration=1
         final TimedPose start_state = new TimedPose(
                 new PoseWithCurvature(

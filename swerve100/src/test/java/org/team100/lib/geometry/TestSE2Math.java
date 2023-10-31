@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
-import org.team100.lib.geometry.GeometryUtil;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -13,10 +12,10 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 
 public class TestSE2Math {
-    public static final double kTestEpsilon = 1e-12;
+    private static final double kTestEpsilon = 1e-12;
 
     @Test
-    public void testRotation2d() {
+    void testRotation2d() {
         // Test constructors
         Rotation2d rot1 = new Rotation2d();
         assertEquals(1, rot1.getCos(), kTestEpsilon);
@@ -137,7 +136,7 @@ public class TestSE2Math {
     }
 
     @Test
-    public void testTranslation2d() {
+    void testTranslation2d() {
         // Test constructors
         Translation2d pos1 = new Translation2d();
         assertEquals(0, pos1.getX(), kTestEpsilon);
@@ -202,7 +201,7 @@ public class TestSE2Math {
     }
 
     @Test
-    public void testPose2d() {
+    void testPose2d() {
         // Test constructors
         Pose2d pose1 = new Pose2d();
         assertEquals(0, pose1.getTranslation().getX(), kTestEpsilon);
@@ -258,7 +257,7 @@ public class TestSE2Math {
     }
 
     @Test
-    public void testTwist() {
+    void testTwist() {
         // Exponentiation (integrate twist to obtain a Pose2d)
         Twist2d twist = new Twist2d(1.0, 0.0, 0.0);
         Pose2d pose = new Pose2d().exp(twist);

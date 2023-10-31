@@ -1,5 +1,7 @@
 package org.team100.lib.swerve;
 
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+
 public class SwerveSetpoint {
     public ChassisSpeeds mChassisSpeeds;
     public SwerveModuleState[] mModuleStates;

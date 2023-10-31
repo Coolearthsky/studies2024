@@ -8,6 +8,7 @@ import org.team100.lib.geometry.GeometryUtil;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 /**
  * Takes a prior setpoint (ChassisSpeeds), a desired setpoint (from a driver, or

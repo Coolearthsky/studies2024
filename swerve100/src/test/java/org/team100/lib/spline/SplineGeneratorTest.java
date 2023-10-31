@@ -7,8 +7,6 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.path.PathPoint;
-import org.team100.lib.spline.Spline;
-import org.team100.lib.spline.SplineGenerator;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;

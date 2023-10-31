@@ -1,7 +1,6 @@
 package org.team100.lib.timing;
 
 import org.team100.lib.physics.SwerveDrive;
-import org.team100.lib.timing.TimingConstraint.MinMaxAcceleration;
 
 import edu.wpi.first.math.spline.PoseWithCurvature;
 
@@ -19,7 +18,8 @@ public class SwerveDriveDynamicsConstraint implements TimingConstraint {
 
     @Override
     public double getMaxVelocity(PoseWithCurvature state) {
-        return kMaxVelocityMetersPerSecond / (1 + Math.abs(4.0 * state.curvatureRadPerMeter));// from 1323 TODO verify or fix
+        return kMaxVelocityMetersPerSecond / (1 + Math.abs(4.0 * state.curvatureRadPerMeter));
+        // from 1323 TODO verify or fix
     }
 
     @Override

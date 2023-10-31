@@ -37,11 +37,11 @@ public class SwerveLocal {
             m_DriveKinematics2.as254());
     private AsymSwerveSetpointGenerator.KinematicLimits limits = new AsymSwerveSetpointGenerator.KinematicLimits();
     org.team100.lib.swerve.ChassisSpeeds c254 = new org.team100.lib.swerve.ChassisSpeeds();
-    org.team100.lib.swerve.SwerveModuleState[] s254 = new org.team100.lib.swerve.SwerveModuleState[] {
-            new org.team100.lib.swerve.SwerveModuleState(0, 0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity),
-            new org.team100.lib.swerve.SwerveModuleState(0, 0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity),
-            new org.team100.lib.swerve.SwerveModuleState(0, 0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity),
-            new org.team100.lib.swerve.SwerveModuleState(0, 0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity)
+    SwerveModuleState[] s254 = new SwerveModuleState[] {
+            new SwerveModuleState(0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity),
+            new SwerveModuleState(0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity),
+            new SwerveModuleState(0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity),
+            new SwerveModuleState(0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity)
     };
     private SwerveSetpoint prevSetpoint = new SwerveSetpoint(c254, s254);
 
@@ -82,7 +82,7 @@ public class SwerveLocal {
         t.log("/desired speed/y254", targetChassisSpeeds.vyMetersPerSecond);
         t.log("/desired speed/theta254", targetChassisSpeeds.omegaRadiansPerSecond);
 
-        org.team100.lib.swerve.SwerveModuleState[] swerveModuleStates254 = m_DriveKinematics2.as254()
+        SwerveModuleState[] swerveModuleStates254 = m_DriveKinematics2.as254()
                 .toSwerveModuleStates(targetChassisSpeeds);
         Rotation2d thetafl = new Rotation2d(swerveModuleStates254[0].angle.getRadians());
         Rotation2d thetafr = new Rotation2d(swerveModuleStates254[1].angle.getRadians());
@@ -111,7 +111,6 @@ public class SwerveLocal {
     }
 
     private void setChassisSpeedsWithSetpointGenerator(ChassisSpeeds targetChassisSpeeds2) {
-
         org.team100.lib.swerve.ChassisSpeeds targetChassisSpeeds = new org.team100.lib.swerve.ChassisSpeeds(
                 targetChassisSpeeds2.vxMetersPerSecond, targetChassisSpeeds2.vyMetersPerSecond,
                 targetChassisSpeeds2.omegaRadiansPerSecond);
@@ -120,7 +119,7 @@ public class SwerveLocal {
                 .05);
         System.out.println(setpoint);
         prevSetpoint = setpoint;
-        org.team100.lib.swerve.SwerveModuleState[] swerveModuleStates254 = m_DriveKinematics2.as254()
+        SwerveModuleState[] swerveModuleStates254 = m_DriveKinematics2.as254()
                 .toSwerveModuleStates(setpoint.mChassisSpeeds);
         Rotation2d thetafl = new Rotation2d(swerveModuleStates254[0].angle.getRadians());
         Rotation2d thetafr = new Rotation2d(swerveModuleStates254[1].angle.getRadians());

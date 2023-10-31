@@ -3,14 +3,10 @@ package org.team100.lib.swerve;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
-import org.team100.lib.swerve.AsymSwerveSetpointGenerator;
-import org.team100.lib.swerve.ChassisSpeeds;
-import org.team100.lib.swerve.SwerveDriveKinematics;
-import org.team100.lib.swerve.SwerveModuleState;
-import org.team100.lib.swerve.SwerveSetpoint;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 public class AsymSwerveSetpointGeneratorTest {
 

@@ -9,6 +9,7 @@ import org.team100.lib.swerve.AsymSwerveSetpointGenerator;
 import org.team100.lib.swerve.SwerveSetpoint;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 public class AsymSwerveSetpointGeneratorTest {
     private static final double kDelta = 0.001;
@@ -32,11 +33,11 @@ public class AsymSwerveSetpointGeneratorTest {
         c254.vxMetersPerSecond = 0;
         c254.vyMetersPerSecond = 0;
         c254.omegaRadiansPerSecond = 0;
-        org.team100.lib.swerve.SwerveModuleState[] s254 = new org.team100.lib.swerve.SwerveModuleState[] {
-                new org.team100.lib.swerve.SwerveModuleState(0, 0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity),
-                new org.team100.lib.swerve.SwerveModuleState(0, 0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity),
-                new org.team100.lib.swerve.SwerveModuleState(0, 0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity),
-                new org.team100.lib.swerve.SwerveModuleState(0, 0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity)
+        SwerveModuleState[] s254 = new SwerveModuleState[] {
+                new SwerveModuleState(0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity),
+                new SwerveModuleState(0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity),
+                new SwerveModuleState(0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity),
+                new SwerveModuleState(0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity)
         };
         SwerveSetpoint setpoint = new SwerveSetpoint(c254, s254);
         org.team100.lib.swerve.ChassisSpeeds cDesired254 = new org.team100.lib.swerve.ChassisSpeeds();

@@ -12,8 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.path.Path;
 import org.team100.lib.path.PathDistanceSampler;
-import org.team100.lib.timing.TimedPose;
-import org.team100.lib.timing.TimingConstraint;
 import org.team100.lib.timing.TimingConstraint.MinMaxAcceleration;
 import org.team100.lib.trajectory.Trajectory;
 
