@@ -153,9 +153,9 @@ public class RobotContainer {
 
         // TODO: make this override work better
         // if (m_allianceSelector.alliance() == DriverStation.Alliance.Blue) {
-            layout = AprilTagFieldLayoutWithCorrectOrientation.blueLayout();
+            layout = AprilTagFieldLayoutWithCorrectOrientation.blueLayout("2023-studies.json");
         // } else { // red
-        //     layout = AprilTagFieldLayoutWithCorrectOrientation.redLayout();
+        //     layout = AprilTagFieldLayoutWithCorrectOrientation.redLayout("2023-studies.json");
         // }
 
         // hunting the memory leak

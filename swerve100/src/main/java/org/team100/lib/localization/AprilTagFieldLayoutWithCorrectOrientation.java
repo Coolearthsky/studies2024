@@ -31,25 +31,30 @@ public class AprilTagFieldLayoutWithCorrectOrientation {
     private final AprilTagFieldLayout layout;
 
     // this is private because i don't want the red/blue enum in our code.
-    private AprilTagFieldLayoutWithCorrectOrientation(OriginPosition origin) throws IOException {
+    /**
+     * @param filename filename allows experimentation with other layouts
+     */
+    private AprilTagFieldLayoutWithCorrectOrientation(OriginPosition origin, String filename) throws IOException {
         // TODO: extract this filename
-        Path path = Filesystem.getDeployDirectory().toPath().resolve("2023-studies.json");
+        Path path = Filesystem.getDeployDirectory().toPath().resolve(filename);
         layout = new AprilTagFieldLayout(path);
         layout.setOrigin(origin);
     }
 
     /**
+     * @param filename allows experimentation with other layouts
      * @return Layout from the red perspective.
      */
-    public static AprilTagFieldLayoutWithCorrectOrientation redLayout() throws IOException {
-        return new AprilTagFieldLayoutWithCorrectOrientation(OriginPosition.kRedAllianceWallRightSide);
+    public static AprilTagFieldLayoutWithCorrectOrientation redLayout(String filename) throws IOException {
+        return new AprilTagFieldLayoutWithCorrectOrientation(OriginPosition.kRedAllianceWallRightSide, filename);
     }
 
     /**
+     * @param filename allows experimentation with other layouts
      * @return Layout from the blue perspective.
      */
-    public static AprilTagFieldLayoutWithCorrectOrientation blueLayout() throws IOException {
-        return new AprilTagFieldLayoutWithCorrectOrientation(OriginPosition.kBlueAllianceWallRightSide);
+    public static AprilTagFieldLayoutWithCorrectOrientation blueLayout(String filename) throws IOException {
+        return new AprilTagFieldLayoutWithCorrectOrientation(OriginPosition.kBlueAllianceWallRightSide, filename);
     }
 
     /**
