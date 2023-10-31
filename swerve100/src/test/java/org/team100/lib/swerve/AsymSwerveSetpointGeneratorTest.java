@@ -6,12 +6,15 @@ import org.junit.jupiter.api.Test;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 public class AsymSwerveSetpointGeneratorTest {
 
     protected final static double kRobotSide = 0.616; // m
-    protected final static SwerveDriveKinematics kKinematics = new SwerveDriveKinematics(
+    static final Translation2d[] moduleTranslations = new Translation2d[] {
             // Front left
             new Translation2d(kRobotSide / 2.0, kRobotSide / 2.0),
             // Front right
@@ -19,7 +22,10 @@ public class AsymSwerveSetpointGeneratorTest {
             // Back left
             new Translation2d(-kRobotSide / 2.0, kRobotSide / 2.0),
             // Back right
-            new Translation2d(-kRobotSide / 2.0, -kRobotSide / 2.0));
+            new Translation2d(-kRobotSide / 2.0, -kRobotSide / 2.0)
+    };
+    protected final static SwerveDriveKinematics kKinematics = new SwerveDriveKinematics(
+        moduleTranslations            );
     protected final static AsymSwerveSetpointGenerator.KinematicLimits kKinematicLimits = new AsymSwerveSetpointGenerator.KinematicLimits();
     static {
         kKinematicLimits.kMaxDriveVelocity = 5.0; // m/s
@@ -54,13 +60,17 @@ public class AsymSwerveSetpointGeneratorTest {
             AsymSwerveSetpointGenerator generator) {
         System.out.println("Driving to goal state " + goal);
         System.out.println("Initial state: " + prevSetpoint);
-        while (!prevSetpoint.mChassisSpeeds.toTwist2d().equals(goal.toTwist2d())) {
+        while (!chassisSpeedsToTwist2d(prevSetpoint.mChassisSpeeds).equals(chassisSpeedsToTwist2d(goal))) {
             var newsetpoint = generator.generateSetpoint(kKinematicLimits, prevSetpoint, goal, kDt);
             System.out.println(newsetpoint);
             SatisfiesConstraints(prevSetpoint, newsetpoint);
             prevSetpoint = newsetpoint;
         }
         return prevSetpoint;
+    }
+
+    private static Twist2d chassisSpeedsToTwist2d(ChassisSpeeds x) {
+        return new Twist2d(x.vxMetersPerSecond, x.vyMetersPerSecond, x.omegaRadiansPerSecond);
     }
 
     @Test
@@ -73,7 +83,7 @@ public class AsymSwerveSetpointGeneratorTest {
         };
         SwerveSetpoint setpoint = new SwerveSetpoint(new ChassisSpeeds(), initialStates);
 
-        var generator = new AsymSwerveSetpointGenerator(kKinematics);
+        var generator = new AsymSwerveSetpointGenerator(kKinematics, moduleTranslations);
 
         var goalSpeeds = new ChassisSpeeds(0.0, 0.0, 1.0);
         setpoint = driveToGoal(setpoint, goalSpeeds, generator);

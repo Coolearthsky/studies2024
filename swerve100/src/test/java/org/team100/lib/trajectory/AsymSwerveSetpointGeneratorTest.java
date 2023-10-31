@@ -9,6 +9,8 @@ import org.team100.lib.swerve.AsymSwerveSetpointGenerator;
 import org.team100.lib.swerve.SwerveSetpoint;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 public class AsymSwerveSetpointGeneratorTest {
@@ -19,17 +21,19 @@ public class AsymSwerveSetpointGeneratorTest {
         // like 2023 comp bot
         double kTrackWidth = 0.491;
         double kWheelBase = 0.765;
-        SwerveKinematics k = new SwerveKinematics(new Translation2d(kWheelBase / 2, kTrackWidth / 2),
+        final Translation2d[] moduleTranslations = new Translation2d[] {
+            new Translation2d(kWheelBase / 2, kTrackWidth / 2),
                 new Translation2d(kWheelBase / 2, -kTrackWidth / 2),
                 new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
-                new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
-        org.team100.lib.swerve.SwerveDriveKinematics kinematics254 = k.as254();
-        AsymSwerveSetpointGenerator swerveSetpointGenerator = new AsymSwerveSetpointGenerator(kinematics254);
+                new Translation2d(-kWheelBase / 2, -kTrackWidth / 2)
+        };
+        SwerveKinematics k = new SwerveKinematics(moduleTranslations);        SwerveDriveKinematics kinematics254 = k.as254();
+        AsymSwerveSetpointGenerator swerveSetpointGenerator = new AsymSwerveSetpointGenerator(kinematics254, moduleTranslations);
         AsymSwerveSetpointGenerator.KinematicLimits limits = new AsymSwerveSetpointGenerator.KinematicLimits();
         limits.kMaxDriveVelocity = 5;
         limits.kMaxDriveAcceleration = 10;
         limits.kMaxSteeringVelocity = 5;
-        org.team100.lib.swerve.ChassisSpeeds c254 = new org.team100.lib.swerve.ChassisSpeeds();
+        ChassisSpeeds c254 = new ChassisSpeeds();
         c254.vxMetersPerSecond = 0;
         c254.vyMetersPerSecond = 0;
         c254.omegaRadiansPerSecond = 0;
@@ -40,7 +44,7 @@ public class AsymSwerveSetpointGeneratorTest {
                 new SwerveModuleState(0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity)
         };
         SwerveSetpoint setpoint = new SwerveSetpoint(c254, s254);
-        org.team100.lib.swerve.ChassisSpeeds cDesired254 = new org.team100.lib.swerve.ChassisSpeeds();
+        ChassisSpeeds cDesired254 = new ChassisSpeeds();
         cDesired254.vxMetersPerSecond = 10;
         cDesired254.vyMetersPerSecond = 10;
         cDesired254.omegaRadiansPerSecond = 10;

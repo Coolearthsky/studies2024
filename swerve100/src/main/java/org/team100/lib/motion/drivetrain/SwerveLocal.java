@@ -28,15 +28,17 @@ public class SwerveLocal {
 
     private final double kWheelBase = .765;
     private final double kTrackWidth = .491;
-    private final SwerveKinematics m_DriveKinematics2 = new SwerveKinematics(
+    final Translation2d[] moduleTranslations = new Translation2d[] {
             new Translation2d(kWheelBase / 2, kTrackWidth / 2),
             new Translation2d(kWheelBase / 2, -kTrackWidth / 2),
             new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
-            new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
+            new Translation2d(-kWheelBase / 2, -kTrackWidth / 2)
+    };
+    private final SwerveKinematics m_DriveKinematics2 = new SwerveKinematics(moduleTranslations);
     private final AsymSwerveSetpointGenerator m_SwerveSetpointGenerator = new AsymSwerveSetpointGenerator(
-            m_DriveKinematics2.as254());
+            m_DriveKinematics2.as254(), moduleTranslations);
     private AsymSwerveSetpointGenerator.KinematicLimits limits = new AsymSwerveSetpointGenerator.KinematicLimits();
-    org.team100.lib.swerve.ChassisSpeeds c254 = new org.team100.lib.swerve.ChassisSpeeds();
+    ChassisSpeeds c254 = new ChassisSpeeds();
     SwerveModuleState[] s254 = new SwerveModuleState[] {
             new SwerveModuleState(0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity),
             new SwerveModuleState(0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity),
@@ -73,11 +75,11 @@ public class SwerveLocal {
         }
     }
 
-    public void setChassisSpeeds254(org.team100.lib.swerve.ChassisSpeeds targetChassisSpeeds) {
+    public void setChassisSpeeds254(ChassisSpeeds targetChassisSpeeds) {
         setChassisSpeedsNormally254(targetChassisSpeeds);
     }
 
-    private void setChassisSpeedsNormally254(org.team100.lib.swerve.ChassisSpeeds targetChassisSpeeds) {
+    private void setChassisSpeedsNormally254(ChassisSpeeds targetChassisSpeeds) {
         t.log("/desired speed/x254", targetChassisSpeeds.vxMetersPerSecond);
         t.log("/desired speed/y254", targetChassisSpeeds.vyMetersPerSecond);
         t.log("/desired speed/theta254", targetChassisSpeeds.omegaRadiansPerSecond);
@@ -111,7 +113,7 @@ public class SwerveLocal {
     }
 
     private void setChassisSpeedsWithSetpointGenerator(ChassisSpeeds targetChassisSpeeds2) {
-        org.team100.lib.swerve.ChassisSpeeds targetChassisSpeeds = new org.team100.lib.swerve.ChassisSpeeds(
+        ChassisSpeeds targetChassisSpeeds = new ChassisSpeeds(
                 targetChassisSpeeds2.vxMetersPerSecond, targetChassisSpeeds2.vyMetersPerSecond,
                 targetChassisSpeeds2.omegaRadiansPerSecond);
 
