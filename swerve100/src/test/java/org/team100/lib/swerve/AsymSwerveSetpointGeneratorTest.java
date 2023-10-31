@@ -38,9 +38,9 @@ public class AsymSwerveSetpointGeneratorTest {
     protected final static double kMaxAccelerationError = 0.1; // m/s^2
 
     public void SatisfiesConstraints(SwerveSetpoint prev, SwerveSetpoint next) {
-        for (int i = 0; i < prev.mModuleStates.length; ++i) {
-            final var prevModule = prev.mModuleStates[i];
-            final var nextModule = next.mModuleStates[i];
+        for (int i = 0; i < prev.getModuleStates().length; ++i) {
+            final var prevModule = prev.getModuleStates()[i];
+            final var nextModule = next.getModuleStates()[i];
             Rotation2d diffRotation = prevModule.angle.unaryMinus().rotateBy(nextModule.angle);
             assertTrue(
                     Math.abs(diffRotation.getRadians()) < kKinematicLimits.kMaxSteeringVelocity
@@ -60,7 +60,7 @@ public class AsymSwerveSetpointGeneratorTest {
             AsymSwerveSetpointGenerator generator) {
         System.out.println("Driving to goal state " + goal);
         System.out.println("Initial state: " + prevSetpoint);
-        while (!chassisSpeedsToTwist2d(prevSetpoint.mChassisSpeeds).equals(chassisSpeedsToTwist2d(goal))) {
+        while (!chassisSpeedsToTwist2d(prevSetpoint.getChassisSpeeds()).equals(chassisSpeedsToTwist2d(goal))) {
             var newsetpoint = generator.generateSetpoint(kKinematicLimits, prevSetpoint, goal, kDt);
             System.out.println(newsetpoint);
             SatisfiesConstraints(prevSetpoint, newsetpoint);

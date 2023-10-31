@@ -86,17 +86,9 @@ public class SwerveLocal {
                 .05);
         System.out.println(setpoint);
         prevSetpoint = setpoint;
-        SwerveModuleState[] states = m_DriveKinematics.toSwerveModuleStates(setpoint.mChassisSpeeds);
-        Rotation2d thetafl = new Rotation2d(states[0].angle.getRadians());
-        Rotation2d thetafr = new Rotation2d(states[1].angle.getRadians());
-        Rotation2d thetabl = new Rotation2d(states[2].angle.getRadians());
-        Rotation2d thetabr = new Rotation2d(states[3].angle.getRadians());
-        SwerveModuleState fl = new SwerveModuleState(states[0].speedMetersPerSecond, thetafl);
-        SwerveModuleState fr = new SwerveModuleState(states[1].speedMetersPerSecond, thetafr);
-        SwerveModuleState bl = new SwerveModuleState(states[2].speedMetersPerSecond, thetabl);
-        SwerveModuleState br = new SwerveModuleState(states[3].speedMetersPerSecond, thetabr);
-        SwerveModuleState[] swerveModuleStates = new SwerveModuleState[] { fl, fr, bl, br };
-        setModuleStates(swerveModuleStates);
+
+        SwerveModuleState[] states = m_DriveKinematics.toSwerveModuleStates(setpoint.getChassisSpeeds());
+        setModuleStates(states);
     }
 
     /**
@@ -104,11 +96,12 @@ public class SwerveLocal {
      * TODO: let the drivetrain decide to do this when it's stopped for awhile
      */
     public void defense() {
-        SwerveModuleState[] states = new SwerveModuleState[4];
-        states[0] = new SwerveModuleState(0, new Rotation2d(Math.PI / 4));
-        states[1] = new SwerveModuleState(0, new Rotation2d(7 * Math.PI / 4));
-        states[2] = new SwerveModuleState(0, new Rotation2d(3 * Math.PI / 4));
-        states[3] = new SwerveModuleState(0, new Rotation2d(5 * Math.PI / 4));
+        SwerveModuleState[] states = new SwerveModuleState[] {
+                new SwerveModuleState(0, new Rotation2d(Math.PI / 4)),
+                new SwerveModuleState(0, new Rotation2d(7 * Math.PI / 4)),
+                new SwerveModuleState(0, new Rotation2d(3 * Math.PI / 4)),
+                new SwerveModuleState(0, new Rotation2d(5 * Math.PI / 4))
+        };
         setModuleStates(states);
     }
 

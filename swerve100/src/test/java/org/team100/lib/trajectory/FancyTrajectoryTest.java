@@ -16,19 +16,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Timer;
 
-/**
- * Some of the trajectory-related stuff uses *inches* as the length measure but
- * i think it's actually unitless, i.e. whatever you give in the waypoints is
- * the same as the velocity limits etc.
- * 
- * There are many issues here. the trajectory generator doesn't listen to all
- * its inputs, and it has some static constraints. So we should make our own.
- * 
- * Trajectories are followed by DriveMotionPlanner, in code that i didn't move
- * over; maybe i should put that other code back.
- * 
- */
-public class FancyTrajectoryTest {
+class FancyTrajectoryTest {
     private static final double kDelta = 0.001;
 
     /**
@@ -95,7 +83,7 @@ public class FancyTrajectoryTest {
 
         ChassisSpeeds output = mMotionPlanner.update(now, actualPose);
 
-        Translation2d translational_error = mMotionPlanner.getTranslationalError();
+        Translation2d translational_error = mMotionPlanner.getTranslationalErrorM();
         Rotation2d heading_error = mMotionPlanner.getHeadingError();
         TimedPose path_setpoint = mMotionPlanner.getPathSetpoint();
         TimedRotation heading_setpoint = mMotionPlanner.getHeadingSetpoint();

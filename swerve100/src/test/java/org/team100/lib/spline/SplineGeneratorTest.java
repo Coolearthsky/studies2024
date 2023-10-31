@@ -14,12 +14,9 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.spline.PoseWithCurvature;
 
-public class SplineGeneratorTest {
-    private static final double kTestEpsilon = 1e-12;
-
+class SplineGeneratorTest {
     @Test
     void test() {
-        // Create the test spline
         Pose2d p1 = new Pose2d(new Translation2d(0, 0), new Rotation2d());
         Pose2d p2 = new Pose2d(new Translation2d(15, 10), new Rotation2d(1, -5));
         Spline s = new QuinticHermiteSpline(p1, p2);
@@ -32,17 +29,18 @@ public class SplineGeneratorTest {
         PoseWithCurvature cur_pose = samples.get(0).state();
         for (PathPoint point : samples) {
             PoseWithCurvature sample = point.state();
-            final Twist2d t = GeometryUtil
-                    .slog(GeometryUtil.transformBy(GeometryUtil.inverse(cur_pose.poseMeters), sample.poseMeters));
-            arclength += t.dx;
+            final Twist2d twist = GeometryUtil.slog(
+                    GeometryUtil.transformBy(
+                            GeometryUtil.inverse(cur_pose.poseMeters), sample.poseMeters));
+            arclength += twist.dx;
             cur_pose = sample;
             cur_heading = point.heading();
         }
 
-        assertEquals(15.0, cur_pose.poseMeters.getTranslation().getX(), kTestEpsilon);
-        assertEquals(10.0, cur_pose.poseMeters.getTranslation().getY(), kTestEpsilon);
-        assertEquals(-78.69006752597981, cur_pose.poseMeters.getRotation().getDegrees(), kTestEpsilon);
-        assertEquals(23.17291953186379, arclength, kTestEpsilon);
-        assertEquals(cur_heading.getRadians(), headings.get(1).getRadians(), kTestEpsilon);
+        assertEquals(15.0, cur_pose.poseMeters.getTranslation().getX(), 0.001);
+        assertEquals(10.0, cur_pose.poseMeters.getTranslation().getY(), 0.001);
+        assertEquals(-78.690, cur_pose.poseMeters.getRotation().getDegrees(), 0.001);
+        assertEquals(23.226, arclength, 0.001);
+        assertEquals(cur_heading.getRadians(), headings.get(1).getRadians(), 1e-12);
     }
 }

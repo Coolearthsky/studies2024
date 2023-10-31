@@ -12,7 +12,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
-public class AsymSwerveSetpointGeneratorTest {
+class AsymSwerveSetpointGeneratorTest {
     private static final double kDelta = 0.001;
 
     @Test
@@ -51,17 +51,17 @@ public class AsymSwerveSetpointGeneratorTest {
 
         // initially it's not moving fast at all
         setpoint = swerveSetpointGenerator.generateSetpoint(limits, setpoint, desiredSpeeds, dt);
-        assertEquals(0, setpoint.mChassisSpeeds.vxMetersPerSecond, kDelta);
-        assertEquals(0, setpoint.mChassisSpeeds.vyMetersPerSecond, kDelta);
-        assertEquals(0, setpoint.mChassisSpeeds.omegaRadiansPerSecond, kDelta);
+        assertEquals(0, setpoint.getChassisSpeeds().vxMetersPerSecond, kDelta);
+        assertEquals(0, setpoint.getChassisSpeeds().vyMetersPerSecond, kDelta);
+        assertEquals(0, setpoint.getChassisSpeeds().omegaRadiansPerSecond, kDelta);
 
         // after 1 second, it's going faster.
         for (int i = 0; i < 50; ++i) {
             setpoint = swerveSetpointGenerator.generateSetpoint(limits, setpoint, desiredSpeeds, dt);
         }
-        assertEquals(2.687, setpoint.mChassisSpeeds.vxMetersPerSecond, kDelta);
-        assertEquals(2.687, setpoint.mChassisSpeeds.vyMetersPerSecond, kDelta);
-        assertEquals(2.687, setpoint.mChassisSpeeds.omegaRadiansPerSecond, kDelta);
+        assertEquals(2.687, setpoint.getChassisSpeeds().vxMetersPerSecond, kDelta);
+        assertEquals(2.687, setpoint.getChassisSpeeds().vyMetersPerSecond, kDelta);
+        assertEquals(2.687, setpoint.getChassisSpeeds().omegaRadiansPerSecond, kDelta);
 
     }
 

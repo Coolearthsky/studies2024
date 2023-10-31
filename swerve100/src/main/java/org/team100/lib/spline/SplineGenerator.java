@@ -12,9 +12,9 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 
 public class SplineGenerator {
-    private static final double kMaxDX = 2.0; // inches
-    private static final double kMaxDY = 0.05; // inches
-    private static final double kMaxDTheta = 0.1; // radians!
+    private static final double kMaxDxM = 0.05; // meters
+    private static final double kMaxDyM = 0.05; // meters
+    private static final double kMaxDThetaRad = 0.1; // radians
     private static final int kMinSampleSize = 1;
 
     /**
@@ -28,16 +28,16 @@ public class SplineGenerator {
     public static List<PathPoint> parameterizeSpline(
             Spline s,
             List<? extends Rotation2d> headings,
-            double maxDx,
-            double maxDy,
-            double maxDTheta,
+            double maxDxM,
+            double maxDyM,
+            double maxDThetaRad,
             double t0,
             double t1) {
         List<PathPoint> rv = new ArrayList<>();
         rv.add(new PathPoint(s.getPose2dWithCurvature(0.0), headings.get(0), 0));
         double dt = (t1 - t0);
         for (double t = 0; t < t1; t += dt / kMinSampleSize) {
-            getSegmentArc(s, headings, rv, t, t + dt / kMinSampleSize, maxDx, maxDy, maxDTheta, dt);
+            getSegmentArc(s, headings, rv, t, t + dt / kMinSampleSize, maxDxM, maxDyM, maxDThetaRad, dt);
         }
         return rv;
     }
@@ -45,33 +45,31 @@ public class SplineGenerator {
     /**
      * Convenience function to parametrize a spline from t 0 to 1
      */
-    public static List<PathPoint> parameterizeSpline(
-            Spline s,
-            List<? extends Rotation2d> headings) {
-        return parameterizeSpline(s, headings, kMaxDX, kMaxDY, kMaxDTheta, 0.0, 1.0);
+    public static List<PathPoint> parameterizeSpline(Spline s, List<? extends Rotation2d> headings) {
+        return parameterizeSpline(s, headings, kMaxDxM, kMaxDyM, kMaxDThetaRad, 0.0, 1.0);
     }
 
     public static List<PathPoint> parameterizeSpline(
             Spline s,
             List<? extends Rotation2d> headings,
-            double maxDx,
-            double maxDy,
-            double maxDTheta) {
-        return parameterizeSpline(s, headings, maxDx, maxDy, maxDTheta, 0.0, 1.0);
+            double maxDxM,
+            double maxDyM,
+            double maxDThetaRad) {
+        return parameterizeSpline(s, headings, maxDxM, maxDyM, maxDThetaRad, 0.0, 1.0);
     }
 
     public static List<PathPoint> parameterizeSplines(
             List<Spline> splines,
             List<? extends Rotation2d> headings) {
-        return parameterizeSplines(splines, headings, kMaxDX, kMaxDY, kMaxDTheta);
+        return parameterizeSplines(splines, headings, kMaxDxM, kMaxDyM, kMaxDThetaRad);
     }
 
     public static List<PathPoint> parameterizeSplines(
             List<? extends Spline> splines,
             List<? extends Rotation2d> headings,
-            double maxDx,
-            double maxDy,
-            double maxDTheta) {
+            double maxDxM,
+            double maxDyM,
+            double maxDThetaRad) {
         List<PathPoint> rv = new ArrayList<>();
         if (splines.isEmpty())
             return rv;
@@ -82,7 +80,7 @@ public class SplineGenerator {
             spline_rots.add(headings.get(i));
             spline_rots.add(headings.get(i + 1));
 
-            List<PathPoint> samples = parameterizeSpline(s, spline_rots, maxDx, maxDy, maxDTheta);
+            List<PathPoint> samples = parameterizeSpline(s, spline_rots, maxDxM, maxDyM, maxDThetaRad);
             samples.remove(0);
             rv.addAll(samples);
         }
@@ -95,9 +93,9 @@ public class SplineGenerator {
             List<PathPoint> rv,
             double t0,
             double t1,
-            double maxDx,
-            double maxDy,
-            double maxDTheta,
+            double maxDxM,
+            double maxDyM,
+            double maxDThetaRad,
             double totalTime) {
         Translation2d p0 = s.getPoint(t0);
         Translation2d p1 = s.getPoint(t1);
@@ -106,9 +104,9 @@ public class SplineGenerator {
         Pose2d transformation = new Pose2d(p1.minus(p0).rotateBy(r0.unaryMinus()), r1.rotateBy(r0.unaryMinus()));
         Twist2d twist = GeometryUtil.slog(transformation);
 
-        if (twist.dy > maxDy || twist.dx > maxDx || twist.dtheta > maxDTheta) {
-            getSegmentArc(s, headings, rv, t0, (t0 + t1) / 2, maxDx, maxDy, maxDTheta, totalTime);
-            getSegmentArc(s, headings, rv, (t0 + t1) / 2, t1, maxDx, maxDy, maxDTheta, totalTime);
+        if (twist.dy > maxDyM || twist.dx > maxDxM || twist.dtheta > maxDThetaRad) {
+            getSegmentArc(s, headings, rv, t0, (t0 + t1) / 2, maxDxM, maxDyM, maxDThetaRad, totalTime);
+            getSegmentArc(s, headings, rv, (t0 + t1) / 2, t1, maxDxM, maxDyM, maxDThetaRad, totalTime);
         } else {
             // Interpolate heading
             Rotation2d diff = headings.get(1).rotateBy(headings.get(0).unaryMinus());

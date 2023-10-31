@@ -9,9 +9,9 @@ import org.team100.lib.geometry.GeometryUtil;
 
 public class TimedPose {
     protected final PoseWithCurvature state_;
-    protected double t_; // Time we achieve this state.
-    protected double velocity_; // ds/dt
-    protected double acceleration_; // d^2s/dt^2
+    protected double timeS; // Time we achieve this state.
+    protected double velocityM_S; // ds/dt
+    protected double accelM_S_S; // d^2s/dt^2
 
     public TimedPose(final PoseWithCurvature state) {
         state_ = state;
@@ -19,9 +19,9 @@ public class TimedPose {
 
     public TimedPose(final PoseWithCurvature state, double t, double velocity, double acceleration) {
         state_ = state;
-        t_ = t;
-        velocity_ = velocity;
-        acceleration_ = acceleration;
+        timeS = t;
+        velocityM_S = velocity;
+        accelM_S_S = acceleration;
     }
 
     public PoseWithCurvature state() {
@@ -29,27 +29,27 @@ public class TimedPose {
     }
 
     public void set_t(double t) {
-        t_ = t;
+        timeS = t;
     }
 
     public double t() {
-        return t_;
+        return timeS;
     }
 
     public void set_velocity(double velocity) {
-        velocity_ = velocity;
+        velocityM_S = velocity;
     }
 
     public double velocity() {
-        return velocity_;
+        return velocityM_S;
     }
 
     public void set_acceleration(double acceleration) {
-        acceleration_ = acceleration;
+        accelM_S_S = acceleration;
     }
 
     public double acceleration() {
-        return acceleration_;
+        return accelM_S_S;
     }
 
     @Override

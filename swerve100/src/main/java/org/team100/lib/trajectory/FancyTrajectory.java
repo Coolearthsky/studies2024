@@ -12,11 +12,14 @@ import org.team100.lib.timing.TimingConstraint;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class FancyTrajectory extends Command {
+    private static final double kMaxVelM_S = 4;
+    private static final double kMaxAccelM_S_S = 2;
+    private static final double kMaxVoltage = 9.0;
+
     private final Telemetry t = Telemetry.get();
     private final SwerveDriveSubsystem m_robotDrive;
     private final DriveMotionPlanner mMotionPlanner;
@@ -29,11 +32,7 @@ public class FancyTrajectory extends Command {
 
     @Override
     public void initialize() {
-        final double kMaxVel = 196;
-        final double kMaxAccel = 196;
-        final double kMaxVoltage = 9.0;
-
-        List<Pose2d> waypoints = List.of(
+        List<Pose2d> waypointsM = List.of(
                 new Pose2d(0, 0, Rotation2d.fromDegrees(90)),
                 new Pose2d(80, 80, Rotation2d.fromDegrees(0)));
         // while turning 180
@@ -51,13 +50,13 @@ public class FancyTrajectory extends Command {
         // there's a bug in here; it doesn't use the constraints, nor the voltage.
         Trajectory trajectory = mMotionPlanner
                 .generateTrajectory(
-                        waypoints,
+                        waypointsM,
                         headings,
                         constraints,
                         start_vel,
                         end_vel,
-                        kMaxVel,
-                        kMaxAccel,
+                        kMaxVelM_S,
+                        kMaxAccelM_S_S,
                         kMaxVoltage);
         System.out.println(trajectory);
         System.out.println("TRAJECTORY LENGTH: " + trajectory.length());
@@ -73,15 +72,15 @@ public class FancyTrajectory extends Command {
     public void execute() {
         final double now = Timer.getFPGATimestamp();
 
-        // TODO: remove this meters/inches stuff
-        Pose2d currentPose = new Pose2d(Units.metersToInches(m_robotDrive.getPose().getX()),
-                Units.metersToInches(m_robotDrive.getPose().getY()),
+        Pose2d currentPose = new Pose2d(
+                m_robotDrive.getPose().getX(),
+                m_robotDrive.getPose().getY(),
                 m_robotDrive.getPose().getRotation());
 
         ChassisSpeeds output = mMotionPlanner.update(now, currentPose);
 
-        t.log("/Fancy TrajectoryPose Error X",  mMotionPlanner.getTranslationalError().getX());
-        t.log("/Fancy Trajectory/Pose Error Y", mMotionPlanner.getTranslationalError().getY());
+        t.log("/Fancy TrajectoryPose Error X", mMotionPlanner.getTranslationalErrorM().getX());
+        t.log("/Fancy Trajectory/Pose Error Y", mMotionPlanner.getTranslationalErrorM().getY());
         t.log("/Fancy Trajectory/Velocity Setpoint", mMotionPlanner.getVelocitySetpoint());
 
         m_robotDrive.setChassisSpeeds(output);
