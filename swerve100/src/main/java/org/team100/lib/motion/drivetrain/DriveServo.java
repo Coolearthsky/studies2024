@@ -16,7 +16,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 /** Feedforward and feedback control of a single drive motor. */
 public class DriveServo {
     public static class Config {
-        public double kDriveDeadband = 0.03;
+        public double kDriveDeadband = 0.2;
+        //public double kDriveDeadband = 0.03;
     }
 
     private final Config m_config = new Config();
@@ -49,11 +50,11 @@ public class DriveServo {
 
     void setDrive(SwerveModuleState state) {
         double speedM_S = state.speedMetersPerSecond;
-        if (m_experiments.enabled(Experiment.UseClosedLoopDrive)) {
+        // if (m_experiments.enabled(Experiment.UseClosedLoopDrive)) {
             offboard(speedM_S);
-        } else {
-            onboard(speedM_S);
-        }
+        // } else {
+        //     onboard(speedM_S);
+        // }
         log();
     }
 
@@ -62,7 +63,17 @@ public class DriveServo {
     }
 
     void offboard(double speedM_S) {
+
+        
+        if(speedM_S >= -0.3 && speedM_S <= 0.3){
+            // System.out.println("AHHHHHHHHHHHHHHHHHHHHHHH");
+            speedM_S = 0;
+        }
+
         m_driveMotor.setPID(ControlMode.Velocity, speedM_S);
+
+        
+        // System.out.println("SPPPPPEED" + speedM_S);
     }
 
     void onboard(double speedM_S) {

@@ -112,15 +112,26 @@ deploy {
                 }
 
                 // Static files artifact
+                // frcStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
+                //     files = project.fileTree('src/main/deploy/2023-studies.json')
+                //     directory = '/home/lvuser/deploy'
+                // }
+                // kernel parameters
+                // frcStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
+                //     files = project.fileTree('src/main/etc')
+                //     directory = '/etc'
+                // }
+
                 frcStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
                     files = project.fileTree('src/main/deploy')
                     directory = '/home/lvuser/deploy'
                 }
                 // kernel parameters
-                frcStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
+                etcStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
                     files = project.fileTree('src/main/etc')
                     directory = '/etc'
                 }
+                
                 // reload the kernel parameters we just changed
                 reloadSysctl(getArtifactTypeClass('CommandArtifact')) {
                     command = 'sysctl -p'

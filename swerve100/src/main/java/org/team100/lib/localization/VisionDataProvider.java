@@ -46,7 +46,7 @@ public class VisionDataProvider extends Subsystem implements TableEventListener 
          * Set this to some large number (e.g. 100) to disable gyro-derived rotation and
          * always use the camera.
          */
-        public double kTagRotationBeliefThresholdMeters = 1;
+        public double kTagRotationBeliefThresholdMeters = 0.5;
     }
 
     private final Config m_config = new Config();

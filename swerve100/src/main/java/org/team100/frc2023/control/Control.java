@@ -180,4 +180,7 @@ public interface Control {
 
     default void driveWith254Trajec(Command command){
     }
+    
+    default void circle(Command command){    
+    }
 }

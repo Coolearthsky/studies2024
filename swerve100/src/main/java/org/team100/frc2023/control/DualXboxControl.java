@@ -186,6 +186,11 @@ public class DualXboxControl implements Control {
 
     @Override
     public void driveWith254Trajec(Command command){
+        //controller0.a().whileTrue(command);
+    }
+
+    @Override
+    public void circle(Command command){
         controller0.a().whileTrue(command);
     }
 

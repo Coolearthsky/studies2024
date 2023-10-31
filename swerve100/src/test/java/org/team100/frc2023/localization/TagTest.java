@@ -18,7 +18,7 @@ public class TagTest {
 
     @Test
     public void testBlueLayout() throws IOException {
-        AprilTagFieldLayoutWithCorrectOrientation layout = AprilTagFieldLayoutWithCorrectOrientation.blueLayout();
+        AprilTagFieldLayoutWithCorrectOrientation layout = AprilTagFieldLayoutWithCorrectOrientation.blueLayout("2023-chargedup.json");
         /*
          * from the blue perspective, tag 5 has small x
          * and large y, and oriented at pi theta.
@@ -35,7 +35,7 @@ public class TagTest {
 
     @Test
     public void testRedLayout() throws IOException {
-        AprilTagFieldLayoutWithCorrectOrientation layout = AprilTagFieldLayoutWithCorrectOrientation.redLayout();
+        AprilTagFieldLayoutWithCorrectOrientation layout = AprilTagFieldLayoutWithCorrectOrientation.redLayout("2023-chargedup.json");
         /*
          * from the red perspective, tag 5 has large x
          * and small y, and oriented at zero theta.

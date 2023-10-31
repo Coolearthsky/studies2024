@@ -17,22 +17,15 @@ public class Cameras2023 {
         Camera cam = Camera.get(serialNumber);
 
         switch (cam) {
-            // case B: // REAR
-            // return new Transform3d(
-            // new Translation3d(-0.326, 0.003, 0.332),
-            // new Rotation3d(0, -0.419, 3.142));
-            case A: // FRONT
+
+            case B: // FRONT
                 return new Transform3d(
-                        new Translation3d(0.398, 0.075, 0.201),
-                        new Rotation3d(0, -0.35, 0));
-            case D: // RIGHT
+                        new Translation3d(0, 0.2413, 0.3937),
+                        new Rotation3d(0, 0, 0));
+            case A: // LEFT
                 return new Transform3d(
-                        new Translation3d(0.012, -0.264, 0.229),
-                        new Rotation3d(0, -0.401, -0.35));
-            case C: // LEFT
-                return new Transform3d(
-                        new Translation3d(0.012, 0.159, 0.240),
-                        new Rotation3d(0, -0.332, 0.35));
+                        new Translation3d(0, 0.26035, 0.3937),
+                        new Rotation3d(0, 0, 1.57));
             case UNKNOWN:
                 return new Transform3d(
                         new Translation3d(0.254, 0.127, 0.3),
