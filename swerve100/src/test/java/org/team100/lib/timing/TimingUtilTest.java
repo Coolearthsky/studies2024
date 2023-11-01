@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.GeometryUtil;
+import org.team100.lib.geometry.Pose2dWithMotion;
 import org.team100.lib.path.Path;
 import org.team100.lib.path.PathDistanceSampler;
 import org.team100.lib.timing.TimingConstraint.MinMaxAcceleration;
@@ -24,11 +25,11 @@ public class TimingUtilTest {
 
     public static final double kTestEpsilon = 1e-12;
     
-    public static final List<PoseWithCurvature> kWaypoints = Arrays.asList(
-            new PoseWithCurvature(new Pose2d(new Translation2d(0.0, 0.0), new Rotation2d()), 0),
-            new PoseWithCurvature(new Pose2d(new Translation2d(24.0, 0.0), new Rotation2d()), 0),
-            new PoseWithCurvature(new Pose2d(new Translation2d(36.0, 12.0), new Rotation2d()), 0),
-            new PoseWithCurvature(new Pose2d(new Translation2d(60.0, 12.0), new Rotation2d()), 0));
+    public static final List<Pose2dWithMotion> kWaypoints = Arrays.asList(
+            new Pose2dWithMotion(new Pose2d(new Translation2d(0.0, 0.0), new Rotation2d()), 0),
+            new Pose2dWithMotion(new Pose2d(new Translation2d(24.0, 0.0), new Rotation2d()), 0),
+            new Pose2dWithMotion(new Pose2d(new Translation2d(36.0, 12.0), new Rotation2d()), 0),
+            new Pose2dWithMotion(new Pose2d(new Translation2d(60.0, 12.0), new Rotation2d()), 0));
 
 
     public static final List<Rotation2d> kHeadings = List.of(
@@ -46,7 +47,7 @@ public class TimingUtilTest {
             double max_vel,
             double max_acc) {
         Trajectory timed_traj = TimingUtil
-                .timeParameterizeTrajectory(dist_view, step_size, constraints, start_vel, end_vel, max_vel,
+                .timeParameterizeTrajectory(false, dist_view, step_size, constraints, start_vel, end_vel, max_vel,
                         max_acc);
         checkTrajectory(timed_traj, constraints, start_vel, end_vel, max_vel, max_acc);
         return timed_traj;
@@ -84,7 +85,7 @@ public class TimingUtilTest {
 
     @Test
     public void testNoConstraints() {
-        Path traj = new Path(kWaypoints, kHeadings);
+        Path traj = new Path(kWaypoints);
         PathDistanceSampler dist_view = new PathDistanceSampler(traj);
 
         // Triangle profile.
@@ -104,13 +105,13 @@ public class TimingUtilTest {
 
     @Test
     public void testConditionalVelocityConstraint() {
-        Path traj = new Path(kWaypoints, kHeadings);
+        Path traj = new Path(kWaypoints);
         PathDistanceSampler dist_view = new PathDistanceSampler(traj);
 
-        class ConditionalTimingConstraint<S extends PoseWithCurvature> implements TimingConstraint {
+        class ConditionalTimingConstraint implements TimingConstraint {
             @Override
-            public double getMaxVelocity(PoseWithCurvature state) {
-                if (state.poseMeters.getTranslation().getX() >= 24.0) {
+            public double getMaxVelocity(Pose2dWithMotion state) {
+                if (state.getPose().getTranslation().getX() >= 24.0) {
                     return 5.0;
                 } else {
                     return Double.POSITIVE_INFINITY;
@@ -118,7 +119,7 @@ public class TimingUtilTest {
             }
 
             @Override
-            public MinMaxAcceleration getMinMaxAcceleration(PoseWithCurvature state,
+            public MinMaxAcceleration getMinMaxAcceleration(Pose2dWithMotion state,
                     double velocity) {
                 return new TimingConstraint.MinMaxAcceleration(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
             }
@@ -127,24 +128,24 @@ public class TimingUtilTest {
         // Trapezoidal profile.
         Trajectory timed_traj = buildAndCheckTrajectory(dist_view,
                 1.0,
-                Arrays.asList(new ConditionalTimingConstraint<>()), 0.0, 0.0, 10.0, 5.0);
+                Arrays.asList(new ConditionalTimingConstraint()), 0.0, 0.0, 10.0, 5.0);
         System.out.println(timed_traj);
 
     }
 
     @Test
     public void testConditionalAccelerationConstraint() {
-        Path traj = new Path(kWaypoints, kHeadings);
+        Path traj = new Path(kWaypoints);
         PathDistanceSampler dist_view = new PathDistanceSampler(traj);
 
         class ConditionalTimingConstraint implements TimingConstraint {
             @Override
-            public double getMaxVelocity(PoseWithCurvature state) {
+            public double getMaxVelocity(Pose2dWithMotion state) {
                 return Double.POSITIVE_INFINITY;
             }
 
             @Override
-            public MinMaxAcceleration getMinMaxAcceleration(PoseWithCurvature state,
+            public MinMaxAcceleration getMinMaxAcceleration(Pose2dWithMotion state,
                     double velocity) {
                 return new TimingConstraint.MinMaxAcceleration(-10.0, 10.0 / velocity);
             }

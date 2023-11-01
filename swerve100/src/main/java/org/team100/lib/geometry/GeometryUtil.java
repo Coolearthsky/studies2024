@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.spline.PoseWithCurvature;
 
 public class GeometryUtil {
@@ -163,6 +164,10 @@ public class GeometryUtil {
 
     public static Pose2d mirror(Pose2d p) {
         return new Pose2d(new Translation2d(p.getTranslation().getX(), -p.getTranslation().getY()), p.getRotation().unaryMinus());
+    }
+
+    public static Twist2d toTwist2d(ChassisSpeeds x) {
+        return new Twist2d(x.vxMetersPerSecond, x.vyMetersPerSecond, x.omegaRadiansPerSecond);
     }
 
 }

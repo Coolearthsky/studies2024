@@ -49,6 +49,7 @@ import org.team100.lib.motion.drivetrain.kinematics.FrameTransform;
 import org.team100.lib.motion.drivetrain.kinematics.SwerveDriveKinematicsFactory;
 import org.team100.lib.sensors.RedundantGyro;
 import org.team100.lib.sensors.RedundantGyroInterface;
+import org.team100.lib.swerve.SwerveKinematicLimits;
 import org.team100.lib.telemetry.Telemetry;
 import org.team100.lib.trajectory.DrawCircle;
 import org.team100.lib.trajectory.FancyTrajectory;
@@ -58,6 +59,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -100,6 +102,9 @@ public class RobotContainer {
     private final SwerveDriveSubsystem m_robotDrive;
     private final SwerveModuleCollectionInterface m_modules;
     private final SwerveDriveKinematics m_kinematics;
+    // TODO replace with SpeedLimits.
+    private final SwerveKinematicLimits m_kinematicLimits;
+
     private final FrameTransform m_frameTransform;
     private final ManipulatorInterface manipulator;
     private final ArmInterface m_arm;
@@ -130,6 +135,13 @@ public class RobotContainer {
 
         SpeedLimits speedLimits = SpeedLimitsFactory.get(identity, false);
         m_kinematics = SwerveDriveKinematicsFactory.get(identity);
+
+        m_kinematicLimits = new SwerveKinematicLimits();
+        // TODO: fix these limits
+        m_kinematicLimits.kMaxDriveVelocity = 4;
+        m_kinematicLimits.kMaxDriveAcceleration = 2;
+        m_kinematicLimits.kMaxSteeringVelocity = Units.degreesToRadians(750.0);
+    
 
         VeeringCorrection veering = new VeeringCorrection(m_heading::getHeadingRateNWU);
 
@@ -253,7 +265,7 @@ public class RobotContainer {
         control.oscillate(new ArmTrajectory(ArmPosition.SUB, m_arm, true));
         // control.armSafeSequential(armSafeWaypoint, armSafe);
         // control.armMid(new ArmTrajectory(ArmPosition.LOW, armController));
-        control.driveWithFancyTrajec(new FancyTrajectory(m_robotDrive));
+        control.driveWithFancyTrajec(new FancyTrajectory(m_kinematics, m_kinematicLimits, m_robotDrive));
 
         //////////////////////////
         // MISC COMMANDS

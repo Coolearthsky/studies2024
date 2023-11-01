@@ -5,14 +5,16 @@ import java.util.List;
 import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.motion.drivetrain.SwerveDriveSubsystem;
 import org.team100.lib.planners.DriveMotionPlanner;
-import org.team100.lib.planners.DriveMotionPlanner.FollowerType;
+import org.team100.lib.swerve.SwerveKinematicLimits;
 import org.team100.lib.telemetry.Telemetry;
 import org.team100.lib.timing.CentripetalAccelerationConstraint;
 import org.team100.lib.timing.TimingConstraint;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -22,13 +24,22 @@ public class FancyTrajectory extends Command {
     private static final double kMaxVoltage = 9.0;
 
     private final Telemetry t = Telemetry.get();
+
     private final SwerveDriveSubsystem m_robotDrive;
     private final DriveMotionPlanner mMotionPlanner;
+    // private final SwerveDriveKinematics m_kinematics;
+    // private final SwerveKinematicLimits m_limits;
 
-    public FancyTrajectory(SwerveDriveSubsystem robotDrive) {
+    public FancyTrajectory(
+            SwerveDriveKinematics kinematics,
+            SwerveKinematicLimits limits,
+            SwerveDriveSubsystem robotDrive) {
+        // m_kinematics = kinematics;
+        // m_limits = limits;
         m_robotDrive = robotDrive;
         // TODO: try the other follower types.
-        mMotionPlanner = new DriveMotionPlanner(FollowerType.PID);
+        // TODO: move this constructor out of here
+        mMotionPlanner = new DriveMotionPlanner(kinematics, limits);
         addRequirements(m_robotDrive);
     }
 
@@ -52,6 +63,7 @@ public class FancyTrajectory extends Command {
         // there's a bug in here; it doesn't use the constraints, nor the voltage.
         Trajectory trajectory = mMotionPlanner
                 .generateTrajectory(
+                        false,
                         waypointsM,
                         headings,
                         constraints,
@@ -79,7 +91,20 @@ public class FancyTrajectory extends Command {
                 m_robotDrive.getPose().getY(),
                 m_robotDrive.getPose().getRotation());
 
-        ChassisSpeeds output = mMotionPlanner.update(now, currentPose);
+        // *****************************************************
+        // *****************************************************
+        //
+        // TODO: measure velocity!
+        // SwerveDriveOdometry used to take both positions and velocities; use module
+        // velocities to determine chassis speed, and turn that into a twist.
+        //
+        // *****************************************************
+        // *****************************************************
+        // *****************************************************
+
+        Twist2d velocity = new Twist2d(); // <<< FIX ME
+
+        ChassisSpeeds output = mMotionPlanner.update(now, currentPose, velocity);
         m_robotDrive.setChassisSpeeds(output);
     }
 

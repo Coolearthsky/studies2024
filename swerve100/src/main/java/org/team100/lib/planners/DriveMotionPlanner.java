@@ -38,6 +38,7 @@ public class DriveMotionPlanner {
     private static final double kMaxDTheta = Math.toRadians(1.0);
 
     public static final double kPathLookaheadTime = 0.25;
+    public static final double kPathMinLookaheadDistance = 12.0;
     public static final double kAdaptivePathMinLookaheadDistance = 6.0;
     public static final double kAdaptivePathMaxLookaheadDistance = 24.0;
     public static final double kAdaptiveErrorLookaheadCoefficient = 0.01;
@@ -152,7 +153,7 @@ public class DriveMotionPlanner {
             waypoints_maybe_flipped = new ArrayList<>(waypoints.size());
             headings_maybe_flipped = new ArrayList<>(headings.size());
             for (int i = 0; i < waypoints.size(); ++i) {
-                waypoints_maybe_flipped.add(waypoints.get(i).transformBy(flip));
+                waypoints_maybe_flipped.add(GeometryUtil.transformBy(waypoints.get(i), flip));
                 headings_maybe_flipped.add(headings.get(i).rotateBy(flip.getRotation()));
             }
         }
@@ -164,7 +165,7 @@ public class DriveMotionPlanner {
         if (reversed) {
             List<Pose2dWithMotion> flipped_points = new ArrayList<>(trajectory.length());
             for (int i = 0; i < trajectory.length(); ++i) {
-                flipped_points.add(new Pose2dWithMotion(trajectory.getPoint(i).state().getPose().transformBy(flip), -trajectory
+                flipped_points.add(new Pose2dWithMotion(GeometryUtil.transformBy(trajectory.getPoint(i).state().getPose(), flip), -trajectory
                         .getPoint(i).state().getCurvature(), trajectory.getPoint(i).state().getDCurvatureDs()));
             }
             trajectory = new Path(flipped_points);
@@ -200,7 +201,7 @@ public class DriveMotionPlanner {
 
         // Convert from current velocity into course.
         Optional<Rotation2d> maybe_field_to_course = Optional.empty();
-        Optional<Rotation2d> maybe_robot_to_course = currentVelocity.getCourse();
+        Optional<Rotation2d> maybe_robot_to_course = GeometryUtil.getCourse(currentVelocity);
         if (maybe_robot_to_course.isPresent()) {
             // Course is robot_to_course, we want to be field_to_course.
             // field_to_course = field_to_robot * robot_to_course
@@ -233,7 +234,7 @@ public class DriveMotionPlanner {
         // Rotate error to be aligned to current course.
         // Error is in robot (heading) frame. Need to rotate it to be in course frame.
         // course_to_error = robot_to_course.inverse() * robot_to_error
-        Translation2d linear_error_course_relative = GeometryUtil.fromRotation(robot_to_course).transformBy(mError).getTranslation();
+        Translation2d linear_error_course_relative = GeometryUtil.transformBy(GeometryUtil.fromRotation(robot_to_course), mError).getTranslation();
 
         // Compute time-varying gain parameter.
         final double k = 2.0 * kZeta * Math.sqrt(kBeta * goal_linear_velocity * goal_linear_velocity + goal_angular_velocity * goal_angular_velocity);
@@ -252,11 +253,11 @@ public class DriveMotionPlanner {
         Twist2d adjusted_course_relative_velocity = new Twist2d(adjusted_linear_velocity, 0.0, adjusted_angular_velocity - heading_rate);
         // See where that takes us in one dt.
         final double kNominalDt = kLooperDt;
-        Pose2d adjusted_course_to_goal = Pose2d.exp(adjusted_course_relative_velocity.scaled(kNominalDt));
+        Pose2d adjusted_course_to_goal = new Pose2d().exp(GeometryUtil.scale(adjusted_course_relative_velocity, kNominalDt));
 
         // Now rotate to be robot-relative.
         // robot_to_goal = robot_to_course * course_to_goal
-        Translation2d adjusted_robot_to_goal = GeometryUtil.fromRotation(robot_to_course).transformBy(adjusted_course_to_goal).getTranslation().scale(1.0 / kNominalDt);
+        Translation2d adjusted_robot_to_goal = GeometryUtil.transformBy(GeometryUtil.fromRotation(robot_to_course), adjusted_course_to_goal).getTranslation().times(1.0 / kNominalDt);
 
         return new ChassisSpeeds(
             adjusted_robot_to_goal.getX(),
@@ -287,7 +288,7 @@ public class DriveMotionPlanner {
         double lookahead_time = kPathLookaheadTime;
         final double kLookaheadSearchDt = 0.01;
         TimedPose lookahead_state = mCurrentTrajectory.preview(lookahead_time).state();
-        double actual_lookahead_distance = GeometryUtil.distance(mSetpoint.state(), lookahead_state.state());
+        double actual_lookahead_distance = mSetpoint.state().distance(lookahead_state.state());
         double adaptive_lookahead_distance = mSpeedLookahead.getLookaheadForSpeed(mSetpoint.velocity());
         //Find the Point on the Trajectory that is Lookahead Distance Away
         while (actual_lookahead_distance < adaptive_lookahead_distance &&
@@ -301,19 +302,18 @@ public class DriveMotionPlanner {
         if (actual_lookahead_distance < adaptive_lookahead_distance) {
             lookahead_state = new TimedPose(
                 new Pose2dWithMotion(
-                    lookahead_state.state()
-                    .getPose().transformBy(Pose2d.fromTranslation(new Translation2d(
-                            (mIsReversed ? -1.0 : 1.0) * (Constants.kPathMinLookaheadDistance -
+                   GeometryUtil.transformBy(lookahead_state.state()
+                    .getPose(), GeometryUtil.fromTranslation(new Translation2d(
+                            (mIsReversed ? -1.0 : 1.0) * (kPathMinLookaheadDistance -
                                     actual_lookahead_distance), 0.0))), 0.0), lookahead_state.t()
                     , lookahead_state.velocity(), lookahead_state.acceleration());
         }
 
         //Find the vector between robot's current position and the lookahead state
-        Translation2d lookaheadTranslation = new Translation2d(current_state.getTranslation(),
-                lookahead_state.state().getTranslation());
+        Translation2d lookaheadTranslation = lookahead_state.state().getTranslation().minus(current_state.getTranslation());
 
         //Set the steering direction as the direction of the vector
-        Rotation2d steeringDirection = lookaheadTranslation.direction();
+        Rotation2d steeringDirection = lookaheadTranslation.getAngle();
 
         //Convert from field-relative steering direction to robot-relative
         steeringDirection = steeringDirection.rotateBy(GeometryUtil.inverse(current_state).getRotation());
@@ -359,7 +359,7 @@ public class DriveMotionPlanner {
         if (!isDone()) {
             // Compute error in robot frame
             mPrevHeadingError = mError.getRotation();
-            mError = GeometryUtil.inverse(current_state).transformBy(mSetpoint.state().getPose());
+            mError = GeometryUtil.transformBy(GeometryUtil.inverse(current_state), mSetpoint.state().getPose());
 
             if (mFollowerType == FollowerType.FEEDFORWARD_ONLY) {
                 sample_point = mCurrentTrajectory.advance(mDt);
@@ -369,9 +369,9 @@ public class DriveMotionPlanner {
                 final double velocity_m = mSetpoint.velocity();
                 // Field relative
                 var course = mSetpoint.state().getCourse();
-                Rotation2d motion_direction = course.isPresent() ? course.get() : Rotation2d.identity();
+                Rotation2d motion_direction = course.isPresent() ? course.get() : GeometryUtil.kRotationIdentity;
                 // Adjust course by ACTUAL heading rather than planned to decouple heading and translation errors.
-                motion_direction = current_state.getRotation().inverse().rotateBy(motion_direction);
+                motion_direction = current_state.getRotation().unaryMinus().rotateBy(motion_direction);
 
                 mOutput = new ChassisSpeeds(
                         motion_direction.getCos() * velocity_m,
@@ -391,9 +391,9 @@ public class DriveMotionPlanner {
                 final double velocity_m = mSetpoint.velocity();
                 // Field relative
                 var course = mSetpoint.state().getCourse();
-                Rotation2d motion_direction = course.isPresent() ? course.get() : Rotation2d.identity();
+                Rotation2d motion_direction = course.isPresent() ? course.get() : GeometryUtil.kRotationIdentity;
                 // Adjust course by ACTUAL heading rather than planned to decouple heading and translation errors.
-                motion_direction = current_state.getRotation().inverse().rotateBy(motion_direction);
+                motion_direction = current_state.getRotation().unaryMinus().rotateBy(motion_direction);
 
                 var chassis_speeds = new ChassisSpeeds(
                         motion_direction.getCos() * velocity_m,
@@ -446,7 +446,7 @@ public class DriveMotionPlanner {
     }
 
     private double distance(Pose2d current_state, double additional_progress){
-        return mCurrentTrajectory.preview(additional_progress).state().state().getPose().distance(current_state);
+        return GeometryUtil.distance(mCurrentTrajectory.preview(additional_progress).state().state().getPose(), current_state);
     }
 
     public synchronized TimedPose getSetpoint() {

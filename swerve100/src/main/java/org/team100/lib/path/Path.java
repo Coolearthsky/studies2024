@@ -13,6 +13,10 @@ import org.team100.lib.geometry.Pose2dWithMotion;
 public class Path {
     protected final List<PathPoint> points_;
 
+    public Path() {
+        points_ = new ArrayList<>();
+    }
+
     public Path(final List<Pose2dWithMotion> states) {
         points_ = new ArrayList<>(states.size());
         for (int i = 0; i < states.size(); ++i) {

@@ -13,6 +13,10 @@ import org.team100.lib.timing.TimedPose;
 public class Trajectory {
     protected final List<TrajectoryPoint> points_;
 
+    public Trajectory() {
+        points_ = new ArrayList<>();
+    }
+
     public Trajectory(final List<TimedPose> states) {
         points_ = new ArrayList<>(states.size());
         for (int i = 0; i < states.size(); ++i) {
