@@ -1,7 +1,6 @@
 package org.team100.lib.trajectory;
 
 import org.team100.lib.timing.TimedPose;
-import org.team100.lib.timing.TimedRotation;
 
 /** 
  * Allows iterating over the schedule of a trajectory. 
@@ -41,10 +40,6 @@ public class TrajectoryTimeIterator {
 
     public TimedPose getState() {
         return getSample().state();
-    }
-
-    public TimedRotation getHeading() {
-        return getSample().heading();
     }
 
     public TrajectorySamplePoint advance(double additional_progress) {

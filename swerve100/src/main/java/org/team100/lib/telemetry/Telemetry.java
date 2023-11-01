@@ -2,10 +2,11 @@ package org.team100.lib.telemetry;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
+import org.team100.lib.geometry.Pose2dWithMotion;
 import org.team100.lib.timing.TimedPose;
-import org.team100.lib.timing.TimedRotation;
 import org.team100.lib.trajectory.TrajectorySamplePoint;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -103,8 +104,7 @@ public class Telemetry {
     }
 
     public void log(String key, TrajectorySamplePoint val) {
-        log(key + "/posestate", val.state());
-        log(key + "/heading", val.heading());
+        log(key + "/state", val.state());
     }
 
     public void log(String key, TimedPose val) {
@@ -118,8 +118,13 @@ public class Telemetry {
         log(key + "/pose", val.poseMeters);
     }
 
-    public void log(String key, TimedRotation val) {
-        log(key + "/rotationstate", val.state());
+    public void log(String key, Pose2dWithMotion val) {
+        log(key + "/pose", val.getPose());
+        Optional<Rotation2d> course = val.getCourse();
+        if (course.isPresent()) {
+            log(key + "/course", course.get());
+        }
+
     }
 
     public void log(String key, Twist2d val) {

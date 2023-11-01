@@ -2,6 +2,7 @@ package org.team100.lib.trajectory;
 
 /**
  * Allows sampling a trajectory by its schedule.
+ * Derived from 254 TimedView.
  */
 public class TrajectoryTimeSampler {
     protected final Trajectory trajectory_;
@@ -28,24 +29,22 @@ public class TrajectoryTimeSampler {
     public TrajectorySamplePoint sample(double t) {
         if (t >= end_t_) {
             TrajectoryPoint point = trajectory_.getPoint(trajectory_.length() - 1);
-            return new TrajectorySamplePoint(point.state(), point.heading(), point.index(), point.index());
+            return new TrajectorySamplePoint(point.state(), point.index(), point.index());
         }
         if (t <= start_t_) {
             TrajectoryPoint point = trajectory_.getPoint(0);
-            return new TrajectorySamplePoint(point.state(), point.heading(), point.index(), point.index());
+            return new TrajectorySamplePoint(point.state(), point.index(), point.index());
         }
         for (int i = 1; i < trajectory_.length(); ++i) {
             final TrajectoryPoint point = trajectory_.getPoint(i);
             if (point.state().t() >= t) {
                 final TrajectoryPoint prev_s = trajectory_.getPoint(i - 1);
                 if (Math.abs(point.state().t() - prev_s.state().t()) <= 1e-12) {
-                    return new TrajectorySamplePoint(point.state(), point.heading(), point.index(), point.index());
+                    return new TrajectorySamplePoint(point.state(), point.index(), point.index());
                 }
                 return new TrajectorySamplePoint(
                         prev_s.state().interpolate2(point.state(),
                                 (t - prev_s.state().t()) / (point.state().t() - prev_s.state().t())),
-                        prev_s.heading().interpolate2(point.heading(),
-                                (t - prev_s.heading().t()) / (point.heading().t() - prev_s.heading().t())),
                         i - 1, i);
             }
         }

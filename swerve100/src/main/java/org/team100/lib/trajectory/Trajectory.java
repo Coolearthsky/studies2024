@@ -4,18 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.team100.lib.timing.TimedPose;
-import org.team100.lib.timing.TimedRotation;
 
 /**
  * Represents a 2d path with heading and a schedule.
+ * 
+ * As of 2023 a trajectory is not two things (path and heading) it's one thing, each path point includes heading.
  */
 public class Trajectory {
     protected final List<TrajectoryPoint> points_;
 
-    public Trajectory(final List<TimedPose> states, final List<TimedRotation> headings) {
+    public Trajectory(final List<TimedPose> states) {
         points_ = new ArrayList<>(states.size());
         for (int i = 0; i < states.size(); ++i) {
-            points_.add(new TrajectoryPoint(states.get(i), headings.get(i), i));
+            points_.add(new TrajectoryPoint(states.get(i), i));
         }
     }
 
@@ -42,8 +43,6 @@ public class Trajectory {
             builder.append(i);
             builder.append(": state: ");
             builder.append(getPoint(i).state());
-            builder.append(": heading ");
-            builder.append(getPoint(i).heading());
             builder.append(System.lineSeparator());
         }
         return builder.toString();

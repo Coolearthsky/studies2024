@@ -1,30 +1,30 @@
 package org.team100.lib.timing;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.spline.PoseWithCurvature;
 
 import java.text.DecimalFormat;
 
-import org.team100.lib.geometry.GeometryUtil;
+import org.team100.lib.geometry.Pose2dWithMotion;
 
+/** Timed Pose now includes the heading part, timed rotation is gone. */
 public class TimedPose {
-    private final PoseWithCurvature state_;
+    private final Pose2dWithMotion state_;
     protected double timeS; // Time we achieve this state.
     protected double velocityM_S; // ds/dt
     protected double accelM_S_S; // d^2s/dt^2
 
-    public TimedPose(final PoseWithCurvature state) {
+    public TimedPose(final Pose2dWithMotion state) {
         this(state, 0, 0, 0);
     }
 
-    public TimedPose(final PoseWithCurvature state, double t, double velocity, double acceleration) {
+    public TimedPose(final Pose2dWithMotion state, double t, double velocity, double acceleration) {
         state_ = state;
         timeS = t;
         velocityM_S = velocity;
         accelM_S_S = acceleration;
     }
 
-    public PoseWithCurvature state() {
+    public Pose2dWithMotion state() {
         return state_;
     }
 
@@ -55,8 +55,8 @@ public class TimedPose {
     @Override
     public String toString() {
         final DecimalFormat fmt = new DecimalFormat("#0.000");
-        return state().poseMeters.toString()
-                + ", curve: " + fmt.format(state().curvatureRadPerMeter)
+        return state().getPose().toString()
+                + ", curve: " + fmt.format(state().getCurvature())
                 + ", time: " + fmt.format(t())
                 + ", vel: " + fmt.format(velocity())
                 + ", acc: " + fmt.format(acceleration());
@@ -72,19 +72,21 @@ public class TimedPose {
         final double new_v = velocity() + acceleration() * delta_t;
         final double new_s = (reversing ? -1.0 : 1.0)
                 * (velocity() * delta_t + .5 * acceleration() * delta_t * delta_t);
-        // System.out.println("x: " + x + " , new_t: " + new_t + ", new_s: " + new_s + "
-        // , distance: " + state()
-        // .distance(other.state()));
+
+        double interpolant = new_s / state().distance(other.state());
+        if (Double.isNaN(interpolant)) {
+            interpolant = 1.0;
+        }
+
         return new TimedPose(
-                GeometryUtil.interpolate2(state(), other.state(),
-                        new_s / GeometryUtil.distance(state(), other.state())),
+                state().interpolate(other.state(), interpolant),
                 new_t,
                 new_v,
                 acceleration());
     }
 
     public double distance(TimedPose other) {
-        return GeometryUtil.distance(state(), other.state());
+        return state().distance(other.state());
     }
 
     @Override
@@ -94,7 +96,7 @@ public class TimedPose {
             return false;
         }
         TimedPose ts = (TimedPose) other;
-        boolean stateEqual = GeometryUtil.poseWithCurvatureEquals(state(), ts.state());
+        boolean stateEqual = state().equals(ts.state());
         if (!stateEqual) {
             System.out.println("state not equal");
             return false;
