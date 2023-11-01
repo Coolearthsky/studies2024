@@ -32,4 +32,12 @@ public class TrajectorySamplePoint {
     public int index_ceil() {
         return index_ceil_;
     }
+
+    @Override
+    public String toString() {
+        return "TrajectorySamplePoint [state_=" + state_
+                + ", heading_=" + heading_
+                + ", index_floor_=" + index_floor_
+                + ", index_ceil_=" + index_ceil_ + "]";
+    }
 }

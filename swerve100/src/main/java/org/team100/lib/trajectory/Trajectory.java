@@ -40,8 +40,9 @@ public class Trajectory {
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < length(); ++i) {
             builder.append(i);
-            builder.append(": ");
+            builder.append(": state: ");
             builder.append(getPoint(i).state());
+            builder.append(": heading ");
             builder.append(getPoint(i).heading());
             builder.append(System.lineSeparator());
         }

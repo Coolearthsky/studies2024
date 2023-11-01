@@ -1,10 +1,13 @@
 package org.team100.lib.trajectory;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.planners.DriveMotionPlanner;
+import org.team100.lib.planners.DriveMotionPlanner.FollowerType;
 import org.team100.lib.timing.CentripetalAccelerationConstraint;
 import org.team100.lib.timing.TimedPose;
 import org.team100.lib.timing.TimedRotation;
@@ -14,10 +17,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.Timer;
 
 class FancyTrajectoryTest {
-    private static final double kDelta = 0.001;
 
     /**
      * This is derived from one of the auton trajectories in
@@ -44,7 +45,7 @@ class FancyTrajectoryTest {
                 new CentripetalAccelerationConstraint(60));
 
         // note there are static constraints in here.
-        DriveMotionPlanner mMotionPlanner = new DriveMotionPlanner();
+        DriveMotionPlanner mMotionPlanner = new DriveMotionPlanner(FollowerType.PID);
         double start_vel = 0;
         double end_vel = 0;
         // there's a bug in here; it doesn't use the constraints, nor the voltage.
@@ -59,7 +60,7 @@ class FancyTrajectoryTest {
                 kMaxVoltage);
         System.out.println(trajectory);
         System.out.println("TRAJECTORY LENGTH: " + trajectory.length());
-        // assertEquals(10, trajectory.length());
+        assertEquals(10, trajectory.length());
 
         TrajectoryTimeSampler view = new TrajectoryTimeSampler(trajectory);
 
@@ -67,37 +68,64 @@ class FancyTrajectoryTest {
 
         mMotionPlanner.setTrajectory(iter);
 
-        // in the drive loop, this happens:
-        Pose2d actualPose = GeometryUtil.kPose2dIdentity;
-        double fpgatime = 0;
-        final double now = Timer.getFPGATimestamp();
-        // this stuff doesn't work, and i don't want to break the build so i'm
-        // commenting it out.
+        // this is a series of perfect trajectory following states,
+        // based on the trajectory itself.
 
-        Translation2d translation2d = new Translation2d(1, 1);
-        Rotation2d rotation2d = Rotation2d.fromDegrees(90);
+        {
+            ChassisSpeeds output = mMotionPlanner.update(0, 
+            new Pose2d(new Translation2d(0, 0), Rotation2d.fromRadians(1.57079632679)));
+            assertEquals(0, output.vxMetersPerSecond, 0.001);
+            assertEquals(0, output.vyMetersPerSecond, 0.001);
+            assertEquals(0.083, output.omegaRadiansPerSecond, 0.001);
+        }
 
-        actualPose = new Pose2d(translation2d, rotation2d);
-
-        System.out.println("POSE::::::::::::::::::::::::::::" + actualPose);
-
-        ChassisSpeeds output = mMotionPlanner.update(now, actualPose);
-
-        Translation2d translational_error = mMotionPlanner.getTranslationalErrorM();
-        Rotation2d heading_error = mMotionPlanner.getHeadingError();
-        TimedPose path_setpoint = mMotionPlanner.getPathSetpoint();
-        TimedRotation heading_setpoint = mMotionPlanner.getHeadingSetpoint();
-
-        // the DriveMotionPlanner has two ways to follow the trajectory: it could just
-        // follow it,
-        // or it could look into the future trajectory states, and chase those, using
-        // "pure pursuit."
-        // the "future" is pretty far away, 0.25 seconds. I guess the difference is that
-        // the "pure pursuit"
-        // model corects errors in the direction of the future state, whereas the pure
-        // tracking model
-        // aims for the *current* state, which seems worse.
-
+        {
+            ChassisSpeeds output = mMotionPlanner.update(4.0,
+                    new Pose2d(new Translation2d(0.05, -2.0), Rotation2d.fromRadians(-1.5)));
+            assertEquals(0, output.vxMetersPerSecond, 0.001);
+            assertEquals(0, output.vyMetersPerSecond, 0.001);
+            assertEquals(0, output.omegaRadiansPerSecond, 0.001);
+            Translation2d translational_error = mMotionPlanner.getTranslationalErrorM();
+            assertEquals(0, translational_error.getX(), 0.001);
+            assertEquals(0, translational_error.getY(), 0.001);
+            Rotation2d heading_error = mMotionPlanner.getHeadingError();
+            assertEquals(0, heading_error.getRadians(), 0.001);
+            TimedPose path_setpoint = mMotionPlanner.getPathSetpoint();
+            assertEquals(0, path_setpoint.state().poseMeters.getX(), 0.001);
+            assertEquals(0, path_setpoint.state().poseMeters.getY(), 0.001);
+            assertEquals(0, path_setpoint.state().poseMeters.getRotation().getRadians(), 0.001);
+            assertEquals(0, path_setpoint.t(), 0.001);
+            assertEquals(0, path_setpoint.velocity(), 0.001);
+            assertEquals(0, path_setpoint.acceleration(), 0.001);
+            TimedRotation heading_setpoint = mMotionPlanner.getHeadingSetpoint();
+            assertEquals(0, heading_setpoint.state().getRadians(), 0.001);
+            assertEquals(0, heading_setpoint.t(), 0.001);
+            assertEquals(0, heading_setpoint.velocity(), 0.001);
+            assertEquals(0, heading_setpoint.acceleration(), 0.001);
+        }
+        {
+            ChassisSpeeds output = mMotionPlanner.update(6.0,
+                    new Pose2d(new Translation2d(0.34, -3.98), Rotation2d.fromRadians(-1.33)));
+            assertEquals(0, output.vxMetersPerSecond, 0.001);
+            assertEquals(0, output.vyMetersPerSecond, 0.001);
+            assertEquals(0, output.omegaRadiansPerSecond, 0.001);
+            Translation2d translational_error = mMotionPlanner.getTranslationalErrorM();
+            assertEquals(0, translational_error.getX(), 0.001);
+            assertEquals(0, translational_error.getY(), 0.001);
+            Rotation2d heading_error = mMotionPlanner.getHeadingError();
+            assertEquals(0, heading_error.getRadians(), 0.001);
+            TimedPose path_setpoint = mMotionPlanner.getPathSetpoint();
+            assertEquals(0, path_setpoint.state().poseMeters.getX(), 0.001);
+            assertEquals(0, path_setpoint.state().poseMeters.getY(), 0.001);
+            assertEquals(0, path_setpoint.state().poseMeters.getRotation().getRadians(), 0.001);
+            assertEquals(0, path_setpoint.t(), 0.001);
+            assertEquals(0, path_setpoint.velocity(), 0.001);
+            assertEquals(0, path_setpoint.acceleration(), 0.001);
+            TimedRotation heading_setpoint = mMotionPlanner.getHeadingSetpoint();
+            assertEquals(0, heading_setpoint.state().getRadians(), 0.001);
+            assertEquals(0, heading_setpoint.t(), 0.001);
+            assertEquals(0, heading_setpoint.velocity(), 0.001);
+            assertEquals(0, heading_setpoint.acceleration(), 0.001);
+        }
     }
-
 }

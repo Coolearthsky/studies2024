@@ -8,13 +8,13 @@ import java.text.DecimalFormat;
 import org.team100.lib.geometry.GeometryUtil;
 
 public class TimedPose {
-    protected final PoseWithCurvature state_;
+    private final PoseWithCurvature state_;
     protected double timeS; // Time we achieve this state.
     protected double velocityM_S; // ds/dt
     protected double accelM_S_S; // d^2s/dt^2
 
     public TimedPose(final PoseWithCurvature state) {
-        state_ = state;
+        this(state, 0, 0, 0);
     }
 
     public TimedPose(final PoseWithCurvature state, double t, double velocity, double acceleration) {
@@ -55,8 +55,11 @@ public class TimedPose {
     @Override
     public String toString() {
         final DecimalFormat fmt = new DecimalFormat("#0.000");
-        return state().toString() + ", t: " + fmt.format(t()) + ", v: " + fmt.format(velocity()) + ", a: "
-                + fmt.format(acceleration());
+        return state().poseMeters.toString()
+                + ", curve: " + fmt.format(state().curvatureRadPerMeter)
+                + ", time: " + fmt.format(t())
+                + ", vel: " + fmt.format(velocity())
+                + ", acc: " + fmt.format(acceleration());
     }
 
     public TimedPose interpolate2(TimedPose other, double x) {
@@ -79,11 +82,6 @@ public class TimedPose {
                 new_v,
                 acceleration());
     }
-
-    // @Override
-    // public TimedState<S> add(TimedState<S> other) {
-    // return new TimedState<>(this.state().add(other.state()));
-    // }
 
     public double distance(TimedPose other) {
         return GeometryUtil.distance(state(), other.state());

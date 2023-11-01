@@ -158,8 +158,6 @@ public class DriveToWaypoint3 extends Command {
 
         addRequirements(m_swerve);
 
-        // SmartDashboard.putData("Drive To Waypoint", this);
-
         translationConfig = new TrajectoryConfig(2, 2).setKinematics(kinematics);
         addRequirements(drivetrain);
     }

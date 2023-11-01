@@ -5,6 +5,7 @@ import java.util.List;
 import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.motion.drivetrain.SwerveDriveSubsystem;
 import org.team100.lib.planners.DriveMotionPlanner;
+import org.team100.lib.planners.DriveMotionPlanner.FollowerType;
 import org.team100.lib.telemetry.Telemetry;
 import org.team100.lib.timing.CentripetalAccelerationConstraint;
 import org.team100.lib.timing.TimingConstraint;
@@ -26,7 +27,8 @@ public class FancyTrajectory extends Command {
 
     public FancyTrajectory(SwerveDriveSubsystem robotDrive) {
         m_robotDrive = robotDrive;
-        mMotionPlanner = new DriveMotionPlanner();
+        // TODO: try the other follower types.
+        mMotionPlanner = new DriveMotionPlanner(FollowerType.PID);
         addRequirements(m_robotDrive);
     }
 
@@ -78,13 +80,7 @@ public class FancyTrajectory extends Command {
                 m_robotDrive.getPose().getRotation());
 
         ChassisSpeeds output = mMotionPlanner.update(now, currentPose);
-
-        t.log("/Fancy TrajectoryPose Error X", mMotionPlanner.getTranslationalErrorM().getX());
-        t.log("/Fancy Trajectory/Pose Error Y", mMotionPlanner.getTranslationalErrorM().getY());
-        t.log("/Fancy Trajectory/Velocity Setpoint", mMotionPlanner.getVelocitySetpoint());
-
         m_robotDrive.setChassisSpeeds(output);
-
     }
 
     @Override
