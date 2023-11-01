@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.spline.PoseWithCurvature;
 import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
@@ -125,6 +126,13 @@ public class Telemetry {
         log(key + "/dx", val.dx);
         log(key + "/dy", val.dy);
         log(key + "/dtheta", val.dtheta);
+    }
+
+    public void log(String key, ChassisSpeeds val) {
+        log(key + "/vx m_s", val.vxMetersPerSecond);
+        log(key + "/vy m_s", val.vyMetersPerSecond);
+        log(key + "/omega rad_s", val.omegaRadiansPerSecond);
+
     }
 
     private <T extends Publisher> T pub(String key, Function<String, Publisher> fn, Class<T> pubClass) {

@@ -76,7 +76,7 @@ class FancyTrajectoryTest {
             new Pose2d(new Translation2d(0, 0), Rotation2d.fromRadians(1.57079632679)));
             assertEquals(0, output.vxMetersPerSecond, 0.001);
             assertEquals(0, output.vyMetersPerSecond, 0.001);
-            assertEquals(0.083, output.omegaRadiansPerSecond, 0.001);
+            assertEquals(0, output.omegaRadiansPerSecond, 0.001);
         }
 
         {
@@ -97,11 +97,8 @@ class FancyTrajectoryTest {
             assertEquals(0, path_setpoint.t(), 0.001);
             assertEquals(0, path_setpoint.velocity(), 0.001);
             assertEquals(0, path_setpoint.acceleration(), 0.001);
-            TimedRotation heading_setpoint = mMotionPlanner.getHeadingSetpoint();
-            assertEquals(0, heading_setpoint.state().getRadians(), 0.001);
-            assertEquals(0, heading_setpoint.t(), 0.001);
-            assertEquals(0, heading_setpoint.velocity(), 0.001);
-            assertEquals(0, heading_setpoint.acceleration(), 0.001);
+            Rotation2d heading_setpoint = mMotionPlanner.getHeadingSetpoint();
+            assertEquals(0, heading_setpoint.getRadians(), 0.001);
         }
         {
             ChassisSpeeds output = mMotionPlanner.update(6.0,
@@ -121,11 +118,8 @@ class FancyTrajectoryTest {
             assertEquals(0, path_setpoint.t(), 0.001);
             assertEquals(0, path_setpoint.velocity(), 0.001);
             assertEquals(0, path_setpoint.acceleration(), 0.001);
-            TimedRotation heading_setpoint = mMotionPlanner.getHeadingSetpoint();
-            assertEquals(0, heading_setpoint.state().getRadians(), 0.001);
-            assertEquals(0, heading_setpoint.t(), 0.001);
-            assertEquals(0, heading_setpoint.velocity(), 0.001);
-            assertEquals(0, heading_setpoint.acceleration(), 0.001);
+            Rotation2d heading_setpoint = mMotionPlanner.getHeadingSetpoint();
+            assertEquals(0, heading_setpoint.getRadians(), 0.001);
         }
     }
 }

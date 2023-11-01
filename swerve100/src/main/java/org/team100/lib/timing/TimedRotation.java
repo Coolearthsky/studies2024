@@ -14,7 +14,7 @@ public class TimedRotation {
     protected double acceleration_; // d^2s/dt^2
 
     public TimedRotation(final Rotation2d state) {
-        state_ = state;
+        this(state, 0, 0, 0);
     }
 
     public TimedRotation(final Rotation2d state, double t, double velocity, double acceleration) {

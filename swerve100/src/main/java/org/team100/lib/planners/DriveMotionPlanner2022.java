@@ -30,7 +30,11 @@ import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.spline.PoseWithCurvature;
 
-public class DriveMotionPlanner {
+/**
+ * This is derived from 254's 2022 version.
+ * It seems unfinished.  See the 2023 version.
+ */
+public class DriveMotionPlanner2022 {
     public enum FollowerType {
         FEEDFORWARD_ONLY,
         PID,
@@ -85,7 +89,7 @@ public class DriveMotionPlanner {
 
     Lookahead mSpeedLookahead = null;
 
-    public DriveMotionPlanner(FollowerType type) {
+    public DriveMotionPlanner2022(FollowerType type) {
         mFollowerType = type;
         mModel = new SwerveDrive(
                 0.0942 / 2,
