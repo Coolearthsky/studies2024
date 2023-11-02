@@ -3,7 +3,6 @@ package org.team100.frc2023.paths;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -15,7 +14,7 @@ import org.team100.lib.timing.TimingConstraint;
 import org.team100.lib.timing.VelocityLimitRegionConstraint;
 import org.team100.lib.trajectory.Trajectory;
 
-/** This is from 254 2023. */
+/** This is from 254 2023.  I commented out the ones that seem unused. */
 public class TrajectoryGenerator {
     private static final double kMaxAccel = 2.54;
     private static final double kMaxVoltage = 9.0;
@@ -171,18 +170,17 @@ public class TrajectoryGenerator {
             allTrajectories.add(ncpThirdScoreToBackoff);
         }
 
-        private void convertToM(List<Pose2d> waypoints, List<Rotation2d> headings) {
-            for (int i = 0; i < waypoints.size(); ++i) {
-                System.out.println("waypoints.add(new Pose2d(" + Units.inchesToMeters(waypoints.get(i).getTranslation().getX())
-                        + ", " + Units.inchesToMeters(waypoints.get(i).getTranslation().getY())
-                        + ", Rotation2d.fromDegrees(" + waypoints.get(i).getRotation().getDegrees()
-                        + ")));");
-                System.out.println("headings.add(Rotation2d.fromDegrees("
-                + headings.get(i).getDegrees()+"));");
-            }
-            System.out.println("\n\n");
-
-        }
+        // private void convertToM(List<Pose2d> waypoints, List<Rotation2d> headings) {
+        //     for (int i = 0; i < waypoints.size(); ++i) {
+        //         System.out.println("waypoints.add(new Pose2d(" + Units.inchesToMeters(waypoints.get(i).getTranslation().getX())
+        //                 + ", " + Units.inchesToMeters(waypoints.get(i).getTranslation().getY())
+        //                 + ", Rotation2d.fromDegrees(" + waypoints.get(i).getRotation().getDegrees()
+        //                 + ")));");
+        //         System.out.println("headings.add(Rotation2d.fromDegrees("
+        //         + headings.get(i).getDegrees()+"));");
+        //     }
+        //     System.out.println("\n\n");
+        // }
 
         private Trajectory getTestTrajectory() {
             List<Pose2d> waypoints = new ArrayList<>();
@@ -490,22 +488,22 @@ public class TrajectoryGenerator {
             return generate(waypoints, headings, List.of(center_outbound_charging_station_constraint), false, 0.8, 1.0);
         }
 
-        private Trajectory getRedNoTurnNCPRightScoringPositionToNCPFirstPickup() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            List<Rotation2d> headings = new ArrayList<>();
-            waypoints.add(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(0)));
-            headings.add(Rotation2d.fromDegrees(180));
-            waypoints.add(new Pose2d(92.5, 10, Rotation2d.fromDegrees(0)));
-            headings.add(Rotation2d.fromDegrees(90));
-            waypoints.add(new Pose2d(185, 25, Rotation2d.fromDegrees(0)));
-            headings.add(Rotation2d.fromDegrees(0));
-            System.out.println(new Object() {}
-                    .getClass()
-                    .getEnclosingMethod()
-                    .getName());
-            convertToM(waypoints, headings);
-            return generate(waypoints, headings, List.of(), false, 0.5, 1.0);
-        }
+        // private Trajectory getRedNoTurnNCPRightScoringPositionToNCPFirstPickup() {
+        //     List<Pose2d> waypoints = new ArrayList<>();
+        //     List<Rotation2d> headings = new ArrayList<>();
+        //     waypoints.add(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(0)));
+        //     headings.add(Rotation2d.fromDegrees(180));
+        //     waypoints.add(new Pose2d(92.5, 10, Rotation2d.fromDegrees(0)));
+        //     headings.add(Rotation2d.fromDegrees(90));
+        //     waypoints.add(new Pose2d(185, 25, Rotation2d.fromDegrees(0)));
+        //     headings.add(Rotation2d.fromDegrees(0));
+        //     System.out.println(new Object() {}
+        //             .getClass()
+        //             .getEnclosingMethod()
+        //             .getName());
+        //     convertToM(waypoints, headings);
+        //     return generate(waypoints, headings, List.of(), false, 0.5, 1.0);
+        // }
 
         private Trajectory getNCPScoringtoCubePickup() {
             List<Pose2d> waypoints = new ArrayList<>();

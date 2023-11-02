@@ -8,7 +8,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.msgpack.jackson.dataformat.MessagePackFactory;
-import org.team100.frc2023.config.Cameras2023;
+import org.team100.lib.config.Cameras2023;
 import org.team100.lib.telemetry.Telemetry;
 
 import com.fasterxml.jackson.databind.ObjectMapper;

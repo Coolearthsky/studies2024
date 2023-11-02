@@ -1,6 +1,5 @@
 package org.team100.lib.motion.drivetrain;
 
-import org.team100.frc2023.subsystems.SwerveModuleFactory;
 import org.team100.lib.config.Identity;
 import org.team100.lib.experiments.Experiments;
 
