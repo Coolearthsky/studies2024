@@ -30,16 +30,16 @@ public class TrajectoryGenerator {
 
     public void generateTrajectories() {
         if (mTrajectorySet == null) {
-            System.out.println("Generating trajectories...");
+            // System.out.println("Generating trajectories...");
             mTrajectorySet = new TrajectorySet();
-            System.out.println("Finished trajectory generation");
+            // System.out.println("Finished trajectory generation");
         }
     }
 
     public void forceRegenerateTrajectories() {
-        System.out.println("Generating trajectories...");
+        // System.out.println("Generating trajectories...");
         mTrajectorySet = new TrajectorySet();
-        System.out.println("Finished trajectory generation");
+        // System.out.println("Finished trajectory generation");
     }
 
     public TrajectorySet getTrajectorySet() {

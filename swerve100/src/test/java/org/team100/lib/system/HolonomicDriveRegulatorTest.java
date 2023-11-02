@@ -16,7 +16,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 
-public class HolonomicDriveRegulatorTest {
+class HolonomicDriveRegulatorTest {
     private HolonomicDriveRegulator m_regulator = new HolonomicDriveRegulator();
     private Pose2d currentPose;
     private SwerveState desiredState;
@@ -32,7 +32,7 @@ public class HolonomicDriveRegulatorTest {
         currentPose = new Pose2d();
         desiredState = new SwerveState(new State100(0, 0, 0), new State100(0, 0, 0), new State100(0, 0, 0));
         Twist2d output = m_regulator.calculate(currentPose, desiredState);
-        System.out.println(output);
+        // System.out.println(output);
         assertEquals(output.dx, 0);
         assertEquals(output.dy, 0);
         assertEquals(output.dtheta, 0);
@@ -67,7 +67,7 @@ public class HolonomicDriveRegulatorTest {
                 speedLimits.angleJerkRad_S3);
 
         double duration = Math.max(profileX.duration(), Math.max(profileY.duration(), profileTheta.duration()));
-        System.out.println(duration);
+        // System.out.println(duration);
 
         while (time < duration) {
             desiredState = new SwerveState(new State100(profileX.get(time)), new State100(profileY.get(time)),
@@ -78,9 +78,9 @@ public class HolonomicDriveRegulatorTest {
             }
             currentPose = new Pose2d(currentPose.getX() + output.dx * .05, currentPose.getY() + output.dy * .05,
                     new Rotation2d(currentPose.getRotation().getRadians() + output.dtheta * .05));
-            System.out.println("\noutput: " + output);
-            System.out.println("\ncurrent pose: " + currentPose);
-            System.out.println("\ndesired state: " + desiredState);
+            // System.out.println("\noutput: " + output);
+            // System.out.println("\ncurrent pose: " + currentPose);
+            // System.out.println("\ndesired state: " + desiredState);
             time += .05;
         }
 

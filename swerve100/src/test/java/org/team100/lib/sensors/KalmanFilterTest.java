@@ -30,7 +30,7 @@ public class KalmanFilterTest {
      * one noisy observation
      */
     // @Test
-    public void testOne() {
+    void testOne() {
         // say this is a simple 1d system
         // state: position and velocity, so N2
         // input: force, so N1
@@ -70,8 +70,8 @@ public class KalmanFilterTest {
 
         Random r = new Random();
         // run some observations through it
-        System.out.printf(
-                "i position velocity positionObservation predictedPosition predictedVelocity correctedPosition correctedVelocity\n");
+        // System.out.printf(
+        //         "i position velocity positionObservation predictedPosition predictedVelocity correctedPosition correctedVelocity\n");
         for (int i = 0; i < 100; ++i) {
             position += velocity * dtSec;
             // no input
@@ -87,19 +87,19 @@ public class KalmanFilterTest {
             kf.correct(controlInput, observedOutput);
             double correctedPosition = kf.getXhat().get(0, 0);
             double correctedVelocity = kf.getXhat().get(1, 0);
-            System.out.printf("%d %f %f %f %f %f %f %f\n",
-                    i, position, velocity, positionObservation,
-                    predictedPosition, predictedVelocity,
-                    correctedPosition, correctedVelocity);
+            // System.out.printf("%d %f %f %f %f %f %f %f\n",
+                    // i, position, velocity, positionObservation,
+                    // predictedPosition, predictedVelocity,
+                    // correctedPosition, correctedVelocity);
         }
-        System.out.flush();
+        // System.out.flush();
     }
 
     /**
      * constant velocity, two noisy measurements (pos and velo)
      */
     // @Test
-    public void testTwo() {
+    void testTwo() {
         // two measurements this time, y is [position, velocity] since the
         // magnetometer measures position and the gyro measures velocity.
         double m = 1; // mass
@@ -128,8 +128,8 @@ public class KalmanFilterTest {
 
         Random r = new Random();
         // run some observations through it
-        System.out.printf(
-                "i position velocity positionObservation velocityObservation predictedPosition predictedVelocity correctedPosition correctedVelocity\n");
+        // System.out.printf(
+        //         "i position velocity positionObservation velocityObservation predictedPosition predictedVelocity correctedPosition correctedVelocity\n");
         for (int i = 0; i < 100; ++i) {
             position += velocity * dtSec;
             kf.predict(controlInput, dtSec);
@@ -145,12 +145,12 @@ public class KalmanFilterTest {
             kf.correct(controlInput, observedOutput);
             double correctedPosition = kf.getXhat().get(0, 0);
             double correctedVelocity = kf.getXhat().get(1, 0);
-            System.out.printf("%d %f %f %f %f %f %f %f %f\n",
-                    i, position, velocity, positionObservation, velocityObservation,
-                    predictedPosition, predictedVelocity,
-                    correctedPosition, correctedVelocity);
+            // System.out.printf("%d %f %f %f %f %f %f %f %f\n",
+            //         i, position, velocity, positionObservation, velocityObservation,
+            //         predictedPosition, predictedVelocity,
+            //         correctedPosition, correctedVelocity);
         }
-        System.out.flush();
+        // System.out.flush();
 
     }
 
@@ -158,8 +158,7 @@ public class KalmanFilterTest {
      * give the KF a step function to try to tune it.
      */
     @Test
-    public void testStep() {
-
+    void testStep() {
         final double dtSec = 0.02;
         final Matrix<N2, N2> A = Matrix.mat(Nat.N2(), Nat.N2()).fill(0, 1, 0, 0);
         final Matrix<N2, N1> B = Matrix.mat(Nat.N2(), Nat.N1()).fill(0, 1);
@@ -173,8 +172,8 @@ public class KalmanFilterTest {
                 dtSec);
 
         Matrix<N2, N2> K = kf.getK();
-        System.out.printf("[%10.5f %10.5f \n %10.5f %10.5f]\n",
-                K.get(0, 0), K.get(0, 1), K.get(1, 0), K.get(1, 1));
+        // System.out.printf("[%10.5f %10.5f \n %10.5f %10.5f]\n",
+        //         K.get(0, 0), K.get(0, 1), K.get(1, 0), K.get(1, 1));
 
         kf.setXhat(Matrix.mat(Nat.N2(), Nat.N1()).fill(0, 0));
 
@@ -183,8 +182,8 @@ public class KalmanFilterTest {
         final double velocityNoiseRS = 0.05;
         final double velocityOffsetRS = 0.05;
 
-        System.out.printf(
-                "tSec,posTrueR,velTrueRS,posObsR,velObsRS,posPredR,velPredRS,PosCorrR,velCorrRS\n");
+        // System.out.printf(
+        //         "tSec,posTrueR,velTrueRS,posObsR,velObsRS,posPredR,velPredRS,PosCorrR,velCorrRS\n");
         double posTrueR = 0; // radians
         double velTrueRS = 0; // radians per sec
         double accTrueRSS = 0; // radians per sec per sec
@@ -216,16 +215,16 @@ public class KalmanFilterTest {
             kf.correct(controlInput, observedOutput);
             final double posCorrR = kf.getXhat().get(0, 0);
             final double velCorrRS = kf.getXhat().get(1, 0);
-            System.out.printf("%5.2f,%7.3f,%7.3f,%7.3f,%7.3f,%7.3f,%7.3f,%7.3f,%7.3f\n",
-                    tSec, posTrueR, velTrueRS, posObsR, velObsRS,
-                    posPredR, velPredRS,
-                    posCorrR, velCorrRS);
+            // System.out.printf("%5.2f,%7.3f,%7.3f,%7.3f,%7.3f,%7.3f,%7.3f,%7.3f,%7.3f\n",
+            //         tSec, posTrueR, velTrueRS, posObsR, velObsRS,
+            //         posPredR, velPredRS,
+            //         posCorrR, velCorrRS);
         }
-        System.out.flush();
+        // System.out.flush();
     }
 
     @Test
-    public void testDiscretization() {
+    void testDiscretization() {
         // continuous A is x-dot, so, x-dot is just v, and that's all
         final double dtSec = 0.02;
         final Matrix<N2, N2> A = Matrix.mat(Nat.N2(), Nat.N2()).fill(0, 1, 0, 0);

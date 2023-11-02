@@ -81,8 +81,8 @@ class FancyTrajectoryTest {
                 kMaxVel,
                 kMaxAccel,
                 kMaxVoltage);
-        System.out.println(trajectory);
-        System.out.println("TRAJECTORY LENGTH: " + trajectory.length());
+        // System.out.println(trajectory);
+        // System.out.println("TRAJECTORY LENGTH: " + trajectory.length());
         // why is this so large?
         assertEquals(1300, trajectory.length());
 
@@ -96,7 +96,7 @@ class FancyTrajectoryTest {
         // based on the trajectory itself.
 
         {
-            System.out.println("============initialize============");
+            // System.out.println("============initialize============");
             ChassisSpeeds output = mMotionPlanner.update(0,
                     new Pose2d(new Translation2d(0, 0), Rotation2d.fromRadians(1.57079632679)),
                     new Twist2d());
@@ -106,7 +106,7 @@ class FancyTrajectoryTest {
         }
 
         {
-            System.out.println("============4 sec============");
+            // System.out.println("============4 sec============");
             ChassisSpeeds output = mMotionPlanner.update(4.0,
                     new Pose2d(new Translation2d(0.25, -3.5), Rotation2d.fromRadians(1.69)),
                     new Twist2d());
@@ -131,7 +131,7 @@ class FancyTrajectoryTest {
             // assertEquals(0, heading_setpoint.getRadians(), 0.001);
         }
         {
-            System.out.println("============8 sec============");
+            // System.out.println("============8 sec============");
             ChassisSpeeds output = mMotionPlanner.update(8.0,
                     new Pose2d(new Translation2d(1.85, -7.11), Rotation2d.fromRadians(2.22)),
                     new Twist2d());
@@ -192,8 +192,8 @@ class FancyTrajectoryTest {
                 kMaxVel,
                 kMaxAccel,
                 kMaxVoltage);
-        System.out.println(trajectory);
-        System.out.println("TRAJECTORY LENGTH: " + trajectory.length());
+        // System.out.println(trajectory);
+        // System.out.println("TRAJECTORY LENGTH: " + trajectory.length());
         // why is this so large?
         assertEquals(1300, trajectory.length());
 
@@ -207,7 +207,7 @@ class FancyTrajectoryTest {
         // based on the trajectory itself.
 
         {
-            System.out.println("============initialize============");
+            // System.out.println("============initialize============");
             ChassisSpeeds output = mMotionPlanner.update(0,
                     new Pose2d(new Translation2d(0, 0), Rotation2d.fromRadians(1.57079632679)),
                     new Twist2d());
@@ -220,7 +220,7 @@ class FancyTrajectoryTest {
         }
 
         {
-            System.out.println("============4 sec============");
+            // System.out.println("============4 sec============");
             ChassisSpeeds output = mMotionPlanner.update(4.0,
                     new Pose2d(new Translation2d(0.25, -3.5), Rotation2d.fromRadians(1.69)),
                     new Twist2d());
@@ -247,7 +247,7 @@ class FancyTrajectoryTest {
             // assertEquals(0, heading_setpoint.getRadians(), 0.001);
         }
         {
-            System.out.println("============8 sec============");
+            // System.out.println("============8 sec============");
             ChassisSpeeds output = mMotionPlanner.update(8.0,
                     new Pose2d(new Translation2d(1.85, -7.11), Rotation2d.fromRadians(2.22)),
                     new Twist2d());
@@ -309,8 +309,8 @@ class FancyTrajectoryTest {
                 kMaxVel,
                 kMaxAccel,
                 kMaxVoltage);
-        System.out.println(trajectory);
-        System.out.println("TRAJECTORY LENGTH: " + trajectory.length());
+        // System.out.println(trajectory);
+        // System.out.println("TRAJECTORY LENGTH: " + trajectory.length());
         // why is this so large?
         assertEquals(1300, trajectory.length());
 
@@ -324,7 +324,7 @@ class FancyTrajectoryTest {
         // based on the trajectory itself.
 
         {
-            System.out.println("============initialize============");
+            // System.out.println("============initialize============");
             ChassisSpeeds output = mMotionPlanner.update(0,
                     new Pose2d(new Translation2d(0, 0), Rotation2d.fromRadians(1.57079632679)),
                     new Twist2d());
@@ -334,7 +334,7 @@ class FancyTrajectoryTest {
         }
 
         {
-            System.out.println("============4 sec============");
+            // System.out.println("============4 sec============");
             ChassisSpeeds output = mMotionPlanner.update(4.0,
                     new Pose2d(new Translation2d(0.25, -3.5), Rotation2d.fromRadians(1.69)),
                     new Twist2d());
@@ -359,7 +359,7 @@ class FancyTrajectoryTest {
             // assertEquals(0, heading_setpoint.getRadians(), 0.001);
         }
         {
-            System.out.println("============8 sec============");
+            // System.out.println("============8 sec============");
             ChassisSpeeds output = mMotionPlanner.update(8.0,
                     new Pose2d(new Translation2d(1.85, -7.11), Rotation2d.fromRadians(2.22)),
                     new Twist2d());
@@ -419,8 +419,8 @@ class FancyTrajectoryTest {
                 kMaxVel,
                 kMaxAccel,
                 kMaxVoltage);
-        System.out.println(trajectory);
-        System.out.println("TRAJECTORY LENGTH: " + trajectory.length());
+        // System.out.println(trajectory);
+        // System.out.println("TRAJECTORY LENGTH: " + trajectory.length());
         // why is this so large?
         assertEquals(1300, trajectory.length());
 
@@ -434,7 +434,7 @@ class FancyTrajectoryTest {
         // based on the trajectory itself.
 
         {
-            System.out.println("============initialize============");
+            // System.out.println("============initialize============");
             ChassisSpeeds output = mMotionPlanner.update(0,
                     new Pose2d(new Translation2d(0, 0), Rotation2d.fromRadians(1.57079632679)),
                     new Twist2d());
@@ -444,7 +444,7 @@ class FancyTrajectoryTest {
         }
 
         {
-            System.out.println("============4 sec============");
+            // System.out.println("============4 sec============");
             ChassisSpeeds output = mMotionPlanner.update(4.0,
                     new Pose2d(new Translation2d(0.25, -3.5), Rotation2d.fromRadians(1.69)),
                     new Twist2d());
@@ -469,7 +469,7 @@ class FancyTrajectoryTest {
             // assertEquals(0, heading_setpoint.getRadians(), 0.001);
         }
         {
-            System.out.println("============8 sec============");
+            // System.out.println("============8 sec============");
             ChassisSpeeds output = mMotionPlanner.update(8.0,
                     new Pose2d(new Translation2d(1.85, -7.11), Rotation2d.fromRadians(2.22)),
                     new Twist2d());

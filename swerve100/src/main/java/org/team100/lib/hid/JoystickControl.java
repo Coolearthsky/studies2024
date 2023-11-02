@@ -1,8 +1,8 @@
-package org.team100.frc2023.control;
+package org.team100.lib.hid;
 
-import static org.team100.lib.control.ControlUtil.clamp;
-import static org.team100.lib.control.ControlUtil.deadband;
-import static org.team100.lib.control.ControlUtil.expo;
+import static org.team100.lib.hid.ControlUtil.clamp;
+import static org.team100.lib.hid.ControlUtil.deadband;
+import static org.team100.lib.hid.ControlUtil.expo;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Twist2d;
@@ -30,7 +30,7 @@ public class JoystickControl implements Control {
 
     public JoystickControl() {
         m_controller = new CommandJoystick(0);
-        System.out.printf("Controller0: %s\n", m_controller.getHID().getName());
+        // System.out.printf("Controller0: %s\n", m_controller.getHID().getName());
     }
 
     @Override

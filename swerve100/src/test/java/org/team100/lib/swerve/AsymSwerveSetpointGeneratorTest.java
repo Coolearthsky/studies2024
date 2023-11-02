@@ -25,7 +25,7 @@ public class AsymSwerveSetpointGeneratorTest {
             new Translation2d(-kRobotSide / 2.0, -kRobotSide / 2.0)
     };
     protected final static SwerveDriveKinematics kKinematics = new SwerveDriveKinematics(
-        moduleTranslations            );
+            moduleTranslations);
     protected final static AsymSwerveSetpointGenerator.KinematicLimits kKinematicLimits = new AsymSwerveSetpointGenerator.KinematicLimits();
     static {
         kKinematicLimits.kMaxDriveVelocity = 5.0; // m/s
@@ -58,11 +58,11 @@ public class AsymSwerveSetpointGeneratorTest {
 
     public SwerveSetpoint driveToGoal(SwerveSetpoint prevSetpoint, ChassisSpeeds goal,
             AsymSwerveSetpointGenerator generator) {
-        System.out.println("Driving to goal state " + goal);
-        System.out.println("Initial state: " + prevSetpoint);
+        // System.out.println("Driving to goal state " + goal);
+        // System.out.println("Initial state: " + prevSetpoint);
         while (!chassisSpeedsToTwist2d(prevSetpoint.getChassisSpeeds()).equals(chassisSpeedsToTwist2d(goal))) {
             var newsetpoint = generator.generateSetpoint(kKinematicLimits, prevSetpoint, goal, kDt);
-            System.out.println(newsetpoint);
+            // System.out.println(newsetpoint);
             SatisfiesConstraints(prevSetpoint, newsetpoint);
             prevSetpoint = newsetpoint;
         }

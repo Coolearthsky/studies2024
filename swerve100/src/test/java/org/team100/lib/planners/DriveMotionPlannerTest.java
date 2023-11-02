@@ -90,7 +90,7 @@ class DriveMotionPlannerTest {
         Trajectory timed_trajectory = TimingUtil.timeParameterizeTrajectory(false, new PathDistanceSampler(traj), 2,
                 Arrays.asList(), start_vel, end_vel, max_vel, max_accel);
 
-        System.out.println("\n\n\n\n\n\n\n");
+        // System.out.println("\n\n\n\n\n\n\n");
 
         // for(int i = 0; i < timed_trajectory.length(); i++) {
         // System.out.println(timed_trajectory.getPoint(i).toString());

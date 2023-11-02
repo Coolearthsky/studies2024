@@ -22,16 +22,16 @@ import edu.wpi.first.math.numbers.N3;
  * Note since we don't trust the camera rotation output we really don't need to
  * do this.
  */
-public class QuaternionTest {
+class QuaternionTest {
     private static final double kDelta = 0.01;
 
-    public QuaternionTest() throws IOException {
+    QuaternionTest() throws IOException {
         // load the JNI
         CameraServerCvJNI.forceLoad();
     }
 
     @Test
-    public void testRodriguesIdentity() {
+    void testRodriguesIdentity() {
         // just to see if it works at all, this is no rotation.
         Mat rmat = new Mat(3, 3, CvType.CV_32F);
         rmat.put(0, 0, 1);
@@ -86,7 +86,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testRodriguesSimple() {
+    void testRodriguesSimple() {
         // a simple rotation
         Mat rmat = new Mat(3, 3, CvType.CV_64F);
         double rot = Math.sqrt(2) / 2;
@@ -144,7 +144,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testRodriguesNonorthogonal() {
+    void testRodriguesNonorthogonal() {
         // a nonorthogonal matrix, this should fail
         Mat rmat = new Mat(3, 3, CvType.CV_32F);
         double rot = Math.sqrt(2) / 2;
@@ -171,6 +171,7 @@ public class QuaternionTest {
         assertEquals(0.012, matrix.times(matrix.transpose()).minus(Matrix.eye(Nat.N3())).normF(), kDelta);
 
         // this should fail because the matrix is not orthogonal
+        // this puts the stack trace on stderr and there's no easy way to make it quiet.
         assertThrows(IllegalArgumentException.class, () -> {
             new Rotation3d(matrix);
         });
@@ -178,7 +179,7 @@ public class QuaternionTest {
     }
 
     @Test
-    public void testRodriguesNormalized() {
+    void testRodriguesNormalized() {
         // a simple rotation
         Mat rmat = new Mat(3, 3, CvType.CV_64F); // must use 64 bit
         double rot = Math.sqrt(2) / 2;
@@ -245,5 +246,4 @@ public class QuaternionTest {
         assertEquals(0, r.getY(), kDelta);
         assertEquals(0, r.getZ(), kDelta);
     }
-
 }
