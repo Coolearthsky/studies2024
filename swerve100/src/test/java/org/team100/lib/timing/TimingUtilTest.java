@@ -2,6 +2,7 @@ package org.team100.lib.timing;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
@@ -23,13 +24,12 @@ import edu.wpi.first.math.geometry.Translation2d;
 public class TimingUtilTest {
 
     public static final double kTestEpsilon = 1e-12;
-    
+
     public static final List<Pose2dWithMotion> kWaypoints = Arrays.asList(
             new Pose2dWithMotion(new Pose2d(new Translation2d(0.0, 0.0), new Rotation2d()), 0),
             new Pose2dWithMotion(new Pose2d(new Translation2d(24.0, 0.0), new Rotation2d()), 0),
             new Pose2dWithMotion(new Pose2d(new Translation2d(36.0, 12.0), new Rotation2d()), 0),
             new Pose2dWithMotion(new Pose2d(new Translation2d(60.0, 12.0), new Rotation2d()), 0));
-
 
     public static final List<Rotation2d> kHeadings = List.of(
             GeometryUtil.fromDegrees(0),
@@ -91,7 +91,9 @@ public class TimingUtilTest {
         Trajectory timed_traj = buildAndCheckTrajectory(dist_view,
                 1.0,
                 new ArrayList<TimingConstraint>(), 0.0, 0.0, 20.0, 5.0);
-        System.out.println(timed_traj);
+        assertNotNull(timed_traj);
+
+        // System.out.println(timed_traj);
 
         // Trapezoidal profile.
         timed_traj = buildAndCheckTrajectory(dist_view, 1.0, new ArrayList<TimingConstraint>(), 0.0, 0.0,
@@ -128,7 +130,9 @@ public class TimingUtilTest {
         Trajectory timed_traj = buildAndCheckTrajectory(dist_view,
                 1.0,
                 Arrays.asList(new ConditionalTimingConstraint()), 0.0, 0.0, 10.0, 5.0);
-        System.out.println(timed_traj);
+        assertNotNull(timed_traj);
+
+        // System.out.println(timed_traj);
 
     }
 
@@ -154,7 +158,8 @@ public class TimingUtilTest {
         Trajectory timed_traj = buildAndCheckTrajectory(dist_view,
                 1.0,
                 Arrays.asList(new ConditionalTimingConstraint()), 0.0, 0.0, 10.0, 5.0);
-        System.out.println(timed_traj);
+        assertNotNull(timed_traj);
+        // System.out.println(timed_traj);
     }
 
 }

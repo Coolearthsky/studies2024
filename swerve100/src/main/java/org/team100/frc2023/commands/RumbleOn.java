@@ -1,6 +1,7 @@
 package org.team100.frc2023.commands;
 
-import org.team100.frc2023.control.Control;
+
+import org.team100.lib.hid.Control;
 
 import edu.wpi.first.wpilibj2.command.Command;
 

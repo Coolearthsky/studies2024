@@ -1,4 +1,4 @@
-package org.team100.lib.control;
+package org.team100.lib.hid;
 
 import edu.wpi.first.math.MathUtil;
 
@@ -21,4 +21,6 @@ public class ControlUtil {
     public static double clamp(double input, double clamp) {
         return MathUtil.clamp(input, -clamp, clamp);
     }
+
+    private ControlUtil() {}
 }

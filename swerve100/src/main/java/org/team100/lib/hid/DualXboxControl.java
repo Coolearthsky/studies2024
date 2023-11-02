@@ -1,8 +1,8 @@
-package org.team100.frc2023.control;
+package org.team100.lib.hid;
 
-import static org.team100.lib.control.ControlUtil.clamp;
-import static org.team100.lib.control.ControlUtil.deadband;
-import static org.team100.lib.control.ControlUtil.expo;
+import static org.team100.lib.hid.ControlUtil.clamp;
+import static org.team100.lib.hid.ControlUtil.deadband;
+import static org.team100.lib.hid.ControlUtil.expo;
 
 import org.team100.frc2023.commands.GoalOffset;
 import org.team100.lib.telemetry.Telemetry;
@@ -40,9 +40,9 @@ public class DualXboxControl implements Control {
 
     public DualXboxControl() {
         controller0 = new CommandXboxController(0);
-        System.out.printf("Controller0: %s\n", controller0.getHID().getName());
+        // System.out.printf("Controller0: %s\n", controller0.getHID().getName());
         controller1 = new CommandXboxController(1);
-        System.out.printf("Controller1: %s\n", controller1.getHID().getName());
+        // System.out.printf("Controller1: %s\n", controller1.getHID().getName());
     }
 
     ///////////////////////////////

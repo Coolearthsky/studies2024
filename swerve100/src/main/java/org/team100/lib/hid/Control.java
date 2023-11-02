@@ -1,4 +1,4 @@
-package org.team100.frc2023.control;
+package org.team100.lib.hid;
 
 import org.team100.frc2023.commands.GoalOffset;
 
