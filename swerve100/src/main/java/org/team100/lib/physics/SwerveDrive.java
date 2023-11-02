@@ -1,4 +1,4 @@
-package com.team254.lib.physics;
+package org.team100.lib.physics;
 
 import java.text.DecimalFormat;
 
@@ -7,6 +7,7 @@ import org.team100.lib.geometry.GeometryUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
+// TODO remove this class
 public class SwerveDrive {
     // All units must be SI!
 

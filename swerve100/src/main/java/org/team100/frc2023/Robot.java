@@ -3,16 +3,18 @@ package org.team100.frc2023;
 import java.io.IOException;
 
 import org.team100.lib.config.Identity;
+import org.team100.lib.telemetry.Telemetry;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.WPILibVersion;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class Robot extends TimedRobot {
+    private final Telemetry t = Telemetry.get();
+
     private RobotContainer m_robotContainer;
 
     public Robot() {
@@ -43,9 +45,9 @@ public class Robot extends TimedRobot {
 
     @Override
     public void disabledPeriodic() {
-        double keyList = NetworkTableInstance.getDefault().getTable("Vision").getKeys().size();
-        SmartDashboard.putNumber("KEY LIST", keyList);
-        if (keyList == 0) {
+        double keyListSize = NetworkTableInstance.getDefault().getTable("Vision").getKeys().size();
+        t.log("/robot/key list size", keyListSize);
+        if (keyListSize == 0) {
             m_robotContainer.red();
         } else {
             m_robotContainer.green();

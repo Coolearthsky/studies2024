@@ -2,13 +2,11 @@ package org.team100.lib.motion.drivetrain;
 
 import org.team100.lib.experiments.Experiment;
 import org.team100.lib.experiments.Experiments;
-import org.team100.lib.motion.drivetrain.kinematics.SwerveKinematics;
 import org.team100.lib.swerve.AsymSwerveSetpointGenerator;
 import org.team100.lib.swerve.SwerveSetpoint;
 import org.team100.lib.telemetry.Telemetry;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -25,29 +23,10 @@ public class SwerveLocal {
     private final SpeedLimits m_speedLimits;
     private final SwerveDriveKinematics m_DriveKinematics;
     private final SwerveModuleCollectionInterface m_modules;
+    private final AsymSwerveSetpointGenerator m_SwerveSetpointGenerator;
+    private final AsymSwerveSetpointGenerator.KinematicLimits limits;
 
-    private final double kWheelBase = .765;
-    private final double kTrackWidth = .491;
-    private final SwerveKinematics m_DriveKinematics2 = new SwerveKinematics(
-            new Translation2d(kWheelBase / 2, kTrackWidth / 2),
-            new Translation2d(kWheelBase / 2, -kTrackWidth / 2),
-            new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
-            new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
-    private final AsymSwerveSetpointGenerator m_SwerveSetpointGenerator = new AsymSwerveSetpointGenerator(
-            m_DriveKinematics2.as254());
-    private AsymSwerveSetpointGenerator.KinematicLimits limits = new AsymSwerveSetpointGenerator.KinematicLimits();
-    org.team100.lib.swerve.ChassisSpeeds c254 = new org.team100.lib.swerve.ChassisSpeeds();
-    com.team254.lib.swerve.SwerveModuleState[] s254 = new com.team254.lib.swerve.SwerveModuleState[] {
-            new com.team254.lib.swerve.SwerveModuleState(0, 0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity),
-            new com.team254.lib.swerve.SwerveModuleState(0, 0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity),
-            new com.team254.lib.swerve.SwerveModuleState(0, 0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity),
-            new com.team254.lib.swerve.SwerveModuleState(0, 0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity)
-    };
-    private SwerveSetpoint prevSetpoint = new SwerveSetpoint(c254, s254);
-
-    // TODO: what is this?
-    // private com.team254.lib.swerve.ChassisSpeeds desiredChassisSpeeds2 = new
-    // com.team254.lib.swerve.ChassisSpeeds();
+    private SwerveSetpoint prevSetpoint;
 
     public SwerveLocal(
             Experiments experiments,
@@ -58,10 +37,22 @@ public class SwerveLocal {
         m_speedLimits = speedLimits;
         m_DriveKinematics = driveKinematics;
         m_modules = modules;
+        m_SwerveSetpointGenerator = new AsymSwerveSetpointGenerator(m_DriveKinematics);
+
+        limits = new AsymSwerveSetpointGenerator.KinematicLimits();
         limits.kMaxDriveVelocity = 5;
         limits.kMaxDriveAcceleration = 1;
         limits.kMaxDriveDecceleration = 4;
         limits.kMaxSteeringVelocity = 5;
+
+        ChassisSpeeds chassisSpeeds = new ChassisSpeeds();
+        SwerveModuleState[] swerveModuleStates = new SwerveModuleState[] {
+                new SwerveModuleState(0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity),
+                new SwerveModuleState(0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity),
+                new SwerveModuleState(0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity),
+                new SwerveModuleState(0, org.team100.lib.geometry.GeometryUtil.kRotationIdentity)
+        };
+        prevSetpoint = new SwerveSetpoint(chassisSpeeds, swerveModuleStates);
     }
 
     /**
@@ -77,35 +68,6 @@ public class SwerveLocal {
         }
     }
 
-    public void setChassisSpeeds254(org.team100.lib.swerve.ChassisSpeeds targetChassisSpeeds) {
-        setChassisSpeedsNormally254(targetChassisSpeeds);
-    }
-
-    private void setChassisSpeedsNormally254(org.team100.lib.swerve.ChassisSpeeds targetChassisSpeeds) {
-        t.log("/desired speed/x254", targetChassisSpeeds.vxMetersPerSecond);
-        t.log("/desired speed/y254", targetChassisSpeeds.vyMetersPerSecond);
-        t.log("/desired speed/theta254", targetChassisSpeeds.omegaRadiansPerSecond);
-
-        com.team254.lib.swerve.SwerveModuleState[] swerveModuleStates254 = m_DriveKinematics2.as254()
-                .toSwerveModuleStates(targetChassisSpeeds);
-        Rotation2d thetafl = new Rotation2d(swerveModuleStates254[0].angle.getRadians());
-        Rotation2d thetafr = new Rotation2d(swerveModuleStates254[1].angle.getRadians());
-        Rotation2d thetabl = new Rotation2d(swerveModuleStates254[2].angle.getRadians());
-        Rotation2d thetabr = new Rotation2d(swerveModuleStates254[3].angle.getRadians());
-        SwerveModuleState fl = new SwerveModuleState(swerveModuleStates254[0].speedMetersPerSecond, thetafl);
-        SwerveModuleState fr = new SwerveModuleState(swerveModuleStates254[1].speedMetersPerSecond, thetafr);
-        SwerveModuleState bl = new SwerveModuleState(swerveModuleStates254[2].speedMetersPerSecond, thetabl);
-        SwerveModuleState br = new SwerveModuleState(swerveModuleStates254[3].speedMetersPerSecond, thetabr);
-        SwerveModuleState[] swerveModuleStates = new SwerveModuleState[] { fl, fr, bl, br };
-
-        t.log("/desired speed/front left", swerveModuleStates[0].speedMetersPerSecond);
-        t.log("/desired speed/front right", swerveModuleStates[1].speedMetersPerSecond);
-        t.log("/desired speed/back left", swerveModuleStates[2].speedMetersPerSecond);
-        t.log("/desired speed/back right", swerveModuleStates[3].speedMetersPerSecond);
-
-        setModuleStates(swerveModuleStates);
-    }
-
     private void setChassisSpeedsNormally(ChassisSpeeds targetChassisSpeeds) {
         t.log("/desired speed/x", targetChassisSpeeds.vxMetersPerSecond);
         t.log("/desired speed/y", targetChassisSpeeds.vyMetersPerSecond);
@@ -115,20 +77,7 @@ public class SwerveLocal {
     }
 
     private void setChassisSpeedsWithSetpointGenerator(ChassisSpeeds targetChassisSpeeds2) {
-        // public void driveMetersPerSec2(Twist2d twist, boolean fieldRelative) {
-        // this is handled by the caller.
-        // Rotation2d rotation2 = m_veering.correct(getPose().getRotation());
-
-        // com.team254.lib.geometry.Rotation2d rotation254 = new
-        // com.team254.lib.geometry.Rotation2d(rotation2.getRadians(), true);
-        // desiredChassisSpeeds2 =
-        // com.team254.lib.swerve.ChassisSpeeds.fromFieldRelativeSpeeds(twist.dx,
-        // twist.dy, twist.dtheta, rotation254);
-        // com.team254.lib.swerve.ChassisSpeeds targetChassisSpeeds = fieldRelative ?
-        // desiredChassisSpeeds2
-        // : new com.team254.lib.swerve.ChassisSpeeds(twist.dx, twist.dy, twist.dtheta);
-
-        org.team100.lib.swerve.ChassisSpeeds targetChassisSpeeds = new org.team100.lib.swerve.ChassisSpeeds(
+        ChassisSpeeds targetChassisSpeeds = new ChassisSpeeds(
                 targetChassisSpeeds2.vxMetersPerSecond, targetChassisSpeeds2.vyMetersPerSecond,
                 targetChassisSpeeds2.omegaRadiansPerSecond);
 
@@ -136,18 +85,9 @@ public class SwerveLocal {
                 .05);
         System.out.println(setpoint);
         prevSetpoint = setpoint;
-        com.team254.lib.swerve.SwerveModuleState[] swerveModuleStates254 = m_DriveKinematics2.as254()
-                .toSwerveModuleStates(setpoint.mChassisSpeeds);
-        Rotation2d thetafl = new Rotation2d(swerveModuleStates254[0].angle.getRadians());
-        Rotation2d thetafr = new Rotation2d(swerveModuleStates254[1].angle.getRadians());
-        Rotation2d thetabl = new Rotation2d(swerveModuleStates254[2].angle.getRadians());
-        Rotation2d thetabr = new Rotation2d(swerveModuleStates254[3].angle.getRadians());
-        SwerveModuleState fl = new SwerveModuleState(swerveModuleStates254[0].speedMetersPerSecond, thetafl);
-        SwerveModuleState fr = new SwerveModuleState(swerveModuleStates254[1].speedMetersPerSecond, thetafr);
-        SwerveModuleState bl = new SwerveModuleState(swerveModuleStates254[2].speedMetersPerSecond, thetabl);
-        SwerveModuleState br = new SwerveModuleState(swerveModuleStates254[3].speedMetersPerSecond, thetabr);
-        SwerveModuleState[] swerveModuleStates = new SwerveModuleState[] { fl, fr, bl, br };
-        setModuleStates(swerveModuleStates);
+
+        SwerveModuleState[] states = m_DriveKinematics.toSwerveModuleStates(setpoint.getChassisSpeeds());
+        setModuleStates(states);
     }
 
     /**
@@ -155,11 +95,12 @@ public class SwerveLocal {
      * TODO: let the drivetrain decide to do this when it's stopped for awhile
      */
     public void defense() {
-        SwerveModuleState[] states = new SwerveModuleState[4];
-        states[0] = new SwerveModuleState(0, new Rotation2d(Math.PI / 4));
-        states[1] = new SwerveModuleState(0, new Rotation2d(7 * Math.PI / 4));
-        states[2] = new SwerveModuleState(0, new Rotation2d(3 * Math.PI / 4));
-        states[3] = new SwerveModuleState(0, new Rotation2d(5 * Math.PI / 4));
+        SwerveModuleState[] states = new SwerveModuleState[] {
+                new SwerveModuleState(0, new Rotation2d(Math.PI / 4)),
+                new SwerveModuleState(0, new Rotation2d(7 * Math.PI / 4)),
+                new SwerveModuleState(0, new Rotation2d(3 * Math.PI / 4)),
+                new SwerveModuleState(0, new Rotation2d(5 * Math.PI / 4))
+        };
         setModuleStates(states);
     }
 

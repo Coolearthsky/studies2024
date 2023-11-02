@@ -1,8 +1,6 @@
 package org.team100.lib.path;
 
-
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.spline.PoseWithCurvature;
+import org.team100.lib.geometry.Pose2dWithMotion;
 
 /**
  * Represents a point on a 2d path with heading.
@@ -10,22 +8,16 @@ import edu.wpi.first.math.spline.PoseWithCurvature;
  * There's no timing data here; for that, see TrajectoryPoint.
  */
 public class PathPoint {
-    private final PoseWithCurvature state_;
-    private final Rotation2d heading_;
+    private final Pose2dWithMotion state_;
     private final int index_;
 
-    public PathPoint(final PoseWithCurvature state, Rotation2d heading, int index) {
+    public PathPoint(final Pose2dWithMotion state, int index) {
         state_ = state;
-        heading_ = heading;
         index_ = index;
     }
 
-    public PoseWithCurvature state() {
+    public Pose2dWithMotion state() {
         return state_;
-    }
-
-    public Rotation2d heading() {
-        return heading_;
     }
 
     public int index() {

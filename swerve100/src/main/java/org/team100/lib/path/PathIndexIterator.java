@@ -1,7 +1,6 @@
 package org.team100.lib.path;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.spline.PoseWithCurvature;
+import org.team100.lib.geometry.Pose2dWithMotion;
 
 /**
  * Allows iterating over the index points of a path.
@@ -35,12 +34,8 @@ public class PathIndexIterator {
         return current_sample_;
     }
 
-    public PoseWithCurvature getState() {
+    public Pose2dWithMotion getState() {
         return getSample().state();
-    }
-
-    public Rotation2d getHeading() {
-        return getSample().heading();
     }
 
     public PathSamplePoint advance(double additional_progress) {

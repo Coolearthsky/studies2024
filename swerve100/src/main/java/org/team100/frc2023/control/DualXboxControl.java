@@ -185,7 +185,7 @@ public class DualXboxControl implements Control {
     }
 
     @Override
-    public void driveWith254Trajec(Command command){
+    public void driveWithFancyTrajec(Command command){
         //controller0.a().whileTrue(command);
     }
 

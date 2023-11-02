@@ -1,11 +1,11 @@
 package org.team100.lib.timing;
 
-import edu.wpi.first.math.spline.PoseWithCurvature;
+import org.team100.lib.geometry.Pose2dWithMotion;
 
 public interface TimingConstraint {
-    double getMaxVelocity(PoseWithCurvature state);
+    double getMaxVelocity(Pose2dWithMotion state);
 
-    MinMaxAcceleration getMinMaxAcceleration(PoseWithCurvature state, double velocity);
+    MinMaxAcceleration getMinMaxAcceleration(Pose2dWithMotion state, double velocity);
 
     class MinMaxAcceleration {
         protected final double min_acceleration_;

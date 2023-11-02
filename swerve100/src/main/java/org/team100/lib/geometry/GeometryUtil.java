@@ -1,11 +1,14 @@
 package org.team100.lib.geometry;
 
+import java.util.Optional;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.spline.PoseWithCurvature;
 
 public class GeometryUtil {
@@ -109,10 +112,28 @@ public class GeometryUtil {
         return norm(slog(transformBy(inverse(a.poseMeters), b.poseMeters)));
     }
 
+    public static double distance(Pose2d a, Pose2d b) {
+        return norm(slog(transformBy(inverse(a), b)));
+    }
+
+    public static double distance(Translation2d a, Translation2d b) {
+        return inverse(a).plus(b).getNorm();
+    }
+
+    public static Translation2d inverse(Translation2d a) {
+        return new Translation2d(-a.getX(), -a.getY());
+    }
+
     public static PoseWithCurvature interpolate2(PoseWithCurvature a, final PoseWithCurvature other, double x) {
         Pose2d interpolatedPose = a.poseMeters.interpolate(other.poseMeters, x);
         double interpolatedCurvature = MathUtil.interpolate(a.curvatureRadPerMeter, other.curvatureRadPerMeter, x);
         return new PoseWithCurvature(interpolatedPose, interpolatedCurvature);
+    }
+
+    public static Twist2d interpolate(Twist2d a, Twist2d b, double x) {
+        return new Twist2d(MathUtil.interpolate(a.dx, b.dx, x),
+                MathUtil.interpolate(a.dy, b.dy, x),
+                MathUtil.interpolate(a.dtheta, b.dtheta, x));
     }
 
     public static boolean poseWithCurvatureEquals(PoseWithCurvature a, PoseWithCurvature b) {
@@ -128,4 +149,25 @@ public class GeometryUtil {
         }
         return true;
     }
+
+    public static Optional<Rotation2d> getCourse(Twist2d t) {
+        if (norm(t) > 1e-12) {
+            return Optional.of(new Rotation2d(t.dx, t.dy));
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    public static Twist2d mirror(Twist2d t) {
+        return new Twist2d(t.dx, -t.dy, -t.dtheta);
+    }
+
+    public static Pose2d mirror(Pose2d p) {
+        return new Pose2d(new Translation2d(p.getTranslation().getX(), -p.getTranslation().getY()), p.getRotation().unaryMinus());
+    }
+
+    public static Twist2d toTwist2d(ChassisSpeeds x) {
+        return new Twist2d(x.vxMetersPerSecond, x.vyMetersPerSecond, x.omegaRadiansPerSecond);
+    }
+
 }

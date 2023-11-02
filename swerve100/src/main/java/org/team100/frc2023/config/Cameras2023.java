@@ -28,7 +28,7 @@ public class Cameras2023 {
                         new Rotation3d(0, 0, 1.57));
             case UNKNOWN:
                 return new Transform3d(
-                        new Translation3d(0.254, 0.127, 0.3),
+                        new Translation3d(0.255, 0.127, 0.3),
                         new Rotation3d(0, 0, 0));
             default:
                 return new Transform3d();
