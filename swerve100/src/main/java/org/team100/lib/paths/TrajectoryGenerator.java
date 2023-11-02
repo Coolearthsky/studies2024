@@ -1,4 +1,4 @@
-package org.team100.frc2023.paths;
+package org.team100.lib.paths;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;

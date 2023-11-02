@@ -6,11 +6,11 @@ import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.team100.frc2023.paths.TrajectoryGenerator;
 import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.path.Path;
 import org.team100.lib.path.PathDistanceSampler;
 import org.team100.lib.path.PathIndexSampler;
+import org.team100.lib.paths.TrajectoryGenerator;
 import org.team100.lib.swerve.SwerveKinematicLimits;
 import org.team100.lib.swerve.SwerveSetpoint;
 import org.team100.lib.timing.TimingUtil;

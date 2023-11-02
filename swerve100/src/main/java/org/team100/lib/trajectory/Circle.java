@@ -4,7 +4,7 @@
 
 package org.team100.lib.trajectory;
 
-import org.team100.frc2023.autonomous.DriveToWaypoint3;
+import org.team100.lib.autonomous.DriveToWaypoint3;
 import org.team100.lib.motion.drivetrain.SwerveDriveSubsystem;
 
 
