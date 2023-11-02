@@ -10,6 +10,7 @@ import org.team100.frc2023.commands.Defense;
 import org.team100.frc2023.commands.DriveScaled;
 import org.team100.frc2023.commands.DriveWithHeading;
 import org.team100.frc2023.commands.DriveWithSetpointGenerator;
+import org.team100.frc2023.commands.GoalOffset;
 import org.team100.frc2023.commands.RumbleOn;
 import org.team100.frc2023.commands.arm.ArmTrajectory;
 import org.team100.frc2023.commands.arm.SetConeMode;
@@ -390,7 +391,7 @@ public class RobotContainer {
                 tagID,
                 xOffset,
                 yOffset,
-                control::goalOffset,
+                () -> GoalOffset.center,
                 m_robotDrive,
                 m_kinematics,
                 layout,
