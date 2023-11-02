@@ -37,6 +37,9 @@ deploy {
                     files = project.fileTree('src/main/deploy')
                     directory = '/home/lvuser/deploy'
                 }
+                killKillKill(getArtifactTypeClass('CommandArtifact')) {
+                    command = 'killall -9 java'
+                }
             }
         }
     }

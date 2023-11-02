@@ -39,7 +39,7 @@ public class Robot extends TimedRobot {
     public double normalUpperD = 0.05;
     public double tolerance = 0.001;
   }
-
+  public final  double kA = 0.2;
   private final Config m_config = new Config();
   private final ArmKinematics m_kinematics = new ArmKinematics(.93,.92);
   private Command m_autonomousCommand;
@@ -56,7 +56,8 @@ public class Robot extends TimedRobot {
   private AnalogEncoder lowerArmEncoder;
   private AnalogEncoder upperArmEncoder;
   private ArmAngles m_reference;
-  private ArmAngles m_feedForward;
+  private ArmAngles m_velFeedForward;
+  private ArmAngles m_accelFeedForward;
   double u1;
   double u2;
   private RobotContainer m_robotContainer;
@@ -102,7 +103,8 @@ public class Robot extends TimedRobot {
     upperArmEncoder = new AnalogEncoder(upperArmInput);
     m_reference = getMeasurement();
     ArmAngles e = new ArmAngles(0, 0);
-    m_feedForward = e;
+    m_velFeedForward = e;
+    m_accelFeedForward = e;
     m_robotContainer = new RobotContainer();
   }
 
@@ -120,8 +122,8 @@ public class Robot extends TimedRobot {
   public void setReference(ArmAngles reference) {
     m_reference = reference;
   }
-  public void setFeedForward(ArmAngles feedForward) {
-    m_feedForward = feedForward;
+  public void setFeedForward(ArmAngles velFeedForward) {
+    m_velFeedForward = velFeedForward;
   }
 
   public ArmAngles getMeasurement() {
@@ -135,11 +137,11 @@ public class Robot extends TimedRobot {
     m_trajec.execute();
     ArmAngles measurement = getMeasurement();
     double lowerControllerOutput = m_lowerController.calculate(measurement.th1, m_reference.th1);
-    double lowerFeedForward = m_feedForward.th1/(Math.PI*2)*3;
-    u1 = lowerFeedForward+lowerControllerOutput;
+    double lowerFeedForward = m_velFeedForward.th1/(Math.PI*2)*4;
+    u1 = lowerFeedForward;
     double upperControllerOutput = m_upperController.calculate(measurement.th2, m_reference.th2);
-    double upperFeedForward = m_feedForward.th2/(Math.PI*2)*3;
-    u2 = upperFeedForward+upperControllerOutput;
+    double upperFeedForward = m_velFeedForward.th2/(Math.PI*2)*4;
+    u2 = upperFeedForward;
     SmartDashboard.putNumber("Lower Encoder: ", measurement.th1);
     SmartDashboard.putNumber("Lower FF ", lowerFeedForward);
     SmartDashboard.putNumber("Lower Controller Output: ", lowerControllerOutput);

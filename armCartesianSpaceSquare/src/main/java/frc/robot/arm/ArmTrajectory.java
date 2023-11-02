@@ -20,7 +20,7 @@ public class ArmTrajectory extends Command {
         /** start oscillating when this close to the target. */
         public double oscillatorZone = 0.1;
         public TrajectoryConfig safeTrajectory = new TrajectoryConfig(9, 1.5);
-        public TrajectoryConfig normalTrajectory = new TrajectoryConfig(12, 2);
+        public TrajectoryConfig normalTrajectory = new TrajectoryConfig(1, 1);
     }
     private final Config m_config = new Config();
     private final Robot m_robot;
@@ -85,14 +85,26 @@ public class ArmTrajectory extends Command {
         double desiredXPos = desiredState.poseMeters.getX();
         double desiredYPos  = desiredState.poseMeters.getY();
         double desiredVecloity = desiredState.velocityMetersPerSecond;
+        double desiredAcceleration = desiredState.accelerationMetersPerSecondSq;
+        if (desiredState == m_trajectory.sample(10)) {
+            desiredAcceleration = 0;
+        }
         double theta = desiredState.poseMeters.getRotation().getRadians();
         double desiredXVel = desiredVecloity*Math.cos(theta);
         double desiredYVel = desiredVecloity*Math.cos(Math.PI/2-theta);
+        double desiredXAccel = desiredAcceleration*Math.cos(theta);
+        double desiredYAccel = desiredAcceleration*Math.cos(Math.PI/2-theta);
         Translation2d vel = new Translation2d(desiredXVel, desiredYVel);
+        Translation2d accel = new Translation2d(desiredXAccel, desiredYAccel);
+        vel = vel.plus(accel.times(m_robot.kA));
+        System.out.println(accel);
+        System.out.println(theta);
+        System.out.println(desiredAcceleration);
         Translation2d reference = new Translation2d(desiredXPos, desiredYPos);
         ArmAngles inverse = m_kinematics.inverse(reference);
         m_robot.setReference(inverse);
-        m_robot.setFeedForward(m_kinematics.inverseVel(inverse, vel));
+        ArmAngles inverseVel = m_kinematics.inverseVel(inverse, vel);
+        m_robot.setFeedForward(inverseVel);
         measurmentX.set(currentUpper);
         measurmentY.set(currentLower);
         setpointUpper.set(desiredYPos);
