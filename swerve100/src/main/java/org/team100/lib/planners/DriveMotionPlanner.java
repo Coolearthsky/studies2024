@@ -273,7 +273,10 @@ public class DriveMotionPlanner {
         //0.15;
         final double kPathKTheta = 2.4;
 
+        t.log("/planner/error", mError);
+
         Twist2d pid_error = new Pose2d().log(mError);
+        t.log("/planner/pid error", pid_error);
 
         chassisSpeeds.vxMetersPerSecond =
                 chassisSpeeds.vxMetersPerSecond + kPathk * pid_error.dx;
@@ -349,6 +352,7 @@ public class DriveMotionPlanner {
 
     public ChassisSpeeds update(double timestamp, Pose2d current_state, Twist2d current_velocity) {
         if (mCurrentTrajectory == null) return null;
+        t.log("/planner/current state", current_state);
 
         if (!Double.isFinite(mLastTime)) mLastTime = timestamp;
         mDt = timestamp - mLastTime;
@@ -359,12 +363,15 @@ public class DriveMotionPlanner {
         if (!isDone()) {
             // Compute error in robot frame
             mPrevHeadingError = mError.getRotation();
-            mError = GeometryUtil.transformBy(GeometryUtil.inverse(current_state), mSetpoint.state().getPose());
+            // 254 calculates error using the *previous* setpoint.  i think this is a big mistake,
+            // which isn't obvious unless the previous and current are far apart, i.e. if dt is very large, e.g. in a unit test.
+            // mError = GeometryUtil.transformBy(GeometryUtil.inverse(current_state), mSetpoint.state().getPose());
 
             if (mFollowerType == FollowerType.FEEDFORWARD_ONLY) {
                 sample_point = mCurrentTrajectory.advance(mDt);
                 // RobotState.getInstance().setDisplaySetpointPose(Pose2d.fromTranslation(RobotState.getInstance().getFieldToOdom(timestamp)).transformBy(sample_point.state().state().getPose()));
                 mSetpoint = sample_point.state();
+                mError = GeometryUtil.transformBy(GeometryUtil.inverse(current_state), mSetpoint.state().getPose());
 
                 final double velocity_m = mSetpoint.velocity();
                 // Field relative
@@ -382,24 +389,37 @@ public class DriveMotionPlanner {
                 sample_point = mCurrentTrajectory.advance(mDt);
                 // RobotState.getInstance().setDisplaySetpointPose(Pose2d.fromTranslation(RobotState.getInstance().getFieldToOdom(timestamp)).transformBy(sample_point.state().state().getPose()));
                 mSetpoint = sample_point.state();
+                mError = GeometryUtil.transformBy(GeometryUtil.inverse(current_state), mSetpoint.state().getPose());
+
                 mOutput = updateRamsete(sample_point.state(), current_state, current_velocity);
             } else if (mFollowerType == FollowerType.PID) {
                 sample_point = mCurrentTrajectory.advance(mDt);
+                t.log("/planner/sample point", sample_point);
+                
                 // RobotState.getInstance().setDisplaySetpointPose(Pose2d.fromTranslation(RobotState.getInstance().getFieldToOdom(timestamp)).transformBy(sample_point.state().state().getPose()));
+                
                 mSetpoint = sample_point.state();
+                mError = GeometryUtil.transformBy(GeometryUtil.inverse(current_state), mSetpoint.state().getPose());
+
+                t.log("/planner/setpoint", mSetpoint);
 
                 final double velocity_m = mSetpoint.velocity();
+                t.log("/planner/setpoint velocity", velocity_m);
+
                 // Field relative
                 var course = mSetpoint.state().getCourse();
                 Rotation2d motion_direction = course.isPresent() ? course.get() : GeometryUtil.kRotationIdentity;
                 // Adjust course by ACTUAL heading rather than planned to decouple heading and translation errors.
                 motion_direction = current_state.getRotation().unaryMinus().rotateBy(motion_direction);
+                t.log("/planner/motion direction", motion_direction);
 
-                var chassis_speeds = new ChassisSpeeds(
+                ChassisSpeeds chassis_speeds = new ChassisSpeeds(
                         motion_direction.getCos() * velocity_m,
                         motion_direction.getSin() * velocity_m,
                         // Need unit conversion because Pose2dWithMotion heading rate is per unit distance.
                         velocity_m * mSetpoint.state().getHeadingRate());
+                t.log("/planner/chassis speeds", chassis_speeds);
+
                 // PID is in robot frame
                 mOutput = updatePIDChassis(chassis_speeds);
             } else if (mFollowerType == FollowerType.PURE_PURSUIT) {
@@ -422,6 +442,8 @@ public class DriveMotionPlanner {
                 sample_point = mCurrentTrajectory.advance(previewQuantity);
                 // RobotState.getInstance().setDisplaySetpointPose(Pose2d.fromTranslation(RobotState.getInstance().getFieldToOdom(timestamp)).transformBy(sample_point.state().state().getPose()));
                 mSetpoint = sample_point.state();
+                mError = GeometryUtil.transformBy(GeometryUtil.inverse(current_state), mSetpoint.state().getPose());
+
                 mOutput = updatePurePursuit(current_state,0.0);
             }
         } else {

@@ -37,7 +37,7 @@ public class Telemetry {
     /**
      * useful for troubleshooting unit tests.
      */
-    private static final boolean kAlsoPrint = true;
+    private static final boolean kAlsoPrint = false;
     private static final Telemetry instance = new Telemetry();
     private final NetworkTableInstance inst;
     private final Map<String, Publisher> pubs;

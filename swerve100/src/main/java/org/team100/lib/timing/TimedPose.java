@@ -48,6 +48,7 @@ public class TimedPose {
         accelM_S_S = acceleration;
     }
 
+    /** this means acceleration along the path, not centripetal acceleration. */
     public double acceleration() {
         return accelM_S_S;
     }

@@ -121,7 +121,7 @@ class DriveMotionPlannerTest {
             // System.out.println("Pathsetpoint:" + planner.getSetpoint());
             time += mDt;
         }
-        Assertions.assertEquals(196, pose.getTranslation().getX(), 0.1);
+        Assertions.assertEquals(196, pose.getTranslation().getX(), 0.2);
         Assertions.assertEquals(13, pose.getTranslation().getY(), 0.1);
         Assertions.assertEquals(0, pose.getRotation().getDegrees(), 0.4);
     }
@@ -153,7 +153,7 @@ class DriveMotionPlannerTest {
             double mDt = 0.005;
             boolean error_injected = false;
             while (!planner.isDone()) {
-                System.out.println("\n\n-----t=" + time);
+                // System.out.println("\n\n-----t=" + time);
                 if (!error_injected && time >= kInjectionTime) {
                     pose = GeometryUtil.transformBy(pose, kInjectedError);
                     velocity = new Twist2d(velocity.dx + kInjectedVelocityError.dx,
