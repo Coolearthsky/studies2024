@@ -1,6 +1,5 @@
-package org.team100.frc2023.subsystems.turning;
+package org.team100.lib.encoder.turning;
 
-import org.team100.lib.encoder.turning.TurningEncoder;
 import org.team100.lib.motor.turning.CANTurningMotor;
 import org.team100.lib.telemetry.Telemetry;
 

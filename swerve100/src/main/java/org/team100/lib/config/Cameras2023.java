@@ -1,6 +1,4 @@
-package org.team100.frc2023.config;
-
-import org.team100.lib.config.Camera;
+package org.team100.lib.config;
 
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
