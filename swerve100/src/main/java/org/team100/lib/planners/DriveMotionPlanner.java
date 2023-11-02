@@ -39,8 +39,10 @@ public class DriveMotionPlanner {
 
     public static final double kPathLookaheadTime = 0.25;
     public static final double kPathMinLookaheadDistance = 12.0;
-    public static final double kAdaptivePathMinLookaheadDistance = 6.0;
-    public static final double kAdaptivePathMaxLookaheadDistance = 24.0;
+    // i think that in 254 2023 these were just wrong, not updated since they stopped using inches.
+    // so i kinda fixed them up a bit.
+    public static final double kAdaptivePathMinLookaheadDistance = 0.1;
+    public static final double kAdaptivePathMaxLookaheadDistance = 0.1;
     public static final double kAdaptiveErrorLookaheadCoefficient = 0.01;
     public static final double kMaxVelocityMetersPerSecond = 4.959668;
 
@@ -288,9 +290,14 @@ public class DriveMotionPlanner {
     }
 
     protected ChassisSpeeds updatePurePursuit(Pose2d current_state, double feedforwardOmegaRadiansPerSecond) {
+        t.log("/planner/error", mError);
+
         double lookahead_time = kPathLookaheadTime;
         final double kLookaheadSearchDt = 0.01;
+
         TimedPose lookahead_state = mCurrentTrajectory.preview(lookahead_time).state();
+        t.log("/planner/lookahead state", lookahead_state);
+
         double actual_lookahead_distance = mSetpoint.state().distance(lookahead_state.state());
         double adaptive_lookahead_distance = mSpeedLookahead.getLookaheadForSpeed(mSetpoint.velocity());
         //Find the Point on the Trajectory that is Lookahead Distance Away
@@ -311,9 +318,11 @@ public class DriveMotionPlanner {
                                     actual_lookahead_distance), 0.0))), 0.0), lookahead_state.t()
                     , lookahead_state.velocity(), lookahead_state.acceleration());
         }
+        t.log("/planner/updated lookahead state", lookahead_state);
 
         //Find the vector between robot's current position and the lookahead state
         Translation2d lookaheadTranslation = lookahead_state.state().getTranslation().minus(current_state.getTranslation());
+        t.log("/planner/lookahead translation", lookaheadTranslation);
 
         //Set the steering direction as the direction of the vector
         Rotation2d steeringDirection = lookaheadTranslation.getAngle();
@@ -336,6 +345,7 @@ public class DriveMotionPlanner {
         final Translation2d steeringVector = new Translation2d(steeringDirection.getCos() * normalizedSpeed, steeringDirection.getSin() * normalizedSpeed);
         ChassisSpeeds chassisSpeeds = new ChassisSpeeds(steeringVector.getX() * kMaxVelocityMetersPerSecond, steeringVector.getY() * kMaxVelocityMetersPerSecond, feedforwardOmegaRadiansPerSecond);
 
+        t.log("/planner/pursuit speeds", chassisSpeeds);
 
         //Use the PD-Controller for To Follow the Time-Parametrized Heading
         final double kThetakP = 3.5;

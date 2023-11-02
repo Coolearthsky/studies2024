@@ -27,11 +27,11 @@ public class MathUtil {
     }
 
     public static boolean epsilonEquals(double x, double y) {
-        return Math.abs(x - y) < EPSILON;
+        return epsilonEquals(x, y, EPSILON);
     }
 
     public static boolean epsilonEquals(double x, double y, double epsilon) {
-        return epsilonEquals(x,y,EPSILON);
+        return Math.abs(x - y) < epsilon;
     }
 
     public static boolean inRange(double v, double maxMagnitude) {
@@ -50,6 +50,7 @@ public class MathUtil {
         x = limit(x, 0.0, 1.0);
         return a + (b - a) * x;
     }
-    
-    private MathUtil() {}
+
+    private MathUtil() {
+    }
 }
