@@ -7,7 +7,6 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.planners.DriveMotionPlanner;
-import org.team100.lib.planners.DriveMotionPlanner.FollowerType;
 import org.team100.lib.swerve.SwerveKinematicLimits;
 import org.team100.lib.timing.CentripetalAccelerationConstraint;
 import org.team100.lib.timing.TimedPose;

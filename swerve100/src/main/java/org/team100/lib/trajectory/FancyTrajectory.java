@@ -105,6 +105,7 @@ public class FancyTrajectory extends Command {
         Twist2d velocity = new Twist2d(); // <<< FIX ME
 
         ChassisSpeeds output = mMotionPlanner.update(now, currentPose, velocity);
+        t.log("/fancy trajectory/chassis speeds", output);
         m_robotDrive.setChassisSpeeds(output);
     }
 

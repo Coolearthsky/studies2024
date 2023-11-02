@@ -19,7 +19,6 @@ import org.team100.lib.trajectory.Trajectory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.spline.PoseWithCurvature;
 
 public class TimingUtilTest {
 
@@ -84,7 +83,7 @@ public class TimingUtilTest {
     }
 
     @Test
-    public void testNoConstraints() {
+    void testNoConstraints() {
         Path traj = new Path(kWaypoints);
         PathDistanceSampler dist_view = new PathDistanceSampler(traj);
 
@@ -104,7 +103,7 @@ public class TimingUtilTest {
     }
 
     @Test
-    public void testConditionalVelocityConstraint() {
+    void testConditionalVelocityConstraint() {
         Path traj = new Path(kWaypoints);
         PathDistanceSampler dist_view = new PathDistanceSampler(traj);
 
@@ -134,7 +133,7 @@ public class TimingUtilTest {
     }
 
     @Test
-    public void testConditionalAccelerationConstraint() {
+    void testConditionalAccelerationConstraint() {
         Path traj = new Path(kWaypoints);
         PathDistanceSampler dist_view = new PathDistanceSampler(traj);
 

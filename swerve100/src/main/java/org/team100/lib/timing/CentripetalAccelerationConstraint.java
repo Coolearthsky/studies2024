@@ -2,8 +2,6 @@ package org.team100.lib.timing;
 
 import org.team100.lib.geometry.Pose2dWithMotion;
 
-import edu.wpi.first.math.spline.PoseWithCurvature;
-
 public class CentripetalAccelerationConstraint implements TimingConstraint {
     final double mMaxCentripetalAccel;
 

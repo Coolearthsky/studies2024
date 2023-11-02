@@ -18,7 +18,6 @@ import org.team100.lib.path.PathSamplePoint;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.spline.PoseWithCurvature;
 
 public class TrajectoryIteratorTest {
     public static final double kTestEpsilon = 1e-12;

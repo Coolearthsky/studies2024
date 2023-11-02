@@ -1,5 +1,9 @@
 package org.team100.lib.planners;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.team100.frc2023.paths.TrajectoryGenerator;
@@ -7,7 +11,6 @@ import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.path.Path;
 import org.team100.lib.path.PathDistanceSampler;
 import org.team100.lib.path.PathIndexSampler;
-import org.team100.lib.swerve.AsymSwerveSetpointGenerator;
 import org.team100.lib.swerve.SwerveKinematicLimits;
 import org.team100.lib.swerve.SwerveSetpoint;
 import org.team100.lib.timing.TimingUtil;
@@ -24,10 +27,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 class DriveMotionPlannerTest {
     public static final double kMaxVelocityMetersPerSecond = 5.05; // Calibrated 3/12 on Comp Bot
@@ -135,7 +134,7 @@ class DriveMotionPlannerTest {
         generator.generateTrajectories();
         var trajectories = generator.getTrajectorySet().getAllTrajectories();
 
-        AsymSwerveSetpointGenerator setpoint_generator = new AsymSwerveSetpointGenerator(kinematics);
+        // AsymSwerveSetpointGenerator setpoint_generator = new AsymSwerveSetpointGenerator(kinematics);
 
         for (var traj : trajectories) {
             // System.out.println("\n" + traj.toString());

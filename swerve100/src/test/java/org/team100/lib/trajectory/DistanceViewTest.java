@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.geometry.Pose2dWithMotion;
 import org.team100.lib.path.Path;
 import org.team100.lib.path.PathDistanceSampler;
@@ -14,7 +13,6 @@ import org.team100.lib.path.PathDistanceSampler;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.spline.PoseWithCurvature;
 
 public class DistanceViewTest {
     public static final double kTestEpsilon = 1e-12;
@@ -28,12 +26,12 @@ public class DistanceViewTest {
                 new Pose2dWithMotion(new Pose2d(new Translation2d(36.0, 24.0), new Rotation2d()), 0),
                 new Pose2dWithMotion(new Pose2d(new Translation2d(60.0, 24.0), new Rotation2d()), 0));
 
-        List<Rotation2d> headings = Arrays.asList(
-                GeometryUtil.fromDegrees(0),
-                GeometryUtil.fromDegrees(30),
-                GeometryUtil.fromDegrees(60),
-                GeometryUtil.fromDegrees(90),
-                GeometryUtil.fromDegrees(180));
+        // List<Rotation2d> headings = Arrays.asList(
+        //         GeometryUtil.fromDegrees(0),
+        //         GeometryUtil.fromDegrees(30),
+        //         GeometryUtil.fromDegrees(60),
+        //         GeometryUtil.fromDegrees(90),
+        //         GeometryUtil.fromDegrees(180));
 
         // Create the reference trajectory (straight line motion between waypoints).
         Path trajectory = new Path(waypoints);
