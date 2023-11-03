@@ -11,11 +11,11 @@ public class Sequence extends SequentialCommandGroup {
     public Sequence(Robot robot, ArmKinematics kinematics) {
         m_robot = robot;
         m_kinematics = kinematics;
-        addCommands(new ArmTrajectory(m_robot, new Translation2d(.6, .6),m_kinematics), 
-        new ArmTrajectory(m_robot, new Translation2d(1, .6),m_kinematics),
-        new ArmTrajectory(m_robot, new Translation2d(1, 1),m_kinematics),
-        new ArmTrajectory(m_robot, new Translation2d(.6, 1),m_kinematics),
-        new ArmTrajectory(m_robot, new Translation2d(.6, .6),m_kinematics)
+        addCommands(new ArmTrajectory(m_robot, new Translation2d(.6, .6),m_kinematics, 90, 90), 
+        new ArmTrajectory(m_robot, new Translation2d(1, .6),m_kinematics, 0 ,0),
+        new ArmTrajectory(m_robot, new Translation2d(1, 1),m_kinematics,90,90),
+        new ArmTrajectory(m_robot, new Translation2d(.6, 1),m_kinematics,180,180),
+        new ArmTrajectory(m_robot, new Translation2d(.6, .6),m_kinematics,270 ,270)
         );
     }
 }

@@ -3,6 +3,7 @@ package frc.robot.arm;
 import frc.robot.Robot;
 import frc.robot.armMotion.ArmAngles;
 import frc.robot.armMotion.ArmKinematics;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.Trajectory.State;
@@ -10,10 +11,26 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class ArmTrajectory extends Command {
     public static class Config {
+        public double softStop = -0.594938;
+        public double kUpperArmLengthM = 0.92;
+        public double kLowerArmLengthM = 0.93;
+        public double filterTimeConstantS = 0.06; // TODO: tune the time constant
+        public double filterPeriodS = 0.02;
+        public double safeP = 2.5;
+        public double safeI = 0;
+        public double safeD = 0;
+        public double normalLowerP = 2;
+        public double normalLowerI = 0;
+        public double normalLowerD = 0.1;
+        public double normalUpperP = 2;
+        public double normalUpperI = 0;
+        public double normalUpperD = 0.05;
+        public double tolerance = 0.001;
         public double oscillatorFrequencyHz = 2;
         /** amplitude (each way) of oscillation in encoder units */
         public double oscillatorScale = 0.025;
@@ -24,11 +41,15 @@ public class ArmTrajectory extends Command {
     }
     private final Config m_config = new Config();
     private final Robot m_robot;
+    private final double m_startAngle;
+    private final double m_endAngle;
     // private final ArmPosition m_position;
     // private final boolean m_oscillate;
     private final ArmKinematics m_kinematics;
     private final Timer m_timer;
     private final Translation2d m_set;
+    private final PIDController m_lowerController; 
+    private final PIDController m_upperController; 
     private final DoublePublisher measurmentX;
     private final DoublePublisher measurmentY;
     private final DoublePublisher setpointUpper;
@@ -38,15 +59,19 @@ public class ArmTrajectory extends Command {
 
     /**
      * Go to the specified position and optionally oscillate when you get there.
+     * Units for angles are degrees
      */
-    public ArmTrajectory(Robot robot, Translation2d set, ArmKinematics kinematics) {
+    public ArmTrajectory(Robot robot, Translation2d set, ArmKinematics kinematics, double startAngle, double endAngle) {
         m_set = set;
         m_robot = robot;
         m_kinematics = kinematics;
+        m_endAngle = endAngle;
+        m_startAngle = startAngle;
         // m_position = position;
         // m_oscillate = oscillate;
         m_timer = new Timer();
-
+        m_lowerController = new PIDController(m_config.normalLowerP, m_config.normalLowerI, m_config.normalLowerD);
+        m_upperController = new PIDController(m_config.normalUpperP, m_config.normalUpperI, m_config.normalUpperD);
         NetworkTableInstance inst = NetworkTableInstance.getDefault();
         measurmentX = inst.getTable("Arm Trajec").getDoubleTopic("measurmentX").publish();
         measurmentY = inst.getTable("Arm Trajec").getDoubleTopic("measurmentY").publish();
@@ -58,6 +83,10 @@ public class ArmTrajectory extends Command {
 
     @Override
     public void initialize() {
+        m_lowerController.setIntegratorRange(1, 1);
+        m_upperController.setIntegratorRange(1, 1);
+    m_lowerController.setTolerance(m_config.tolerance);
+    m_upperController.setTolerance(m_config.tolerance);
         m_timer.restart();
         final TrajectoryConfig trajectoryConfig;
         // if (m_position == ArmPosition.SAFE) {
@@ -69,7 +98,7 @@ public class ArmTrajectory extends Command {
         // }
         System.out.println("Initialize");
         m_trajectory = new ArmTrajectories(trajectoryConfig).makeTrajectory(
-            m_kinematics.forward(m_robot.getMeasurement()),m_set);
+            m_kinematics.forward(m_robot.getMeasurement()),m_set, m_startAngle, m_endAngle);
            
     }
 
@@ -100,23 +129,31 @@ public class ArmTrajectory extends Command {
         System.out.println(accel);
         System.out.println(theta);
         System.out.println(desiredAcceleration);
-        Translation2d reference = new Translation2d(desiredXPos, desiredYPos);
-        ArmAngles inverse = m_kinematics.inverse(reference);
-        m_robot.setReference(inverse);
-        ArmAngles inverseVel = m_kinematics.inverseVel(inverse, vel);
-        m_robot.setFeedForward(inverseVel);
+        Translation2d XYreference = new Translation2d(desiredXPos, desiredYPos);
+        ArmAngles thetaReference = m_kinematics.inverse(XYreference);
+        ArmAngles inverseVel = m_kinematics.inverseVel(thetaReference, vel);
+    double lowerControllerOutput = m_lowerController.calculate(measurement.th1, inverseVel.th1);
+    double lowerFeedForward = thetaReference.th1/(Math.PI*2)*4;
+    double u1 = lowerFeedForward;
+    double upperControllerOutput = m_upperController.calculate(measurement.th2, inverseVel.th2);
+    double upperFeedForward = thetaReference.th2/(Math.PI*2)*4;
+    double u2 = upperFeedForward;
+    m_robot.set(u1, u2);
+    SmartDashboard.putNumber("Lower Encoder: ", measurement.th1);
+    SmartDashboard.putNumber("Lower FF ", lowerFeedForward);
+    SmartDashboard.putNumber("Lower Controller Output: ", lowerControllerOutput);
+    SmartDashboard.putNumber("Upper FF ", upperFeedForward);
+    SmartDashboard.putNumber("Upper Controller Output: ", upperControllerOutput);
+    SmartDashboard.putNumber("Lower Ref: ", thetaReference.th1);
+    SmartDashboard.putNumber("Upper Encoder: ", measurement.th2);
+    SmartDashboard.putNumber("Upper Ref: ", thetaReference.th2);
+    SmartDashboard.putNumber("Output Upper: ", u1);
+    SmartDashboard.putNumber("Output Lower: ", u2);
         measurmentX.set(currentUpper);
         measurmentY.set(currentLower);
         setpointUpper.set(desiredYPos);
         setpointLower.set(desiredXPos);
     }
-
-    @Override
-    public void end(boolean interrupted) {
-        // m_arm.setControlNormal();
-        m_robot.setReference(m_robot.getMeasurement());
-    }
-
     @Override
     public boolean isFinished() {
         double th1 = m_kinematics.inverse(m_set).th1;

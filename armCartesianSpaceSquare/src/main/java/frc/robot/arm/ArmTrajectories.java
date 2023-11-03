@@ -36,23 +36,16 @@ public class ArmTrajectories {
         public ArmAngles safeWaypoint = new ArmAngles(-0.394089, 1.226285);
     }
 
-    private final Config m_config = new Config();
     private final TrajectoryConfig trajecConfig;
 
     public ArmTrajectories(TrajectoryConfig config) {
         trajecConfig = config;
     }
 
-    public Trajectory makeTrajectory(Translation2d start, Translation2d end) {
+    public Trajectory makeTrajectory(Translation2d start, Translation2d end, double startAngle,double endAngle) {
         if (start == null)
             return null;
-        if (m_config.t0 != null && m_config.t1 != null && m_config.t2 != null && m_config.t3 != null) {
-            System.out.println(start.getX() + " " +  start.getY());
-            return onePoint(start, end, 90,90);
-        } else {
-            System.out.println("ERROR");
-            return null;
-        }
+            return onePoint(start, end, startAngle,endAngle);
     }
 
     /** from current location to an endpoint */
