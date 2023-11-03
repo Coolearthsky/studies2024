@@ -4,7 +4,7 @@
 			"path": "."
 		},
 		{
-			"path": "../test_lib"
+			"path": "../../test_lib"
 		}
 	],
     "settings": {
