@@ -2,20 +2,17 @@ package frc.robot.arm;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.Robot;
-import frc.robot.armMotion.ArmKinematics;
+import frc.robot.ArmSubsystem;
 
 public class Sequence extends SequentialCommandGroup {
-    private final Robot m_robot;
-    private final ArmKinematics m_kinematics;
-    public Sequence(Robot robot, ArmKinematics kinematics) {
+    private final ArmSubsystem m_robot;
+    public Sequence(ArmSubsystem robot) {
         m_robot = robot;
-        m_kinematics = kinematics;
-        addCommands(new ArmTrajectory(m_robot, new Translation2d(.6, .6),m_kinematics, 90, 90), 
-        new ArmTrajectory(m_robot, new Translation2d(1, .6),m_kinematics, 0 ,0),
-        new ArmTrajectory(m_robot, new Translation2d(1, 1),m_kinematics,90,90),
-        new ArmTrajectory(m_robot, new Translation2d(.6, 1),m_kinematics,180,180),
-        new ArmTrajectory(m_robot, new Translation2d(.6, .6),m_kinematics,270 ,270)
+        addCommands(new ArmTrajectory(m_robot, new Translation2d(.6, .6), 90, 90), 
+        new ArmTrajectory(m_robot, new Translation2d(1, .6), 0 ,0),
+        new ArmTrajectory(m_robot, new Translation2d(1, 1),90,90),
+        new ArmTrajectory(m_robot, new Translation2d(.6, 1),180,180),
+        new ArmTrajectory(m_robot, new Translation2d(.6, .6),270 ,270)
         );
     }
 }
