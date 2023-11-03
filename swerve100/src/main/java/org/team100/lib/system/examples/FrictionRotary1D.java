@@ -26,9 +26,9 @@ public class FrictionRotary1D extends Rotary1D {
     /**
      * xdot = f(x,u)
      * pdot = v
-     * vdot = u
+     * vdot = u - v
      * 
-     * the x jacobian should be constant [0 1 0 -1]
+     * the x jacobian should be constant [0 1 ; 0 -1]
      * the u jacobian should be constant [0 1]
      */
     public RandomVector<N2> f(RandomVector<N2> xmat, Matrix<N1, N1> umat) {
@@ -36,16 +36,14 @@ public class FrictionRotary1D extends Rotary1D {
         double u = umat.get(0, 0);
         double pdot = v;
         double vdot = u - v;
-        Matrix<N2,N1> xdotx = VecBuilder.fill(pdot, vdot);
-        Matrix<N2,N2> xdotP = xmat.Kxx.copy().getValue();
+        Matrix<N2, N1> xdotx = VecBuilder.fill(pdot, vdot);
+        Matrix<N2, N2> xdotP = xmat.Kxx.copy().getValue();
         xdotP.fill(0);
         // propagate variance of x through f (u has zero variance)
-        double vP = xmat.Kxx.get(1,1);
-        // guessing what to do with the off-diagonals
-        xdotP.set(0,0,vP);
-        xdotP.set(0,1,vP*0.9);
-        xdotP.set(1,0,vP*0.9);
-        xdotP.set(1,1,vP);
+        double vP = xmat.Kxx.get(1, 1);
+        // x0 and x1 are uncorrelated.
+        xdotP.set(0, 0, vP);
+        xdotP.set(1, 1, vP);
         // note that xdot needs no wrapping, don't return an AngularRandomVector here.
         return new RandomVector<>(xdotx, new Variance<>(xdotP));
     }

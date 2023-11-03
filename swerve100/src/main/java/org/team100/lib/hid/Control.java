@@ -1,7 +1,5 @@
 package org.team100.lib.hid;
 
-import org.team100.frc2023.commands.GoalOffset;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -24,11 +22,6 @@ public interface Control {
 
     default Rotation2d desiredRotation() {
         return new Rotation2d();
-    }
-
-
-    default GoalOffset goalOffset() {
-        return GoalOffset.center;
     }
 
     default void driveToLeftGrid(Command command) {
