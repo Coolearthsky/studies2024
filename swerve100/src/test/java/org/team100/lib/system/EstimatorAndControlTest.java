@@ -277,6 +277,6 @@ public class EstimatorAndControlTest {
         // after all that, what's the accumulated variance?
         // position variance is very tiny since we've given it the same measurement over and over.
         // velocity variance is just the prior since we never corrected velocity
-        assertArrayEquals(new double[] { 0.000028, 0, 0, 0.1 }, xhat.Kxx.getData(), 0.000001);
+        assertArrayEquals(new double[] { 0.000028, 0, 0, 0.100156 }, xhat.Kxx.getData(), 0.000001);
     }
 }

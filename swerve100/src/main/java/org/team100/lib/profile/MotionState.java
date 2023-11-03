@@ -1,7 +1,9 @@
 package org.team100.lib.profile;
 
 /**
- * Kinematic state of a motion profile at any given time.
+ * Kinematic state of a one-dimensional motion profile at any given time.
+ * 
+ * Includes position, velocity, acceleration, and jerk.
  */
 public class MotionState {
     private final double x;

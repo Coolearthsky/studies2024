@@ -25,7 +25,7 @@ public class FrictionCartesian1D extends Cartesian1D {
      * pdot = v
      * vdot = u - v
      * 
-     * the x jacobian should be constant [0 1 0 -1]
+     * the x jacobian should be constant [0 1 ; 0 -1]
      * the u jacobian should be constant [0 1]
      */
     @Override
@@ -39,10 +39,8 @@ public class FrictionCartesian1D extends Cartesian1D {
         xdotP.fill(0);
         // propagate variance of x through f (u has zero variance)
         double vP = xmat.Kxx.get(1, 1);
-        // guessing what to do with the off-diagonals
+        // x0 and x1 are uncorrelated.
         xdotP.set(0, 0, vP);
-        xdotP.set(0, 1, vP * 0.9);
-        xdotP.set(1, 0, vP * 0.9);
         xdotP.set(1, 1, vP);
         return new RandomVector<>(xdotx, new Variance<>(xdotP));
     }
