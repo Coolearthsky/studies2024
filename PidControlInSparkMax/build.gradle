@@ -3,13 +3,8 @@ plugins {
     id "edu.wpi.first.GradleRIO" version "2023.4.3"
 }
 
-wpi.maven.useLocal = false
-wpi.maven.useDevelopment = true
-wpi.versions.wpilibVersion = '2023.+'
-wpi.versions.wpimathVersion = '2023.+'
-
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
 
 def ROBOT_MAIN_CLASS = "frc.robot.Main"
 
@@ -36,9 +31,6 @@ deploy {
                 frcStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
                     files = project.fileTree('src/main/deploy')
                     directory = '/home/lvuser/deploy'
-                }
-                killKillKill(getArtifactTypeClass('CommandArtifact')) {
-                    command = 'killall -9 java'
                 }
             }
         }
@@ -76,10 +68,6 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
-    testImplementation 'org.hamcrest:hamcrest-library:2.2'
-
-    implementation "org.ejml:ejml-simple:0.42"
-    implementation "org.jfree:jfreechart:1.5.3"
 }
 
 test {

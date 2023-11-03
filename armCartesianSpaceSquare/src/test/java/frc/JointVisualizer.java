@@ -29,24 +29,70 @@ public class JointVisualizer {
 
     /** Return a dataset with one series with proximal in x and distal in y */
     private static XYSeriesCollection joints() {
+        ArmKinematics kinematics = new ArmKinematics(.93, .92);
         XYSeriesCollection dataset = new XYSeriesCollection();
         TrajectoryConfig config = new TrajectoryConfig(1, 1);
         ArmTrajectories trajectories = new ArmTrajectories(config);
-        ArmAngles t0 = new ArmAngles(-0.639248, 1.838205); // safe
-       // ArmAngles t0 = new ArmAngles(0.089803, 1.681915); // mid
-        ArmAngles t1 = new ArmAngles(0.316365, 1.147321); // high
-        Trajectory trajectory = trajectories.onePoint(t0, t1, 135);
-
-        XYSeries series1 = new XYSeries("Joints");
-        for (double t = 0; t < trajectory.getTotalTimeSeconds(); t += 0.1) {
+        Translation2d t0 = kinematics.forward(new ArmAngles(-0.639248, 1.838205)); // safe
+        Translation2d mid = kinematics.forward(new ArmAngles(0.089803, 1.681915)); // mid
+        Translation2d t1 = new Translation2d(.6, .6);
+        Translation2d t2 = new Translation2d(1, .6);
+        Translation2d t3 = new Translation2d(1, 1);
+        Translation2d t4 = new Translation2d(.6, 1);
+        Trajectory trajectorystart = trajectories.onePoint(t0, t1, 90, 90);
+        Trajectory trajectory = trajectories.onePoint(t1, t2, 0, 0);
+        Trajectory trajectory2 = trajectories.onePoint(t2, t3, 90, 90);
+        Trajectory trajectory3 = trajectories.onePoint(t3, t4, 180, 180);
+        Trajectory trajectory4 = trajectories.onePoint(t4, t1, 270, 270);
+        XYSeries series1 = new XYSeries("Cartesian End");
+        XYSeries elbow = new XYSeries("Cartesian Elbow");
+        for (double t = 0; t < trajectorystart.getTotalTimeSeconds(); t += 0.05) {
+            Trajectory.State s = trajectorystart.sample(t);
+            double x1 = s.poseMeters.getX(); // proximal
+            double y1 = s.poseMeters.getY(); // distal
+            series1.add(x1, y1);
+        }
+        for (double t = 0; t < trajectory.getTotalTimeSeconds(); t += 0.05) {
             Trajectory.State s = trajectory.sample(t);
-            // note distal is X here
-            // TODO: reverse these
-            double x1 = s.poseMeters.getY(); // proximal
-            double y1 = s.poseMeters.getX(); // distal
+            double x1 = s.poseMeters.getX(); // proximal
+            double y1 = s.poseMeters.getY(); // distal
+            series1.add(x1, y1);
+        }
+        for (double t = 0; t < trajectory2.getTotalTimeSeconds(); t += 0.05) {
+            Trajectory.State s = trajectory2.sample(t);
+            double x1 = s.poseMeters.getX(); // proximal
+            double y1 = s.poseMeters.getY(); // distal
+            series1.add(x1, y1);
+        }
+        for (double t = 0; t < trajectory3.getTotalTimeSeconds(); t += 0.05) {
+            Trajectory.State s = trajectory3.sample(t);
+            double x1 = s.poseMeters.getX(); // proximal
+            double y1 = s.poseMeters.getY(); // distal
+            series1.add(x1, y1);
+        }
+        for (double t = 0; t < trajectory4.getTotalTimeSeconds(); t += 0.05) {
+            Trajectory.State s = trajectory4.sample(t);
+            double x1 = s.poseMeters.getX(); // proximal
+            double y1 = s.poseMeters.getY(); // distal
             series1.add(x1, y1);
         }
         dataset.addSeries(series1);
+        XYSeries joints = dataset.getSeries(0);
+        int ct = joints.getItemCount();
+        for (int i = 0; i < ct; ++i) {
+            Number nx = joints.getX(i); // proximal
+            Number ny = joints.getY(i); // distal
+            double proximal = nx.doubleValue();
+            double distal = ny.doubleValue();
+            Translation2d a = new Translation2d(proximal, distal);
+            ArmAngles c = kinematics.inverse(a);
+            Translation2d el = kinematics.elbow(c);
+            elbow.add(el.getY(), el.getX());
+        }
+        dataset.addSeries(elbow);
+        XYSeries base = new XYSeries("Base");
+        base.add(0, 0);
+        dataset.addSeries(base);
         return dataset;
     }
 
@@ -59,29 +105,22 @@ public class JointVisualizer {
      * @param data has proximal in x and distal in y
      * 
      */
-    private static XYSeriesCollection jointToCartesian(XYSeriesCollection data) {
-        ArmKinematics k = new ArmKinematics(1, 1);
+    private static XYSeriesCollection cartesianToJoint(XYSeriesCollection data) {
+        ArmKinematics k = new ArmKinematics(.93, .92);
         XYSeries joints = data.getSeries(0);
-        XYSeries end = new XYSeries("Cartesian End");
-        XYSeries elbow = new XYSeries("Cartesian Elbow");
+        XYSeries end = new XYSeries("Joints");
         int ct = joints.getItemCount();
         for (int i = 0; i < ct; ++i) {
             Number nx = joints.getX(i); // proximal
             Number ny = joints.getY(i); // distal
             double proximal = nx.doubleValue();
             double distal = ny.doubleValue();
-            ArmAngles a = new ArmAngles(proximal, distal);
-            Translation2d c = k.forward(a);
-            end.add(c.getY(), c.getX());
-            Translation2d el = k.elbow(a);
-            elbow.add(el.getY(), el.getX());
+            Translation2d a = new Translation2d(proximal, distal);
+            ArmAngles c = k.inverse(a);
+            end.add(c.th1, c.th2);
         }
         XYSeriesCollection result = new XYSeriesCollection();
         result.addSeries(end);
-        result.addSeries(elbow);
-        XYSeries base = new XYSeries("Base");
-        base.add(0, 0);
-        result.addSeries(base);
         return result;
 
     }
@@ -92,17 +131,17 @@ public class JointVisualizer {
 
             JFrame frame = new JFrame("Chart Collection");
 
-            XYSeriesCollection joints = joints();
+            XYSeriesCollection translation = joints();
             JFreeChart jointChart = ChartFactory.createScatterPlot(
-                    "Trajectory in Joint Space",
-                    "Proximal (Lower)",
-                    "Distal (Upper)",
-                    joints);
+                    "Trajectory in Cartesian Space",
+                    "X (Left/Right)",
+                    "Y (Up/Down)",
+                    translation);
 
-            XYPlot jointXY = (XYPlot) jointChart.getPlot();
-            jointXY.setBackgroundPaint(Color.WHITE);
-            jointXY.getDomainAxis().setRange(-1.0, 1.0); // 2
-            jointXY.getRangeAxis().setRange(0.5, 2.5); // 2
+            XYPlot cartesianXY = (XYPlot) jointChart.getPlot();
+            cartesianXY.setBackgroundPaint(Color.WHITE);
+            cartesianXY.getDomainAxis().setRange(-1, 1.5); // 2
+            cartesianXY.getRangeAxis().setRange(0, 2.5); // 2
 
             ChartPanel jointPanel = new ChartPanel(jointChart) {
                 @Override
@@ -112,17 +151,17 @@ public class JointVisualizer {
             };
             frame.add(jointPanel, BorderLayout.EAST);
 
-            XYSeriesCollection cartesian = jointToCartesian(joints);
+            XYSeriesCollection cartesian = cartesianToJoint(translation);
             JFreeChart cartesianChart = ChartFactory.createScatterPlot(
-                    "Trajectory in Cartesian Space",
-                    "X (forward)",
-                    "Z (up)",
+                    "Trajectory in Joint Space",
+                    "Lower",
+                    "Upper",
                     cartesian);
 
-            XYPlot cartesianXY = (XYPlot) cartesianChart.getPlot();
-            cartesianXY.setBackgroundPaint(Color.WHITE);
-            cartesianXY.getDomainAxis().setRange(-1, 1.5); // 2.5
-            cartesianXY.getRangeAxis().setRange(0, 2.5);
+            XYPlot jointXY = (XYPlot) cartesianChart.getPlot();
+            jointXY.setBackgroundPaint(Color.WHITE);
+            jointXY.getDomainAxis().setRange(-0.7, 0.5); // 2.5
+            jointXY.getRangeAxis().setRange(0, 3.14);
 
             ChartPanel cartesianPanel = new ChartPanel(cartesianChart) {
                 @Override
