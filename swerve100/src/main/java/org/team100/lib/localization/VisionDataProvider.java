@@ -8,7 +8,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.msgpack.jackson.dataformat.MessagePackFactory;
-import org.team100.frc2023.config.Cameras2023;
+import org.team100.lib.config.Cameras2023;
 import org.team100.lib.telemetry.Telemetry;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,7 +46,7 @@ public class VisionDataProvider extends Subsystem implements TableEventListener 
          * Set this to some large number (e.g. 100) to disable gyro-derived rotation and
          * always use the camera.
          */
-        public double kTagRotationBeliefThresholdMeters = 1;
+        public double kTagRotationBeliefThresholdMeters = 0.5;
     }
 
     private final Config m_config = new Config();

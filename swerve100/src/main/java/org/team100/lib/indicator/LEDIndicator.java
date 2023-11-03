@@ -23,7 +23,7 @@ public class LEDIndicator {
         BLACK(new Color(0, 0, 0)),
         RED(new Color(255, 0, 0)),
         GREEN(new Color(0, 0, 255)),
-        PURPLE(new Color(254, 100, 0)),
+        PURPLE(new Color(255, 100, 0)),
         YELLOW(new Color(255, 0, 80)),
         ORANGE(new Color(255, 0, 30));
 

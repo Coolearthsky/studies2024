@@ -4,14 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.team254.lib.geometry.Rotation2d;
-import com.team254.lib.geometry.Translation2d;
-import com.team254.lib.geometry.Twist2d;
-import com.team254.lib.swerve.ChassisSpeeds;
-import com.team254.lib.swerve.SwerveDriveKinematics;
-import com.team254.lib.swerve.SwerveModuleState;
-import com.team254.lib.swerve.SwerveSetpoint;
-import com.team254.lib.util.Util;
+import org.team100.lib.geometry.GeometryUtil;
+
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Twist2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 /**
  * Takes a prior setpoint (ChassisSpeeds), a desired setpoint (from a driver, or
@@ -88,7 +87,7 @@ public class AsymSwerveSetpointGenerator {
      */
     private double findRoot(Function2d func, double x_0, double y_0, double f_0, double x_1, double y_1, double f_1,
             int iterations_left) {
-        if (iterations_left < 0 || Util.epsilonEquals(f_0, f_1)) {
+        if (iterations_left < 0 || Math.abs(f_0 - f_1) <= 1e-12) {
             return 1.0;
         }
         var s_guess = Math.max(0.0, Math.min(1.0, -f_0 / (f_1 - f_0)));
@@ -169,7 +168,6 @@ public class AsymSwerveSetpointGenerator {
      */
     public SwerveSetpoint generateSetpoint(final KinematicLimits limits, final SwerveSetpoint prevSetpoint,
             ChassisSpeeds desiredState, double dt) {
-        final Translation2d[] modules = mKinematics.getModuleLocations();
 
         SwerveModuleState[] desiredModuleState = mKinematics.toSwerveModuleStates(desiredState);
         // Make sure desiredState respects velocity limits.
@@ -181,46 +179,48 @@ public class AsymSwerveSetpointGenerator {
         // Special case: desiredState is a complete stop. In this case, module angle is
         // arbitrary, so just use the previous angle.
         boolean need_to_steer = true;
-        if (desiredState.toTwist2d().epsilonEquals(Twist2d.identity(), Util.kEpsilon)) {
+        if (chassisSpeedsToTwist2d(desiredState).equals(GeometryUtil.kTwist2dIdentity)) {
             need_to_steer = false;
-            for (int i = 0; i < modules.length; ++i) {
-                desiredModuleState[i].angle = prevSetpoint.mModuleStates[i].angle;
+            for (int i = 0; i < prevSetpoint.getModuleStates().length; ++i) {
+                desiredModuleState[i].angle = prevSetpoint.getModuleStates()[i].angle;
                 desiredModuleState[i].speedMetersPerSecond = 0.0;
             }
         }
 
         // For each module, compute local Vx and Vy vectors.
-        double[] prev_vx = new double[modules.length];
-        double[] prev_vy = new double[modules.length];
-        Rotation2d[] prev_heading = new Rotation2d[modules.length];
-        double[] desired_vx = new double[modules.length];
-        double[] desired_vy = new double[modules.length];
-        Rotation2d[] desired_heading = new Rotation2d[modules.length];
+        double[] prev_vx = new double[prevSetpoint.getModuleStates().length];
+        double[] prev_vy = new double[prevSetpoint.getModuleStates().length];
+        Rotation2d[] prev_heading = new Rotation2d[prevSetpoint.getModuleStates().length];
+        double[] desired_vx = new double[prevSetpoint.getModuleStates().length];
+        double[] desired_vy = new double[prevSetpoint.getModuleStates().length];
+        Rotation2d[] desired_heading = new Rotation2d[prevSetpoint.getModuleStates().length];
         boolean all_modules_should_flip = true;
-        for (int i = 0; i < modules.length; ++i) {
-            prev_vx[i] = prevSetpoint.mModuleStates[i].angle.cos() * prevSetpoint.mModuleStates[i].speedMetersPerSecond;
-            prev_vy[i] = prevSetpoint.mModuleStates[i].angle.sin() * prevSetpoint.mModuleStates[i].speedMetersPerSecond;
-            prev_heading[i] = prevSetpoint.mModuleStates[i].angle;
-            if (prevSetpoint.mModuleStates[i].speedMetersPerSecond < 0.0) {
-                prev_heading[i] = prev_heading[i].flip();
+        for (int i = 0; i < prevSetpoint.getModuleStates().length; ++i) {
+            prev_vx[i] = prevSetpoint.getModuleStates()[i].angle.getCos()
+                    * prevSetpoint.getModuleStates()[i].speedMetersPerSecond;
+            prev_vy[i] = prevSetpoint.getModuleStates()[i].angle.getSin()
+                    * prevSetpoint.getModuleStates()[i].speedMetersPerSecond;
+            prev_heading[i] = prevSetpoint.getModuleStates()[i].angle;
+            if (prevSetpoint.getModuleStates()[i].speedMetersPerSecond < 0.0) {
+                prev_heading[i] = GeometryUtil.flip(prev_heading[i]);
             }
-            desired_vx[i] = desiredModuleState[i].angle.cos() * desiredModuleState[i].speedMetersPerSecond;
-            desired_vy[i] = desiredModuleState[i].angle.sin() * desiredModuleState[i].speedMetersPerSecond;
+            desired_vx[i] = desiredModuleState[i].angle.getCos() * desiredModuleState[i].speedMetersPerSecond;
+            desired_vy[i] = desiredModuleState[i].angle.getSin() * desiredModuleState[i].speedMetersPerSecond;
             desired_heading[i] = desiredModuleState[i].angle;
             if (desiredModuleState[i].speedMetersPerSecond < 0.0) {
-                desired_heading[i] = desired_heading[i].flip();
+                desired_heading[i] = GeometryUtil.flip(desired_heading[i]);
             }
             if (all_modules_should_flip) {
                 double required_rotation_rad = Math
-                        .abs(prev_heading[i].inverse().rotateBy(desired_heading[i]).getRadians());
+                        .abs(prev_heading[i].unaryMinus().rotateBy(desired_heading[i]).getRadians());
                 if (required_rotation_rad < Math.PI / 2.0) {
                     all_modules_should_flip = false;
                 }
             }
         }
         if (all_modules_should_flip &&
-                !prevSetpoint.mChassisSpeeds.toTwist2d().epsilonEquals(Twist2d.identity(), Util.kEpsilon) &&
-                !desiredState.toTwist2d().epsilonEquals(Twist2d.identity(), Util.kEpsilon)) {
+                !chassisSpeedsToTwist2d(prevSetpoint.getChassisSpeeds()).equals(GeometryUtil.kTwist2dIdentity) &&
+                !chassisSpeedsToTwist2d(desiredState).equals(GeometryUtil.kTwist2dIdentity)) {
             // It will (likely) be faster to stop the robot, rotate the modules in place to
             // the complement of the desired
             // angle, and accelerate again.
@@ -231,9 +231,9 @@ public class AsymSwerveSetpointGenerator {
         // start state to the goal state; then
         // find the amount we can move from start towards goal in this cycle such that
         // no kinematic limit is exceeded.
-        double dx = desiredState.vxMetersPerSecond - prevSetpoint.mChassisSpeeds.vxMetersPerSecond;
-        double dy = desiredState.vyMetersPerSecond - prevSetpoint.mChassisSpeeds.vyMetersPerSecond;
-        double dtheta = desiredState.omegaRadiansPerSecond - prevSetpoint.mChassisSpeeds.omegaRadiansPerSecond;
+        double dx = desiredState.vxMetersPerSecond - prevSetpoint.getChassisSpeeds().vxMetersPerSecond;
+        double dy = desiredState.vyMetersPerSecond - prevSetpoint.getChassisSpeeds().vyMetersPerSecond;
+        double dtheta = desiredState.omegaRadiansPerSecond - prevSetpoint.getChassisSpeeds().omegaRadiansPerSecond;
 
         // 's' interpolates between start and goal. At 0, we are at prevState and at 1,
         // we are at desiredState.
@@ -243,33 +243,33 @@ public class AsymSwerveSetpointGenerator {
         // steering angle to command (since
         // inverse kinematics doesn't care about angle, we can be opportunistically
         // lazy).
-        List<Optional<Rotation2d>> overrideSteering = new ArrayList<>(modules.length);
+        List<Optional<Rotation2d>> overrideSteering = new ArrayList<>(prevSetpoint.getModuleStates().length);
         // Enforce steering velocity limits. We do this by taking the derivative of
         // steering angle at the current angle,
         // and then backing out the maximum interpolant between start and goal states.
         // We remember the minimum across all modules, since
         // that is the active constraint.
         final double max_theta_step = dt * limits.kMaxSteeringVelocity;
-        for (int i = 0; i < modules.length; ++i) {
+        for (int i = 0; i < prevSetpoint.getModuleStates().length; ++i) {
             if (!need_to_steer) {
-                overrideSteering.add(Optional.of(prevSetpoint.mModuleStates[i].angle));
+                overrideSteering.add(Optional.of(prevSetpoint.getModuleStates()[i].angle));
                 continue;
             }
             overrideSteering.add(Optional.empty());
-            if (Util.epsilonEquals(prevSetpoint.mModuleStates[i].speedMetersPerSecond, 0.0)) {
+            if (Math.abs(prevSetpoint.getModuleStates()[i].speedMetersPerSecond - 0.0) <= 1e-12) {
                 // If module is stopped, we know that we will need to move straight to the final
                 // steering angle, so limit based
                 // purely on rotation in place.
-                if (Util.epsilonEquals(desiredModuleState[i].speedMetersPerSecond, 0.0)) {
+                if (Math.abs(desiredModuleState[i].speedMetersPerSecond - 0.0) <= 1e-12) {
                     // Goal angle doesn't matter. Just leave module at its current angle.
-                    overrideSteering.set(i, Optional.of(prevSetpoint.mModuleStates[i].angle));
+                    overrideSteering.set(i, Optional.of(prevSetpoint.getModuleStates()[i].angle));
                     continue;
                 }
 
-                var necessaryRotation = prevSetpoint.mModuleStates[i].angle.inverse().rotateBy(
+                var necessaryRotation = prevSetpoint.getModuleStates()[i].angle.unaryMinus().rotateBy(
                         desiredModuleState[i].angle);
                 if (flipHeading(necessaryRotation)) {
-                    necessaryRotation = necessaryRotation.rotateBy(Rotation2d.kPi);
+                    necessaryRotation = necessaryRotation.rotateBy(GeometryUtil.kPi);
                 }
                 // getRadians() bounds to +/- Pi.
                 final double numStepsNeeded = Math.abs(necessaryRotation.getRadians()) / max_theta_step;
@@ -281,7 +281,7 @@ public class AsymSwerveSetpointGenerator {
                     continue;
                 } else {
                     // Adjust steering by max_theta_step.
-                    overrideSteering.set(i, Optional.of(prevSetpoint.mModuleStates[i].angle.rotateBy(
+                    overrideSteering.set(i, Optional.of(prevSetpoint.getModuleStates()[i].angle.rotateBy(
                             Rotation2d.fromRadians(Math.signum(necessaryRotation.getRadians()) * max_theta_step))));
                     min_s = 0.0;
                     continue;
@@ -292,7 +292,7 @@ public class AsymSwerveSetpointGenerator {
                 continue;
             }
 
-            //TODO(add range reduction trick)
+            // TODO(add range reduction trick)
             final int kMaxIterations = 8;
             double s = findSteeringMaxS(prev_vx[i], prev_vy[i], prev_heading[i].getRadians(),
                     desired_vx[i], desired_vy[i], desired_heading[i].getRadians(),
@@ -302,7 +302,7 @@ public class AsymSwerveSetpointGenerator {
 
         // Enforce drive wheel acceleration limits.
         // final double max_vel_step = dt * limits.kMaxDriveAcceleration;
-        for (int i = 0; i < modules.length; ++i) {
+        for (int i = 0; i < prevSetpoint.getModuleStates().length; ++i) {
             if (min_s == 0.0) {
                 // No need to carry on.
                 break;
@@ -326,25 +326,29 @@ public class AsymSwerveSetpointGenerator {
         }
 
         ChassisSpeeds retSpeeds = new ChassisSpeeds(
-                prevSetpoint.mChassisSpeeds.vxMetersPerSecond + min_s * dx,
-                prevSetpoint.mChassisSpeeds.vyMetersPerSecond + min_s * dy,
-                prevSetpoint.mChassisSpeeds.omegaRadiansPerSecond + min_s * dtheta);
+                prevSetpoint.getChassisSpeeds().vxMetersPerSecond + min_s * dx,
+                prevSetpoint.getChassisSpeeds().vyMetersPerSecond + min_s * dy,
+                prevSetpoint.getChassisSpeeds().omegaRadiansPerSecond + min_s * dtheta);
         var retStates = mKinematics.toSwerveModuleStates(retSpeeds);
-        for (int i = 0; i < modules.length; ++i) {
+        for (int i = 0; i < prevSetpoint.getModuleStates().length; ++i) {
             final var maybeOverride = overrideSteering.get(i);
             if (maybeOverride.isPresent()) {
                 var override = maybeOverride.get();
-                if (flipHeading(retStates[i].angle.inverse().rotateBy(override))) {
+                if (flipHeading(retStates[i].angle.unaryMinus().rotateBy(override))) {
                     retStates[i].speedMetersPerSecond *= -1.0;
                 }
                 retStates[i].angle = override;
             }
-            final var deltaRotation = prevSetpoint.mModuleStates[i].angle.inverse().rotateBy(retStates[i].angle);
+            final var deltaRotation = prevSetpoint.getModuleStates()[i].angle.unaryMinus().rotateBy(retStates[i].angle);
             if (flipHeading(deltaRotation)) {
-                retStates[i].angle = retStates[i].angle.flip();
+                retStates[i].angle = GeometryUtil.flip(retStates[i].angle);
                 retStates[i].speedMetersPerSecond *= -1.0;
             }
         }
         return new SwerveSetpoint(retSpeeds, retStates);
+    }
+
+    private static Twist2d chassisSpeedsToTwist2d(ChassisSpeeds x) {
+        return new Twist2d(x.vxMetersPerSecond, x.vyMetersPerSecond, x.omegaRadiansPerSecond);
     }
 }

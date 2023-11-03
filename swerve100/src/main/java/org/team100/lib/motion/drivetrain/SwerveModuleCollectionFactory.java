@@ -1,6 +1,5 @@
 package org.team100.lib.motion.drivetrain;
 
-import org.team100.frc2023.subsystems.SwerveModuleFactory;
 import org.team100.lib.config.Identity;
 import org.team100.lib.experiments.Experiments;
 
@@ -26,25 +25,25 @@ public class SwerveModuleCollectionFactory {
                                 11, // drive CAN
                                 30, // turn CAN
                                 0, // turn encoder
-                                0.642472), // turn offset
+                                0.708328), // turn offset
                         m_moduleFactory.WCPModule(
                                 "Front Right",
                                 12, // drive CAN
                                 32, // turn CAN
                                 1, // turn encoder
-                                0.740540), // turn offset
+                                0.659267), // turn offset
                         m_moduleFactory.WCPModule(
                                 "Rear Left",
                                 21, // drive CAN
                                 31, // turn CAN
                                 2, // turn encoder
-                                0.149713), // turn offset
+                                0.396148), // turn offset
                         m_moduleFactory.WCPModule(
                                 "Rear Right",
                                 22, // drive CAN
                                 33, // turn CAN
                                 3, // turn encoder
-                                0.296298)); // turn offset
+                                0.109823)); // turn offset
             case SWERVE_TWO:
                 return new SwerveModuleCollection(
                     m_moduleFactory.Swerve2CAN(

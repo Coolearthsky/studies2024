@@ -1,6 +1,5 @@
 package org.team100.frc2023;
 
-import java.io.FileWriter;
 import java.io.IOException;
 
 import org.team100.frc2023.autonomous.Autonomous;
@@ -18,8 +17,6 @@ import org.team100.frc2023.commands.arm.SetCubeMode;
 import org.team100.frc2023.commands.manipulator.Eject;
 import org.team100.frc2023.commands.manipulator.Hold;
 import org.team100.frc2023.commands.manipulator.Intake;
-import org.team100.frc2023.control.Control;
-import org.team100.frc2023.control.DualXboxControl;
 import org.team100.frc2023.subsystems.Manipulator;
 import org.team100.frc2023.subsystems.ManipulatorInterface;
 import org.team100.frc2023.subsystems.arm.ArmInterface;
@@ -34,6 +31,8 @@ import org.team100.lib.controller.DriveControllers;
 import org.team100.lib.controller.DriveControllersFactory;
 import org.team100.lib.controller.HolonomicDriveController2;
 import org.team100.lib.experiments.Experiments;
+import org.team100.lib.hid.Control;
+import org.team100.lib.hid.DualXboxControl;
 import org.team100.lib.indicator.LEDIndicator;
 import org.team100.lib.indicator.LEDIndicator.State;
 import org.team100.lib.localization.AprilTagFieldLayoutWithCorrectOrientation;
@@ -50,7 +49,9 @@ import org.team100.lib.motion.drivetrain.kinematics.FrameTransform;
 import org.team100.lib.motion.drivetrain.kinematics.SwerveDriveKinematicsFactory;
 import org.team100.lib.sensors.RedundantGyro;
 import org.team100.lib.sensors.RedundantGyroInterface;
+import org.team100.lib.swerve.SwerveKinematicLimits;
 import org.team100.lib.telemetry.Telemetry;
+import org.team100.lib.trajectory.DrawCircle;
 import org.team100.lib.trajectory.FancyTrajectory;
 
 import edu.wpi.first.math.VecBuilder;
@@ -58,6 +59,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
@@ -78,7 +80,8 @@ public class RobotContainer {
         //
         //////////////////////////////////////
 
-        public double kDriveCurrentLimit = SHOW_MODE ? 20 : 60;
+        public double kDriveCurrentLimit = 30;
+        // public double kDriveCurrentLimit = SHOW_MODE ? 20 : 60;
 
         public boolean useSetpointGenerator = false;
     }
@@ -99,15 +102,15 @@ public class RobotContainer {
     private final SwerveDriveSubsystem m_robotDrive;
     private final SwerveModuleCollectionInterface m_modules;
     private final SwerveDriveKinematics m_kinematics;
+    // TODO replace with SpeedLimits.
+    private final SwerveKinematicLimits m_kinematicLimits;
+
     private final FrameTransform m_frameTransform;
     private final ManipulatorInterface manipulator;
     private final ArmInterface m_arm;
 
     // HID CONTROL
     private final Control control;
-
-    // LOGGING
-    private final FileWriter myWriter;
 
     // AUTON
     private final Command m_auton;
@@ -133,6 +136,13 @@ public class RobotContainer {
         SpeedLimits speedLimits = SpeedLimitsFactory.get(identity, false);
         m_kinematics = SwerveDriveKinematicsFactory.get(identity);
 
+        m_kinematicLimits = new SwerveKinematicLimits();
+        // TODO: fix these limits
+        m_kinematicLimits.kMaxDriveVelocity = 4;
+        m_kinematicLimits.kMaxDriveAcceleration = 2;
+        m_kinematicLimits.kMaxSteeringVelocity = Units.degreesToRadians(750.0);
+    
+
         VeeringCorrection veering = new VeeringCorrection(m_heading::getHeadingRateNWU);
 
         m_frameTransform = new FrameTransform(veering);
@@ -151,13 +161,14 @@ public class RobotContainer {
                 m_modules.positions(),
                 new Pose2d(),
                 VecBuilder.fill(0.5, 0.5, 0.5),
-                VecBuilder.fill(0.4, 0.4, 0.4)); // note tight rotation variance here, used to be MAX_VALUE
+                VecBuilder.fill(0.1, 0.1, 0.4)); // note tight rotation variance here, used to be MAX_VALUE
 
-        if (m_allianceSelector.alliance() == DriverStation.Alliance.Blue) {
-            layout = AprilTagFieldLayoutWithCorrectOrientation.blueLayout();
-        } else { // red
-            layout = AprilTagFieldLayoutWithCorrectOrientation.redLayout();
-        }
+        // TODO: make this override work better
+        // if (m_allianceSelector.alliance() == DriverStation.Alliance.Blue) {
+            layout = AprilTagFieldLayoutWithCorrectOrientation.blueLayout("2023-studies.json");
+        // } else { // red
+        //     layout = AprilTagFieldLayoutWithCorrectOrientation.redLayout("2023-studies.json");
+        // }
 
         // hunting the memory leak
         VisionDataProvider visionDataProvider = new VisionDataProvider(
@@ -185,22 +196,20 @@ public class RobotContainer {
         control = new DualXboxControl();
         // control = new JoystickControl();
 
-        myWriter = logFile();
-
         ////////////////////////////
         // DRIVETRAIN COMMANDS
         // control.autoLevel(new AutoLevel(false, m_robotDrive, ahrsclass));
-        if (m_allianceSelector.alliance() == DriverStation.Alliance.Blue) {
-            control.driveToLeftGrid(toTag(6, 1.25, 0));
-            control.driveToCenterGrid(toTag(7, 0.95, .55));
-            control.driveToRightGrid(toTag(8, 0.95, .55));
-            control.driveToSubstation(toTag(4, 0.53, -0.749));
-        } else {
-            control.driveToLeftGrid(toTag(1, 0.95, .55));
-            control.driveToCenterGrid(toTag(2, 0.95, .55));
-            control.driveToRightGrid(toTag(3, 0.95, .55));
-            control.driveToSubstation(toTag(5, 0.9, -0.72));
-        }
+        // if (m_allianceSelector.alliance() == DriverStation.Alliance.Blue) {
+        //     control.driveToLeftGrid(toTag(6, 1.25, 0));
+        //     control.driveToCenterGrid(toTag(7, 0.95, .55));
+        //     control.driveToRightGrid(toTag(8, 0.95, .55));
+        //     control.driveToSubstation(toTag(4, 0.53, -0.749));
+        // } else {
+        //     control.driveToLeftGrid(toTag(1, 0.95, .55));
+        //     control.driveToCenterGrid(toTag(2, 0.95, .55));
+        //     control.driveToRightGrid(toTag(3, 0.95, .55));
+        //     control.driveToSubstation(toTag(5, 0.9, -0.72));
+        // }
         control.defense(new Defense(m_robotDrive));
         control.resetRotation0(new ResetRotation(m_robotDrive, new Rotation2d(0)));
         control.resetRotation180(new ResetRotation(m_robotDrive, Rotation2d.fromDegrees(180)));
@@ -208,7 +217,9 @@ public class RobotContainer {
         control.driveSlow(new DriveScaled(control::twist, m_robotDrive, slow));
         SpeedLimits medium = new SpeedLimits(2.0, 2.0, 0.5, 1.0);
         control.driveMedium(new DriveScaled(control::twist, m_robotDrive, medium));
-        control.resetPose(new ResetPose(m_robotDrive, 0, 0, 0));
+        // TODO: make the reset configurable
+        // control.resetPose(new ResetPose(m_robotDrive, 0, 0, 0));
+        control.resetPose(new ResetPose(m_robotDrive, 0, 0, Math.PI));
         control.rotate0(new Rotate(m_robotDrive, m_heading, speedLimits, new Timer(), 0));
 
         control.moveConeWidthLeft(new MoveConeWidth(m_robotDrive, speedLimits, new Timer(), true));
@@ -225,6 +236,22 @@ public class RobotContainer {
 
         ////////////////////////////
         // ARM COMMANDS
+
+
+        //new Circle(new Pose2d(1, 1, Rotation2d.fromDegrees(180))), m_robotDrive, m_kinematics
+
+        // Circle circle = 
+
+        
+        Pose2d[] goalArr = {  new Pose2d(-2.199237, -0.400119, Rotation2d.fromDegrees(180)),
+                              new Pose2d(-2.199237, 1, Rotation2d.fromDegrees(180)),
+                              new Pose2d(-3.312756, 1, Rotation2d.fromDegrees(180)),
+                              new Pose2d(-3.312756,  -0.400119, Rotation2d.fromDegrees(180)),
+                              new Pose2d(-2.199237, -0.400119, Rotation2d.fromDegrees(180))
+
+                            };
+        // control.circle(new Circle(new Pose2d(-2, 0, Rotation2d.fromDegrees(180)), m_robotDrive, m_kinematics));
+        control.circle(new DrawCircle(goalArr, m_robotDrive, m_kinematics));
         control.armHigh(new ArmTrajectory(ArmPosition.HIGH, m_arm, false));
         control.armSafe(new ArmTrajectory(ArmPosition.SAFE, m_arm, false));
         control.armSubstation(new ArmTrajectory(ArmPosition.SUB, m_arm, false));
@@ -238,7 +265,7 @@ public class RobotContainer {
         control.oscillate(new ArmTrajectory(ArmPosition.SUB, m_arm, true));
         // control.armSafeSequential(armSafeWaypoint, armSafe);
         // control.armMid(new ArmTrajectory(ArmPosition.LOW, armController));
-        control.driveWith254Trajec(new FancyTrajectory(m_robotDrive));
+        control.driveWithFancyTrajec(new FancyTrajectory(m_kinematics, m_kinematicLimits, m_robotDrive));
 
         //////////////////////////
         // MISC COMMANDS
@@ -261,7 +288,8 @@ public class RobotContainer {
                     new DriveScaled(
                             control::twist,
                             m_robotDrive,
-                            speedLimits));
+                            SpeedLimitsFactory.get(identity, false))
+            );
         } else {
             if (m_config.useSetpointGenerator) {
                 m_robotDrive.setDefaultCommand(
@@ -330,7 +358,7 @@ public class RobotContainer {
                 { rearLeft ? driveControl : 0, rearLeft ? turnControl : 0 },
                 { rearRight ? driveControl : 0, rearRight ? turnControl : 0 }
         };
-        m_robotDrive.test(desiredOutputs, myWriter);
+        m_robotDrive.test(desiredOutputs);
 
     }
 
@@ -352,15 +380,6 @@ public class RobotContainer {
 
     public void green() {
         m_indicator.set(State.GREEN);
-    }
-
-    private static FileWriter logFile() {
-        try {
-            return new FileWriter("/home/lvuser/logs.txt", true);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     private DriveToAprilTag toTag(

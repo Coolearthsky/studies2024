@@ -1,11 +1,7 @@
 package org.team100.lib.motion.drivetrain;
 
-import java.io.FileWriter;
-import java.io.IOException;
-
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.Timer;
 
 /** Represents the modules in the drivetrain. */
 public class SwerveModuleCollection implements SwerveModuleCollectionInterface {
@@ -40,7 +36,7 @@ public class SwerveModuleCollection implements SwerveModuleCollectionInterface {
         }
 
         @Override
-        public void test(double[][] desiredOutputs, FileWriter writer) {
+        public void test(double[][] desiredOutputs) {
         }
 
         @Override
@@ -106,24 +102,11 @@ public class SwerveModuleCollection implements SwerveModuleCollectionInterface {
     }
 
     /** Test and log. */
-    public void test(double[][] desiredOutputs, FileWriter writer) {
-
-
+    public void test(double[][] desiredOutputs) {
         m_frontLeft.test(desiredOutputs[0]);
         m_frontRight.test(desiredOutputs[1]);
         m_rearLeft.test(desiredOutputs[2]);
         m_rearRight.test(desiredOutputs[3]);
-        try {
-            if (writer != null) {
-                writer.write("Timestamp: " + Timer.getFPGATimestamp() +
-                        ", P" + m_frontLeft.getPosition().distanceMeters
-                        + ", " + m_frontLeft.getState().speedMetersPerSecond + "\n");
-                writer.flush();
-            }
-        } catch (IOException e) {
-            System.out.println("An error occurred.");
-            e.printStackTrace();
-        }
     }
 
     // TODO: do we need this?

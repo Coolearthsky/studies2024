@@ -111,7 +111,7 @@ public class VisionDataProviderTest {
     @Test
     public void testEstimateRobotPose() throws IOException {
         Supplier<Pose2d> robotPose = () -> new Pose2d(); // always at the origin
-        AprilTagFieldLayoutWithCorrectOrientation layout = AprilTagFieldLayoutWithCorrectOrientation.redLayout();
+        AprilTagFieldLayoutWithCorrectOrientation layout = AprilTagFieldLayoutWithCorrectOrientation.redLayout("2023-chargedup.json");
         VisionDataProvider vdp = new VisionDataProvider(layout, null, robotPose);
 
         String key = "foo";
@@ -163,7 +163,7 @@ public class VisionDataProviderTest {
     public void testEstimateRobotPose2() throws IOException {
         // robot is panned right 45
         Supplier<Pose2d> robotPose = () -> new Pose2d(0, 0, new Rotation2d(-Math.PI / 4)); // just for rotation
-        AprilTagFieldLayoutWithCorrectOrientation layout = AprilTagFieldLayoutWithCorrectOrientation.redLayout();
+        AprilTagFieldLayoutWithCorrectOrientation layout = AprilTagFieldLayoutWithCorrectOrientation.redLayout("2023-chargedup.json");
         VisionDataProvider vdp = new VisionDataProvider(layout, null, robotPose);
 
         String key = "foo";

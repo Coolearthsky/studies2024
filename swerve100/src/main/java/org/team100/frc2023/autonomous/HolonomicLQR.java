@@ -139,6 +139,8 @@ public class HolonomicLQR {
         double thetaFF = m_thetaController.calculate(
                 currentPose.getRotation().getRadians(), desiredHeading.getRadians());
 
+        thetaFF = 0;
+
         m_poseError = trajectoryPose.relativeTo(currentPose);
         m_rotationError = desiredHeading.minus(currentPose.getRotation());
 
