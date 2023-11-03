@@ -15,7 +15,7 @@ public enum Camera {
     B("10000000a7c673d9"),
     UNKNOWN(null);
 
-    private static Map<String, Camera> cameras = new HashMap<String, Camera>();
+    private static Map<String, Camera> cameras = new HashMap<>();
     static {
         for (Camera i : Camera.values()) {
             cameras.put(i.m_serialNumber, i);

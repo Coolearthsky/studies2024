@@ -17,4 +17,5 @@ public class DriveUtil {
                 maxRot * MathUtil.clamp(twist.dtheta, -1, 1));
     }
 
+    private DriveUtil() {}
 }
