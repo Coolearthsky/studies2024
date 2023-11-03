@@ -27,7 +27,7 @@ public enum Identity {
     BLANK(""), // e.g. test default or simulation
     UNKNOWN(null);
 
-    private static Map<String, Identity> identities = new HashMap<String, Identity>();
+    private static Map<String, Identity> identities = new HashMap<>();
 
     static {
         for (Identity i : Identity.values()) {

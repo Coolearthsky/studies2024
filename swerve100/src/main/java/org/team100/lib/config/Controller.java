@@ -22,7 +22,7 @@ public enum Controller {
     BLANK(""),
     UNKNOWN(null);
 
-    private static Map<String, Controller> controllers = new HashMap<String, Controller>();
+    private static Map<String, Controller> controllers = new HashMap<>();
 
     static {
         for (Controller i : Controller.values()) {

@@ -29,8 +29,8 @@ public class DoubleIntegratorRotary1D extends Rotary1D {
      * pdot = v
      * vdot = u
      * 
-     * the x jacobian should be constant [0 1 0 0]
-     * the u jacobian should be constant [0, 1]
+     * the x jacobian should be constant [0 1 ; 0 0]
+     * the u jacobian should be constant [0 ; 1]
      */
     @Override
     public RandomVector<N2> f(RandomVector<N2> xmat, Matrix<N1, N1> umat) {
@@ -42,7 +42,12 @@ public class DoubleIntegratorRotary1D extends Rotary1D {
         Matrix<N2, N2> xdotP = xmat.Kxx.copy().getValue();
         xdotP.fill(0);
         // propagate variance of x through f (u has zero variance)
-        xdotP.set(0, 0, xmat.Kxx.get(1, 1));
+        // xdotP.set(0, 0, xmat.Kxx.get(1, 1));
+        double vP = xmat.Kxx.get(1, 1);
+        // x0 and x1 are uncorrelated.
+        xdotP.set(0, 0, vP);
+        xdotP.set(1, 1, vP);
+
         // note that xdot needs no wrapping, don't return an AngularRandomVector here.
         return new RandomVector<>(xdotx, new Variance<>(xdotP));
     }

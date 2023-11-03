@@ -4,7 +4,6 @@ import static org.team100.lib.hid.ControlUtil.clamp;
 import static org.team100.lib.hid.ControlUtil.deadband;
 import static org.team100.lib.hid.ControlUtil.expo;
 
-import org.team100.frc2023.commands.GoalOffset;
 import org.team100.lib.telemetry.Telemetry;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -115,22 +114,6 @@ public class DualXboxControl implements Control {
         }
         previousRotation = Rotation2d.fromDegrees(-1.0 * desiredAngleDegrees);
         return previousRotation;
-    }
-
-    @Override
-    public GoalOffset goalOffset() {
-        double left = controller0.getLeftTriggerAxis();
-        double right = controller0.getRightTriggerAxis();
-        if (left > m_config.kTriggerThreshold) {
-            if (right > m_config.kTriggerThreshold) {
-                return GoalOffset.center;
-            }
-            return GoalOffset.left;
-        }
-        if (right > m_config.kTriggerThreshold) {
-            return GoalOffset.right;
-        }
-        return GoalOffset.center;
     }
 
     @Override

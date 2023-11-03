@@ -1,9 +1,5 @@
-package org.team100.lib.system;
+package org.team100.lib.controller;
 
-import org.team100.lib.controller.FeedbackControl;
-import org.team100.lib.controller.GainCalculator;
-import org.team100.lib.controller.InversionFeedforward;
-import org.team100.lib.controller.State100;
 import org.team100.lib.estimator.ExtrapolatingEstimator;
 import org.team100.lib.estimator.PointEstimator;
 import org.team100.lib.fusion.LinearPooling;
@@ -11,6 +7,7 @@ import org.team100.lib.fusion.VarianceWeightedLinearPooling;
 import org.team100.lib.math.MeasurementUncertainty;
 import org.team100.lib.math.RandomVector;
 import org.team100.lib.math.WhiteNoiseVector;
+import org.team100.lib.system.NonlinearSystemLoop;
 import org.team100.lib.system.examples.NoisyLimitedPlant1D;
 
 import edu.wpi.first.math.Matrix;
@@ -20,8 +17,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
 
 /**
- * A class packaging all of the infastructure necessary for observing and
- * controlling one DOF of the HolonomicDriveRegulator.
+ * One-dimensional estimator and full state feedback controller with feedforward.
  */
 public class SubRegulator1D {
     private static final double kDt = 0.02;
@@ -61,11 +57,11 @@ public class SubRegulator1D {
         loop = new NonlinearSystemLoop<>(system, predictor, pointEstimator, pooling, controller, feedforward);
     }
 
-    public Vector<N2> getR(State100 desiredState) {
+    public static Vector<N2> getR(State100 desiredState) {
         return VecBuilder.fill(desiredState.x(), desiredState.v());
     }
 
-    public Vector<N2> getRDot(State100 desiredState) {
+    public static Vector<N2> getRDot(State100 desiredState) {
         return VecBuilder.fill(desiredState.v(), desiredState.a());
     }
 

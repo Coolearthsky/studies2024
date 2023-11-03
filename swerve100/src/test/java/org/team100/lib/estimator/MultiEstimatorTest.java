@@ -112,7 +112,7 @@ public class MultiEstimatorTest {
 
         xhat = pooling.fuse(x, xhat);
         assertArrayEquals(new double[] { -3.134, -0.240 }, xhat.x.getData(), kDelta);
-        assertArrayEquals(new double[] { 0.0001, 0, 0, 0.1 }, xhat.Kxx.getData(), 0.00001);
+        assertArrayEquals(new double[] { 0.0001, 0, 0, 0.10001 }, xhat.Kxx.getData(), 0.00001);
 
         x = pointEstimator.stateForMeasurementWithZeroU(system.velocity(-0.240));
         assertArrayEquals(new double[] { 0, -0.240 }, x.x.getData(), kDelta);

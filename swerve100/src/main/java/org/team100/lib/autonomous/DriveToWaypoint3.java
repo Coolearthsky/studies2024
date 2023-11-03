@@ -1,9 +1,7 @@
-package org.team100.frc2023.autonomous;
+package org.team100.lib.autonomous;
 
 import java.util.List;
 
-import org.team100.frc2023.LQRManager;
-import org.team100.frc2023.commands.GoalOffset;
 import org.team100.lib.config.Identity;
 import org.team100.lib.controller.DriveControllers;
 import org.team100.lib.controller.DriveControllersFactory;
@@ -69,12 +67,12 @@ public class DriveToWaypoint3 extends Command {
     // private final HolonomicLQR m_controller;
     private final HolonomicDriveController3 m_controller;
 
-    private GoalOffset previousOffset;
+    // private GoalOffset previousOffset;
     private Trajectory m_trajectory;
     private boolean isFinished = false;
 
-    private final LQRManager xManager;
-    private final LQRManager yManager;
+    // private final LQRManager xManager;
+    // private final LQRManager yManager;
 
     // private final Manipulator m_manipulator;
 
@@ -136,8 +134,8 @@ public class DriveToWaypoint3 extends Command {
                 VecBuilder.fill(20), // relms. Control effort (voltage) tolerance. Decrease this to more
                 0.020); // Nominal time between loops. 0.020 for TimedRobot, but can be
 
-        xManager = new LQRManager(m_translationPlant, m_translationObserver, m_translationController, m_constraints);
-        yManager = new LQRManager(m_translationPlant, m_translationObserver, m_translationController, m_constraints);
+        // xManager = new LQRManager(m_translationPlant, m_translationObserver, m_translationController, m_constraints);
+        // yManager = new LQRManager(m_translationPlant, m_translationObserver, m_translationController, m_constraints);
 
         // m_controller = new HolonomicDriveController2(xController, yController,
         // m_rotationController, m_gyro);
@@ -162,7 +160,7 @@ public class DriveToWaypoint3 extends Command {
         addRequirements(drivetrain);
     }
 
-    private Trajectory makeTrajectory(GoalOffset goalOffset, double startVelocity) {
+    private Trajectory makeTrajectory(double startVelocity) {
         Pose2d currentPose = m_swerve.getPose();
         Translation2d currentTranslation = currentPose.getTranslation();
 
@@ -196,7 +194,7 @@ public class DriveToWaypoint3 extends Command {
         // m_controller.reset(m_swerve.getPose());
         // m_controller.updateProfile(m_goal.getX(), m_goal.getY(), 5, 3, 1);
         // m_controller.start();
-        m_trajectory = makeTrajectory(previousOffset, 0);
+        m_trajectory = makeTrajectory(0);
 
     }
 
