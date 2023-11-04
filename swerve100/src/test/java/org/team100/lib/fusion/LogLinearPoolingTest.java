@@ -8,11 +8,11 @@ import org.team100.lib.math.RandomVector;
 
 import edu.wpi.first.math.numbers.N1;
 
-public class LogLinearPoolingTest extends PoolingTest {
+class LogLinearPoolingTest extends PoolingTestUtil {
     private static final Pooling<N1> p = new DemocraticLogLinearPooling<N1>();
 
     @Test
-    public void testUnanimity() {
+    void testUnanimity() {
         RandomVector<N1> aV = v1(0, 1);
         RandomVector<N1> bV = v1(0, 1);
         RandomVector<N1> cV = p.fuse(aV, bV);
@@ -20,7 +20,7 @@ public class LogLinearPoolingTest extends PoolingTest {
     }
 
     @Test
-    public void testDifferentMeans() {
+    void testDifferentMeans() {
         RandomVector<N1> aV = v1(0, 1);
         RandomVector<N1> bV = v1(1, 1);
         RandomVector<N1> cV = p.fuse(aV, bV);
@@ -28,7 +28,7 @@ public class LogLinearPoolingTest extends PoolingTest {
     }
 
     @Test
-    public void testDifferentVariance() {
+    void testDifferentVariance() {
         RandomVector<N1> aV = v1(0, 1);
         RandomVector<N1> bV = v1(0, 2);
         RandomVector<N1> cV = p.fuse(aV, bV);
@@ -38,7 +38,7 @@ public class LogLinearPoolingTest extends PoolingTest {
     }
 
     @Test
-    public void testDifferent() {
+    void testDifferent() {
         RandomVector<N1> aV = v1(0, 1);
         RandomVector<N1> bV = v1(1, 2);
         RandomVector<N1> cV = p.fuse(aV, bV);
@@ -47,7 +47,7 @@ public class LogLinearPoolingTest extends PoolingTest {
     }
 
     @Test
-    public void testZeroVariance() {
+    void testZeroVariance() {
         RandomVector<N1> aV = v1(0, 0);
         RandomVector<N1> bV = v1(1, 1);
         // zero variance does not work for geometric mean
@@ -55,12 +55,11 @@ public class LogLinearPoolingTest extends PoolingTest {
     }
 
     @Test
-    public void testAlmostZero() {
+    void testAlmostZero() {
         RandomVector<N1> aV = v1(0, 0.0000001);
         RandomVector<N1> bV = v1(1, 1);
         RandomVector<N1> cV = p.fuse(aV, bV);
         // the near-zero variance forces the fusion to (nearly) its estimate
         assert1(cV, 0, 0);
     }
-
 }

@@ -11,10 +11,10 @@ import java.util.SortedMap;
 
 import org.junit.jupiter.api.Test;
 
-public class BitemporalBufferTest {
+class BitemporalBufferTest {
 
     @Test
-    public void testTailMapInclusion() {
+    void testTailMapInclusion() {
         BitemporalBuffer<String> buf = new BitemporalBuffer<>(10);
         buf.put(0l, 0.0, "hello");
         SortedMap<Long, Entry<Double, String>> s1 = buf.recordTailMap(0l);
@@ -28,7 +28,7 @@ public class BitemporalBufferTest {
     }
 
     @Test
-    public void testTailMapExclusion() {
+    void testTailMapExclusion() {
         BitemporalBuffer<String> buf = new BitemporalBuffer<>(10);
         buf.put(0l, 0.0, "hello");
         SortedMap<Long, Entry<Double, String>> s3 = buf.recordTailMap(1l);
@@ -39,7 +39,7 @@ public class BitemporalBufferTest {
     }
 
     @Test
-    public void testDuplicateKeys() {
+    void testDuplicateKeys() {
         BitemporalBuffer<String> buf = new BitemporalBuffer<>(10);
         // add duplicate keys
         buf.put(0l, 0.0, "hello");
@@ -92,7 +92,7 @@ public class BitemporalBufferTest {
     }
 
     @Test
-    public void testOrder() {
+    void testOrder() {
         BitemporalBuffer<String> buf = new BitemporalBuffer<>(4);
         // all out of order
         buf.put(2l, 1.0, "r2 v1");
@@ -124,7 +124,7 @@ public class BitemporalBufferTest {
     }
 
     @Test
-    public void testCapacity() {
+    void testCapacity() {
         BitemporalBuffer<String> buf = new BitemporalBuffer<>(2);
         assertEquals(0, buf.size());
         {
@@ -175,7 +175,7 @@ public class BitemporalBufferTest {
     }
 
     @Test
-    public void testOutOfOrderCapacity() {
+    void testOutOfOrderCapacity() {
         BitemporalBuffer<String> buf = new BitemporalBuffer<>(2);
         assertEquals(0, buf.size());
         {
@@ -228,5 +228,4 @@ public class BitemporalBufferTest {
             }
         }
     }
-
 }

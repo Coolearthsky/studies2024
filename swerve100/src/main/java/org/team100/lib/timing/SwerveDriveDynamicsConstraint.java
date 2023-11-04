@@ -36,7 +36,7 @@ public class SwerveDriveDynamicsConstraint implements TimingConstraint {
         double vx = course_local.getCos();
         double vy = course_local.getSin();
         double vtheta = state.getHeadingRate();
-        double curvature = state.getCurvature();
+        // double curvature = state.getCurvature();
         ChassisSpeeds chassis_speeds = new ChassisSpeeds(vx, vy, vtheta);
 
         var module_states = kinematics_.toSwerveModuleStates(chassis_speeds);

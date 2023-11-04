@@ -12,7 +12,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-public class MotionProfileTest {
+class MotionProfileTest {
     private static final double kDelta = 0.001;
 
     @Test
@@ -32,6 +32,7 @@ public class MotionProfileTest {
         assertEquals(1, s1.getV(), kDelta);
 
     }
+
     @Test
     void testReverse() {
         List<MotionSegment> segments = new ArrayList<MotionSegment>();
@@ -39,6 +40,5 @@ public class MotionProfileTest {
         MotionProfile p = new MotionProfile(segments);
         MotionProfile b = p.reversed();
         assertEquals(1, b.duration(), kDelta);
-
     }
 }

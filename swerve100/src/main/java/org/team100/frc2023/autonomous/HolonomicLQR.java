@@ -55,7 +55,7 @@ public class HolonomicLQR {
     private MotionProfile profileX;
     private MotionProfile profileY;
 
-    Timer m_timer = new Timer();
+    private final Timer m_timer;
 
     // TODO: get rid of this profiled pid controller, use a MotionProfile instead.
     private final ProfiledPIDController m_thetaController;
@@ -77,6 +77,7 @@ public class HolonomicLQR {
         m_thetaController = thetaController;
         m_robotDrive = robotDrive;
         m_thetaController.enableContinuousInput(0, Units.degreesToRadians(360.0));
+        m_timer = new Timer();
     }
 
     /**

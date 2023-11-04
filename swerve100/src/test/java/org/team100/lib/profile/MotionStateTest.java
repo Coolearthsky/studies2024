@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-public class MotionStateTest {
+class MotionStateTest {
     private static final double kDelta = 0.001;
 
     @Test

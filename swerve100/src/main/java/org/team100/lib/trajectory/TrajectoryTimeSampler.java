@@ -5,50 +5,53 @@ package org.team100.lib.trajectory;
  * Derived from 254 TimedView.
  */
 public class TrajectoryTimeSampler {
+    public static class TrajectoryTimeSampleException extends RuntimeException {}
+
     protected final Trajectory trajectory_;
-    protected final double start_t_;
-    protected final double end_t_;
+    protected final double startTimeS;
+    protected final double endTimeS;
 
     public TrajectoryTimeSampler(Trajectory trajectory) {
         trajectory_ = trajectory;
-        start_t_ = trajectory_.getPoint(0).state().t();
-        end_t_ = trajectory_.getPoint(trajectory_.length() - 1).state().t();
+        startTimeS = trajectory_.getPoint(0).state().getTimeS();
+        endTimeS = trajectory_.getPoint(trajectory_.length() - 1).state().getTimeS();
     }
 
-    public double first_interpolant() {
-        return start_t_;
+    public double getStartTimeS() {
+        return startTimeS;
     }
 
-    public double last_interpolant() {
-        return end_t_;
+    public double getEndTimeS() {
+        return endTimeS;
     }
 
     /**
-     * @param t TODO what's the unit here? seconds?
+     * @param timeS seconds
      */
-    public TrajectorySamplePoint sample(double t) {
-        if (t >= end_t_) {
+    public TrajectorySamplePoint sample(double timeS) {
+        if (timeS >= endTimeS) {
             TrajectoryPoint point = trajectory_.getPoint(trajectory_.length() - 1);
             return new TrajectorySamplePoint(point.state(), point.index(), point.index());
         }
-        if (t <= start_t_) {
+        if (timeS <= startTimeS) {
             TrajectoryPoint point = trajectory_.getPoint(0);
             return new TrajectorySamplePoint(point.state(), point.index(), point.index());
         }
         for (int i = 1; i < trajectory_.length(); ++i) {
             final TrajectoryPoint point = trajectory_.getPoint(i);
-            if (point.state().t() >= t) {
+            if (point.state().getTimeS() >= timeS) {
                 final TrajectoryPoint prev_s = trajectory_.getPoint(i - 1);
-                if (Math.abs(point.state().t() - prev_s.state().t()) <= 1e-12) {
+                if (Math.abs(point.state().getTimeS() - prev_s.state().getTimeS()) <= 1e-12) {
                     return new TrajectorySamplePoint(point.state(), point.index(), point.index());
                 }
                 return new TrajectorySamplePoint(
                         prev_s.state().interpolate2(point.state(),
-                                (t - prev_s.state().t()) / (point.state().t() - prev_s.state().t())),
+                                (timeS - prev_s.state().getTimeS())
+                                        / (point.state().getTimeS() - prev_s.state().getTimeS())),
                         i - 1, i);
             }
         }
-        throw new RuntimeException();
+        throw new TrajectoryTimeSampleException();
     }
 
     public Trajectory trajectory() {

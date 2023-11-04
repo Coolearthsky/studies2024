@@ -9,7 +9,7 @@ import org.team100.lib.motion.arm.ArmAngles;
 
 import edu.wpi.first.math.geometry.Translation2d;
 
-public class ArmKinematicsTest {
+class ArmKinematicsTest {
     private static final double kDelta = 0.001;
 
     @Test

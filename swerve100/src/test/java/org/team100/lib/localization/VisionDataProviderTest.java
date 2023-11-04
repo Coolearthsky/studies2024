@@ -16,11 +16,11 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 
-public class VisionDataProviderTest {
+class VisionDataProviderTest {
     private static final double kDelta = 0.01;
 
     @Test
-    public void testGetRobotPoseInFieldCoords2() {
+    void testGetRobotPoseInFieldCoords2() {
         // trivial example: if camera offset happens to match the camera global pose
         // then of course the robot global pose is the origin.
         Transform3d cameraInRobotCoords = new Transform3d(
@@ -44,7 +44,7 @@ public class VisionDataProviderTest {
     }
 
     @Test
-    public void testGetRobotPoseInFieldCoords3() {
+    void testGetRobotPoseInFieldCoords3() {
         Transform3d cameraInRobotCoords = new Transform3d(
                 new Translation3d(1, 1, 1),
                 new Rotation3d(0, 0, 0));
@@ -69,7 +69,7 @@ public class VisionDataProviderTest {
     }
 
     @Test
-    public void testGetRobotPoseInFieldCoords4() {
+    void testGetRobotPoseInFieldCoords4() {
         Transform3d cameraInRobotCoords = new Transform3d(
                 new Translation3d(1, 1, 1),
                 new Rotation3d(0, 0, 0));
@@ -109,7 +109,7 @@ public class VisionDataProviderTest {
     }
 
     @Test
-    public void testEstimateRobotPose() throws IOException {
+    void testEstimateRobotPose() throws IOException {
         Supplier<Pose2d> robotPose = () -> new Pose2d(); // always at the origin
         AprilTagFieldLayoutWithCorrectOrientation layout = AprilTagFieldLayoutWithCorrectOrientation.redLayout("2023-chargedup.json");
         VisionDataProvider vdp = new VisionDataProvider(layout, null, robotPose);
@@ -160,7 +160,7 @@ public class VisionDataProviderTest {
     }
 
     @Test
-    public void testEstimateRobotPose2() throws IOException {
+    void testEstimateRobotPose2() throws IOException {
         // robot is panned right 45
         Supplier<Pose2d> robotPose = () -> new Pose2d(0, 0, new Rotation2d(-Math.PI / 4)); // just for rotation
         AprilTagFieldLayoutWithCorrectOrientation layout = AprilTagFieldLayoutWithCorrectOrientation.redLayout("2023-chargedup.json");

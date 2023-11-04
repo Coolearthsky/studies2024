@@ -28,11 +28,11 @@ public class TimedPose {
         return state_;
     }
 
-    public void set_t(double t) {
+    public void setTimeS(double t) {
         timeS = t;
     }
 
-    public double t() {
+    public double getTimeS() {
         return timeS;
     }
 
@@ -40,7 +40,7 @@ public class TimedPose {
         velocityM_S = velocity;
     }
 
-    public double velocity() {
+    public double velocityM_S() {
         return velocityM_S;
     }
 
@@ -58,21 +58,21 @@ public class TimedPose {
         final DecimalFormat fmt = new DecimalFormat("#0.000");
         return state().getPose().toString()
                 + ", curve: " + fmt.format(state().getCurvature())
-                + ", time: " + fmt.format(t())
-                + ", vel: " + fmt.format(velocity())
+                + ", time: " + fmt.format(getTimeS())
+                + ", vel: " + fmt.format(velocityM_S())
                 + ", acc: " + fmt.format(acceleration());
     }
 
     public TimedPose interpolate2(TimedPose other, double x) {
-        final double new_t = MathUtil.interpolate(t(), other.t(), x);
-        final double delta_t = new_t - t();
+        final double new_t = MathUtil.interpolate(getTimeS(), other.getTimeS(), x);
+        final double delta_t = new_t - getTimeS();
         if (delta_t < 0.0) {
             return other.interpolate2(this, 1.0 - x);
         }
-        boolean reversing = velocity() < 0.0 || (Math.abs(velocity() - 0.0) <= 1e-12 && acceleration() < 0.0);
-        final double new_v = velocity() + acceleration() * delta_t;
+        boolean reversing = velocityM_S() < 0.0 || (Math.abs(velocityM_S() - 0.0) <= 1e-12 && acceleration() < 0.0);
+        final double new_v = velocityM_S() + acceleration() * delta_t;
         final double new_s = (reversing ? -1.0 : 1.0)
-                * (velocity() * delta_t + .5 * acceleration() * delta_t * delta_t);
+                * (velocityM_S() * delta_t + .5 * acceleration() * delta_t * delta_t);
 
         double interpolant = new_s / state().distance(other.state());
         if (Double.isNaN(interpolant)) {
@@ -102,7 +102,7 @@ public class TimedPose {
             System.out.println("state not equal");
             return false;
         }
-        boolean timeEqual = Math.abs(t() - ts.t()) <= 1e-12;
+        boolean timeEqual = Math.abs(getTimeS() - ts.getTimeS()) <= 1e-12;
         if (!timeEqual) {
             System.out.println("time not equal");
             return false;

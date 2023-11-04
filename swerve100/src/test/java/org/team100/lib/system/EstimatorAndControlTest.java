@@ -27,7 +27,7 @@ import edu.wpi.first.math.numbers.N2;
 /**
  * Test combination of estimator and controller
  */
-public class EstimatorAndControlTest {
+class EstimatorAndControlTest {
     private static final double kDelta = 0.001;
     private static final double kDt = 0.02;
 
@@ -70,7 +70,7 @@ public class EstimatorAndControlTest {
     }
 
     @Test
-    public void testNearZero() {
+    void testNearZero() {
         // positive setpoint, delta +0.02, push positive
 
         // initially, state estimate: at zero, motionless
@@ -129,7 +129,7 @@ public class EstimatorAndControlTest {
     }
 
     @Test
-    public void testNearPiWithoutWrapping() {
+    void testNearPiWithoutWrapping() {
         // example near PI
         // goal is pi-0.01,
         // initial is pi - 0.03
@@ -201,7 +201,7 @@ public class EstimatorAndControlTest {
     }
 
     @Test
-    public void testNearPiWithWrapping() {
+    void testNearPiWithWrapping() {
         // example near PI
         // goal is pi-0.01,
         // initial is -pi + 0.01

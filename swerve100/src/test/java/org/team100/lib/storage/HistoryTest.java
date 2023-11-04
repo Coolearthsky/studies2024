@@ -6,9 +6,9 @@ import java.util.Map.Entry;
 
 import org.junit.jupiter.api.Test;
 
-public class HistoryTest {
+class HistoryTest {
     @Test
-    public void testSimple() {
+    void testSimple() {
         History<String> h = new History<>(100);
         h.put(1.0, "hi 1");
         h.put(0.5, "hi 0.5");

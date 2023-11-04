@@ -51,4 +51,5 @@ public class Jacobian {
         return result;
     }
 
+    private Jacobian() {}
 }

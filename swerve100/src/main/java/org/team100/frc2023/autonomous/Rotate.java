@@ -66,7 +66,8 @@ public class Rotate extends Command {
                 m_speedLimits.angleSpeedRad_S,
                 m_speedLimits.angleAccelRad_S2,
                 m_speedLimits.angleJerkRad_S3);
-        m_timer.reset();
+
+        m_timer.restart();
     }
 
     @Override

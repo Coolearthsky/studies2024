@@ -56,6 +56,8 @@ public class DriveWithHeading extends Command {
     @Override
     public void initialize() {
         snapMode = false;
+
+        m_timer.restart();
     }
 
     @Override

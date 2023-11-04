@@ -8,8 +8,7 @@ import org.junit.jupiter.api.Test;
 // import com.acmerobotics.roadrunner.profile.MotionSegment;
 // import com.acmerobotics.roadrunner.profile.MotionState;
 
-
-public class MotionSegmentTest {
+class MotionSegmentTest {
     private static final double kDelta = 0.001;
 
     @Test

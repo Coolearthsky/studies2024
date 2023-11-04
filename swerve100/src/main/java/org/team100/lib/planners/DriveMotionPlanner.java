@@ -107,12 +107,12 @@ public class DriveMotionPlanner {
         mLastSetpoint = null;
         useDefaultCook = true;
         mSpeedLookahead = new Lookahead(kAdaptivePathMinLookaheadDistance, kAdaptivePathMaxLookaheadDistance, 0.0, kMaxVelocityMetersPerSecond);
-        mCurrentTrajectoryLength = mCurrentTrajectory.trajectory().getLastPoint().state().t();
+        mCurrentTrajectoryLength = mCurrentTrajectory.trajectory().getLastPoint().state().getTimeS();
         for (int i = 0; i < trajectory.trajectory().length(); ++i) {
-            if (trajectory.trajectory().getPoint(i).state().velocity() > MathUtil.EPSILON) {
+            if (trajectory.trajectory().getPoint(i).state().velocityM_S() > MathUtil.EPSILON) {
                 mIsReversed = false;
                 break;
-            } else if (trajectory.trajectory().getPoint(i).state().velocity() < -MathUtil.EPSILON) {
+            } else if (trajectory.trajectory().getPoint(i).state().velocityM_S() < -MathUtil.EPSILON) {
                 mIsReversed = true;
                 break;
             }
@@ -211,7 +211,7 @@ public class DriveMotionPlanner {
         }
 
         // Convert goal into a desired course (in robot frame).
-        double goal_linear_velocity = fieldToGoal.velocity();
+        double goal_linear_velocity = fieldToGoal.velocityM_S();
         double goal_angular_velocity = goal_linear_velocity * fieldToGoal.state().getCurvature();
         Optional<Rotation2d> maybe_field_to_goal = fieldToGoal.state().getCourse();
 
@@ -299,7 +299,7 @@ public class DriveMotionPlanner {
         t.log("/planner/lookahead state", lookahead_state);
 
         double actual_lookahead_distance = mSetpoint.state().distance(lookahead_state.state());
-        double adaptive_lookahead_distance = mSpeedLookahead.getLookaheadForSpeed(mSetpoint.velocity());
+        double adaptive_lookahead_distance = mSpeedLookahead.getLookaheadForSpeed(mSetpoint.velocityM_S());
         //Find the Point on the Trajectory that is Lookahead Distance Away
         while (actual_lookahead_distance < adaptive_lookahead_distance &&
                 mCurrentTrajectory.getRemainingProgress() > lookahead_time) {
@@ -315,8 +315,8 @@ public class DriveMotionPlanner {
                    GeometryUtil.transformBy(lookahead_state.state()
                     .getPose(), GeometryUtil.fromTranslation(new Translation2d(
                             (mIsReversed ? -1.0 : 1.0) * (kPathMinLookaheadDistance -
-                                    actual_lookahead_distance), 0.0))), 0.0), lookahead_state.t()
-                    , lookahead_state.velocity(), lookahead_state.acceleration());
+                                    actual_lookahead_distance), 0.0))), 0.0), lookahead_state.getTimeS()
+                    , lookahead_state.velocityM_S(), lookahead_state.acceleration());
         }
         t.log("/planner/updated lookahead state", lookahead_state);
 
@@ -331,10 +331,10 @@ public class DriveMotionPlanner {
         steeringDirection = steeringDirection.rotateBy(GeometryUtil.inverse(current_state).getRotation());
 
         //Use the Velocity Feedforward of the Closest Point on the Trajectory
-        double normalizedSpeed = Math.abs(mSetpoint.velocity()) / kMaxVelocityMetersPerSecond;
+        double normalizedSpeed = Math.abs(mSetpoint.velocityM_S()) / kMaxVelocityMetersPerSecond;
 
         //The Default Cook is the minimum speed to use. So if a feedforward speed is less than defaultCook, the robot will drive at the defaultCook speed
-        if(normalizedSpeed > defaultCook || mSetpoint.t() > (mCurrentTrajectoryLength / 2.0)){
+        if(normalizedSpeed > defaultCook || mSetpoint.getTimeS() > (mCurrentTrajectoryLength / 2.0)){
             useDefaultCook = false;
         }
         if(useDefaultCook){
@@ -383,7 +383,7 @@ public class DriveMotionPlanner {
                 mSetpoint = sample_point.state();
                 mError = GeometryUtil.transformBy(GeometryUtil.inverse(current_state), mSetpoint.state().getPose());
 
-                final double velocity_m = mSetpoint.velocity();
+                final double velocity_m = mSetpoint.velocityM_S();
                 // Field relative
                 var course = mSetpoint.state().getCourse();
                 Rotation2d motion_direction = course.isPresent() ? course.get() : GeometryUtil.kRotationIdentity;
@@ -413,7 +413,7 @@ public class DriveMotionPlanner {
 
                 t.log("/planner/setpoint", mSetpoint);
 
-                final double velocity_m = mSetpoint.velocity();
+                final double velocity_m = mSetpoint.velocityM_S();
                 t.log("/planner/setpoint velocity", velocity_m);
 
                 // Field relative

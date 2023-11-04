@@ -67,23 +67,22 @@ public class FalconTurningMotor implements TurningMotor {
         }
         double kFF = (Kn * revolutionsPerSec + Ks * Math.signum(revolutionsPerSec)) * gearRatio / VSat;
         m_motor.set(ControlMode.Velocity, ticksPer100ms * gearRatio, type, kFF);
-
-        t.log(m_name + "/Output", get());
-        t.log(m_name + "/Error", m_motor.getClosedLoopError() / (ticksPerRevolution / 10));
+        log();
     }
 
     public void setPIDPosition(double outputRadians) {
         double outputTicks = outputRadians / (Math.PI * 2) * ticksPerRevolution;
         m_motor.set(ControlMode.Position, outputTicks * gearRatio);
-
-        t.log(m_name + "/Output", get());
-        t.log(m_name + "/Error", m_motor.getClosedLoopError() / (ticksPerRevolution / 10));
+        log();
     }
 
     @Override
     public void set(double output) {
         m_motor.set(output);
+        log();
+    }
 
+    private void log() {
         t.log(m_name + "/Output", get());
         t.log(m_name + "/Error", m_motor.getClosedLoopError() / (ticksPerRevolution / 10));
     }

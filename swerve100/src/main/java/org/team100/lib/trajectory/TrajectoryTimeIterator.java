@@ -18,8 +18,8 @@ public class TrajectoryTimeIterator {
         view_ = view;
 
         // No effect if view is empty.
-        current_sample_ = view_.sample(view_.first_interpolant());
-        progress_ = view_.first_interpolant();
+        current_sample_ = view_.sample(view_.getStartTimeS());
+        progress_ = view_.getStartTimeS();
     }
 
     public boolean isDone() {
@@ -31,7 +31,7 @@ public class TrajectoryTimeIterator {
     }
 
     public double getRemainingProgress() {
-        return Math.max(0.0, view_.last_interpolant() - progress_);
+        return Math.max(0.0, view_.getEndTimeS() - progress_);
     }
 
     public TrajectorySamplePoint getSample() {
@@ -43,15 +43,15 @@ public class TrajectoryTimeIterator {
     }
 
     public TrajectorySamplePoint advance(double additional_progress) {
-        progress_ = Math.max(view_.first_interpolant(),
-                Math.min(view_.last_interpolant(), progress_ + additional_progress));
+        progress_ = Math.max(view_.getStartTimeS(),
+                Math.min(view_.getEndTimeS(), progress_ + additional_progress));
         current_sample_ = view_.sample(progress_);
         return current_sample_;
     }
 
     public TrajectorySamplePoint preview(double additional_progress) {
-        final double progress = Math.max(view_.first_interpolant(),
-                Math.min(view_.last_interpolant(), progress_ + additional_progress));
+        final double progress = Math.max(view_.getStartTimeS(),
+                Math.min(view_.getEndTimeS(), progress_ + additional_progress));
         return view_.sample(progress);
     }
 

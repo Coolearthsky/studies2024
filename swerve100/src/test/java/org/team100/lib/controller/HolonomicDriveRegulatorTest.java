@@ -34,26 +34,26 @@ class HolonomicDriveRegulatorTest {
 
     @Test
     void driveOneMeter() {
-        final double kDtSec = 0.02;
+        double kDtSec = 0.02;
         Pose2d startingPose = new Pose2d();
         Pose2d goalPose = new Pose2d(1, 0, new Rotation2d(0));
-        final SpeedLimits speedLimits = new SpeedLimits(5, 2, 2, 2);
+        SpeedLimits speedLimits = new SpeedLimits(5, 2, 2, 2);
         Pose2d currentPose = startingPose;
         Twist2d currentTwist = new Twist2d(); // start at rest
         double time = 0;
-        final MotionProfile profileX = MotionProfileGenerator.generateSimpleMotionProfile(
+        MotionProfile profileX = MotionProfileGenerator.generateSimpleMotionProfile(
                 new MotionState(startingPose.getX(), 0),
                 new MotionState(goalPose.getX(), 0),
                 speedLimits.speedM_S,
                 speedLimits.accelM_S2,
                 speedLimits.jerkM_S3);
-        final MotionProfile profileY = MotionProfileGenerator.generateSimpleMotionProfile(
+        MotionProfile profileY = MotionProfileGenerator.generateSimpleMotionProfile(
                 new MotionState(startingPose.getY(), 0),
                 new MotionState(goalPose.getY(), 0),
                 speedLimits.speedM_S,
                 speedLimits.accelM_S2,
                 speedLimits.jerkM_S3);
-        final MotionProfile profileTheta = MotionProfileGenerator.generateSimpleMotionProfile(
+        MotionProfile profileTheta = MotionProfileGenerator.generateSimpleMotionProfile(
                 new MotionState(startingPose.getRotation().getRadians(), 0),
                 new MotionState(goalPose.getRotation().getRadians(), 0),
                 speedLimits.angleSpeedRad_S,

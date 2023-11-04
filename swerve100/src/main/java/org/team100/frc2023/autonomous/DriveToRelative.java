@@ -16,7 +16,7 @@ public class DriveToRelative extends Command {
     private final Pose2d relative;
     private final SwerveDriveSubsystem m_robotDrive;
     private final SpeedLimits speedLimits = new SpeedLimits(5, 2, 2, 2);
-    private Timer m_timer;
+    private final Timer m_timer;
     private MotionProfile profileX;
     private MotionProfile profileY;
     private MotionProfile profileTheta;
@@ -24,6 +24,7 @@ public class DriveToRelative extends Command {
     public DriveToRelative(Pose2d relative, SwerveDriveSubsystem robotDrive) {
         this.relative = relative;
         m_robotDrive = robotDrive;
+        m_timer = new Timer();
     }
 
     @Override
@@ -50,6 +51,8 @@ public class DriveToRelative extends Command {
                 speedLimits.angleSpeedRad_S,
                 speedLimits.angleAccelRad_S2,
                 speedLimits.angleJerkRad_S3);
+
+        m_timer.restart();
     }
 
     @Override

@@ -10,13 +10,8 @@ import org.junit.jupiter.api.Test;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 
-public class UnrollerTest {
+class UnrollerTest {
     public static final double DELTA = 0.02;
-
-    @Test
-    public void testToy() {
-        assertEquals(1, 1);
-    }
 
     public class TestSupplier implements Supplier<Rotation2d> {
         private final ListIterator<Double> in = List.of(0.0, 1.0, 1.5, 3.0, -3.0, -1.5, -3.0, 3.0).listIterator();
@@ -32,7 +27,7 @@ public class UnrollerTest {
     }
 
     @Test
-    public void testUnroller() {
+    void testUnroller() {
         TestSupplier s = new TestSupplier();
         Unroller c = new Unroller(s);
         for (int i = 0; i < 8; ++i)

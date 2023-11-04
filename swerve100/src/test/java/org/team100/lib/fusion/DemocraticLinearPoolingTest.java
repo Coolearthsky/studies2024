@@ -6,11 +6,11 @@ import org.team100.lib.math.RandomVector;
 
 import edu.wpi.first.math.numbers.N1;
 
-public class DemocraticLinearPoolingTest extends PoolingTest {
+class DemocraticLinearPoolingTest extends PoolingTestUtil {
     private static final Pooling<N1> p = new DemocraticLinearPooling<N1>();
 
     @Test
-    public void testUnanimity() {
+    void testUnanimity() {
         RandomVector<N1> aV = v1(0, 1);
         RandomVector<N1> bV = v1(0, 1);
         RandomVector<N1> cV = p.fuse(aV, bV);
@@ -19,7 +19,7 @@ public class DemocraticLinearPoolingTest extends PoolingTest {
     }
 
     @Test
-    public void testDifferentMeans() {
+    void testDifferentMeans() {
         RandomVector<N1> aV = v1(0, 1);
         RandomVector<N1> bV = v1(1, 1);
         RandomVector<N1> cV = p.fuse(aV, bV);
@@ -29,7 +29,7 @@ public class DemocraticLinearPoolingTest extends PoolingTest {
     }
 
     @Test
-    public void testDifferentVariance() {
+    void testDifferentVariance() {
         RandomVector<N1> aV = v1(0, 1);
         RandomVector<N1> bV = v1(0, 2);
         RandomVector<N1> cV = p.fuse(aV, bV);
@@ -39,7 +39,7 @@ public class DemocraticLinearPoolingTest extends PoolingTest {
     }
 
     @Test
-    public void testDifferent() {
+    void testDifferent() {
         RandomVector<N1> aV = v1(0, 1);
         RandomVector<N1> bV = v1(1, 2);
         RandomVector<N1> cV = p.fuse(aV, bV);
@@ -49,7 +49,7 @@ public class DemocraticLinearPoolingTest extends PoolingTest {
     }
 
     @Test
-    public void testZeroVariance() {
+     void testZeroVariance() {
         RandomVector<N1> aV = v1(0, 0);
         RandomVector<N1> bV = v1(1, 1);
         RandomVector<N1> cV = p.fuse(aV, bV);
@@ -59,7 +59,7 @@ public class DemocraticLinearPoolingTest extends PoolingTest {
     }
 
     @Test
-    public void testNotWrapping() {
+    void testNotWrapping() {
         // in this example position is an angle
         // but wrapping is not required
         AngularRandomVector<N1> aV = a1(- Math.PI / 4, 1);
@@ -71,7 +71,7 @@ public class DemocraticLinearPoolingTest extends PoolingTest {
     }
 
     @Test
-    public void testWrapping() {
+    void testWrapping() {
         // in this example position is an angle
         AngularRandomVector<N1> aV = a1(-3 * Math.PI / 4, 1);
         // a little less so it ends up positive
@@ -81,7 +81,4 @@ public class DemocraticLinearPoolingTest extends PoolingTest {
         // and the variance is a bit bigger since the inputs are pi/2 apart
         assert1(cV, Math.PI - 0.005, 1.125);
     }
-
-
-
 }

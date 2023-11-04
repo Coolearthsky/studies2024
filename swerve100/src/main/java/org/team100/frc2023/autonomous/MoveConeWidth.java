@@ -64,7 +64,8 @@ public class MoveConeWidth extends Command {
                 Math.min(m_config.speedM_S, m_speedLimits.speedM_S),
                 Math.min(m_config.accelM_S2, m_speedLimits.accelM_S2),
                 Math.min(m_config.jerkM_S3, m_speedLimits.jerkM_S3));
-        m_timer.reset();
+                
+        m_timer.restart();
     }
 
     @Override

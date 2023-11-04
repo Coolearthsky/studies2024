@@ -10,11 +10,11 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.numbers.N2;
 
 /** Verify non-Euclidean arithmetic. */
-public class AngularRandomVectorTest {
+class AngularRandomVectorTest {
     private static final double kDelta = 0.001;
 
     @Test
-    public void testWrappingPlus() {
+    void testWrappingPlus() {
         Vector<N2> x0 = VecBuilder.fill(3, 0);
         Variance<N2> p0 = Variance.from2StdDev(0.316228, 0.316228);
         // p0.set(0, 0, 0.1);
@@ -35,7 +35,7 @@ public class AngularRandomVectorTest {
     }
 
     @Test
-    public void testWrappingMinus() {
+    void testWrappingMinus() {
         Vector<N2> x0 = VecBuilder.fill(3, 0);
         Variance<N2> p0 = Variance.from2StdDev(0.316228, 0.316228);
         // p0.set(0, 0, 0.1);
@@ -55,5 +55,4 @@ public class AngularRandomVectorTest {
         // more variance here
         assertArrayEquals(new double[] { 0.2, 0, 0, 0.2 }, v2.Kxx.getData(), kDelta);
     }
-
 }

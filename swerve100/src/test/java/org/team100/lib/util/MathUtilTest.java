@@ -11,7 +11,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-public class MathUtilTest {
+class MathUtilTest {
     private static final double kDelta = 0.001;
 
     @Test

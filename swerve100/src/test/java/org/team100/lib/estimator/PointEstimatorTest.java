@@ -12,7 +12,7 @@ import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
 
-public class PointEstimatorTest {
+class PointEstimatorTest {
     private static final double kDelta = 0.001;
 
     public static class Thing extends MockNonlinearPlant<N2, N1, N2> {
@@ -42,7 +42,7 @@ public class PointEstimatorTest {
     }
 
     @Test
-    public void testStateForFullMeasurement() {
+    void testStateForFullMeasurement() {
         Thing system = new Thing();
         PointEstimator<N2, N1, N2> pointEstimator = new PointEstimator<>(system);
 
@@ -63,7 +63,7 @@ public class PointEstimatorTest {
     }
 
     @Test
-    public void testStateForPartialMeasurement() {
+    void testStateForPartialMeasurement() {
         Thing system = new Thing();
         PointEstimator<N2, N1, N2> pointEstimator = new PointEstimator<>(system);
 
@@ -82,8 +82,4 @@ public class PointEstimatorTest {
         assertArrayEquals(new double[] { 1, 0 }, xhat.x.getData(), kDelta);
         assertArrayEquals(new double[] { 0.01, 0, 0, 1e9 }, xhat.Kxx.getData(), kDelta);
     }
-
-
-    
-
 }

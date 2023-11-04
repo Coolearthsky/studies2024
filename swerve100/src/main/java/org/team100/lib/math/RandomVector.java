@@ -10,7 +10,7 @@ import edu.wpi.first.math.numbers.N1;
  * 
  * https://en.wikipedia.org/wiki/Multivariate_random_variable
  * 
- * TODO: make distinct classes for state vs measurement
+ * This class may be used for measurements, or for state estimates.
  */
 public class RandomVector<States extends Num> {
     /**

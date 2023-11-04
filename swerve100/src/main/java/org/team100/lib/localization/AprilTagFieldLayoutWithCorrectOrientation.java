@@ -35,7 +35,6 @@ public class AprilTagFieldLayoutWithCorrectOrientation {
      * @param filename filename allows experimentation with other layouts
      */
     private AprilTagFieldLayoutWithCorrectOrientation(OriginPosition origin, String filename) throws IOException {
-        // TODO: extract this filename
         Path path = Filesystem.getDeployDirectory().toPath().resolve(filename);
         layout = new AprilTagFieldLayout(path);
         layout.setOrigin(origin);

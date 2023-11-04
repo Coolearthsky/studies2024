@@ -11,7 +11,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
-public class AsymSwerveSetpointGeneratorTest {
+class AsymSwerveSetpointGeneratorTest {
 
     protected final static double kRobotSide = 0.616; // m
     static final Translation2d[] moduleTranslations = new Translation2d[] {

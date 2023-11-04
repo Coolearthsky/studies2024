@@ -13,7 +13,7 @@ import edu.wpi.first.math.system.NumericalIntegration;
  * Do I need to enforce time polarity?
  * Nope, RK4 works forwards and backwards.
  */
-public class NumericalIntegrationTest {
+class NumericalIntegrationTest {
     private static final double kDelta = 0.001;
 
     Matrix<N1, N1> constantF(Matrix<N1, N1> x, Matrix<N1, N1> u) {
@@ -21,7 +21,7 @@ public class NumericalIntegrationTest {
     }
 
     @Test
-    public void testPositiveTime() {
+    void testPositiveTime() {
         Matrix<N1, N1> prevXhat = VecBuilder.fill(0);
         Matrix<N1, N1> u = VecBuilder.fill(0);
         Matrix<N1, N1> xhat = NumericalIntegration.rk4(this::constantF, prevXhat, u, 1);
@@ -29,7 +29,7 @@ public class NumericalIntegrationTest {
     }
 
     @Test
-    public void testNegativeTime() {
+    void testNegativeTime() {
         Matrix<N1, N1> prevXhat = VecBuilder.fill(0);
         Matrix<N1, N1> u = VecBuilder.fill(0);
         Matrix<N1, N1> xhat = NumericalIntegration.rk4(this::constantF, prevXhat, u, -1);
@@ -38,7 +38,7 @@ public class NumericalIntegrationTest {
     }
 
     @Test
-    public void testRoundtripTime() {
+    void testRoundtripTime() {
         Matrix<N1, N1> prevXhat = VecBuilder.fill(0);
         Matrix<N1, N1> u = VecBuilder.fill(0);
         Matrix<N1, N1> xhat = NumericalIntegration.rk4(this::constantF, prevXhat, u, 1);

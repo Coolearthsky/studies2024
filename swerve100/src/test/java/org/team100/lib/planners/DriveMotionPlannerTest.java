@@ -126,7 +126,7 @@ class DriveMotionPlannerTest {
     }
 
     @Test
-    public void testAllTrajectories() {
+    void testAllTrajectories() {
         SwerveDriveKinematics kinematics = kKinematics;
         SwerveKinematicLimits limits = kSmoothKinematicLimits;
         DriveMotionPlanner planner = new DriveMotionPlanner(kinematics, limits);
@@ -191,6 +191,5 @@ class DriveMotionPlannerTest {
                 time += mDt;
             }
         }
-
     }
 }

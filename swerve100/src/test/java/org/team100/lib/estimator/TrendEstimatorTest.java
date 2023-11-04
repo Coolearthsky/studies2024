@@ -12,7 +12,7 @@ import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
 
-public class TrendEstimatorTest {
+class TrendEstimatorTest {
     private static final double kDelta = 0.001;
 
     public static class Thing extends MockNonlinearPlant<N2, N1, N2> {
@@ -41,7 +41,7 @@ public class TrendEstimatorTest {
     }
 
     @Test
-    public void testStateForMeasurementPair() {
+    void testStateForMeasurementPair() {
         Thing thing = new Thing();
         TrendEstimator<N2, N1, N2> trendEstimator = new TrendEstimator<>(thing);
 
@@ -126,7 +126,7 @@ public class TrendEstimatorTest {
     }
 
     @Test
-    public void testDoubleIntegrator() {
+    void testDoubleIntegrator() {
         DoubleIntegrator doubleIntegrator = new DoubleIntegrator();
         TrendEstimator<N2, N1, N2> trendEstimator = new TrendEstimator<>(doubleIntegrator);
 
@@ -157,7 +157,7 @@ public class TrendEstimatorTest {
     }
 
     @Test
-    public void testDoubleIntegratorSmallTimeStep() {
+    void testDoubleIntegratorSmallTimeStep() {
         DoubleIntegrator doubleIntegrator = new DoubleIntegrator();
         TrendEstimator<N2, N1, N2> trendEstimator = new TrendEstimator<>(doubleIntegrator);
 
