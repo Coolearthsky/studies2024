@@ -12,6 +12,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.TrajectoryParameterizer.TrajectoryGenerationException;
+import edu.wpi.first.math.util.Units;
 
 public class ArmTrajectories {
     public static class Config {
@@ -42,10 +43,22 @@ public class ArmTrajectories {
         trajecConfig = config;
     }
 
-    public Trajectory makeTrajectory(Translation2d start, Translation2d end, double startAngle,double endAngle) {
-        if (start == null)
-            return null;
-            return onePoint(start, end, startAngle,endAngle);
+    public Trajectory makeTrajectory(Translation2d start, Translation2d end) {
+        Translation2d e = end.minus(start);
+        double angle = degreesFromTranslation2d(e);
+        return onePoint(start, end, angle,angle);
+    }
+
+    private double degreesFromTranslation2d(Translation2d xy) {
+        double x = xy.getX();
+        double y = xy.getY();
+        double constant = 0;
+        if (x <0) {
+            constant += 180;
+        }
+        double atan = Math.atan(y/x);
+        double angle = Units.radiansToDegrees(atan)+constant;
+        return angle;
     }
 
     /** from current location to an endpoint */

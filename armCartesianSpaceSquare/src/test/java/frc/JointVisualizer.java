@@ -39,11 +39,11 @@ public class JointVisualizer {
         Translation2d t2 = new Translation2d(1, .6);
         Translation2d t3 = new Translation2d(1, 1);
         Translation2d t4 = new Translation2d(.6, 1);
-        Trajectory trajectorystart = trajectories.onePoint(t0, t1, 90, 90);
-        Trajectory trajectory = trajectories.onePoint(t1, t2, 0, 0);
-        Trajectory trajectory2 = trajectories.onePoint(t2, t3, 90, 90);
-        Trajectory trajectory3 = trajectories.onePoint(t3, t4, 180, 180);
-        Trajectory trajectory4 = trajectories.onePoint(t4, t1, 270, 270);
+        Trajectory trajectorystart = trajectories.makeTrajectory(t0, t1);
+        Trajectory trajectory = trajectories.makeTrajectory(t1, t2);
+        Trajectory trajectory2 = trajectories.makeTrajectory(t2, t3);
+        Trajectory trajectory3 = trajectories.makeTrajectory(t3, t4);
+        Trajectory trajectory4 = trajectories.makeTrajectory(t4, t1);
         XYSeries series1 = new XYSeries("Cartesian End");
         XYSeries elbow = new XYSeries("Cartesian Elbow");
         for (double t = 0; t < trajectorystart.getTotalTimeSeconds(); t += 0.05) {
@@ -65,6 +65,7 @@ public class JointVisualizer {
             series1.add(x1, y1);
         }
         for (double t = 0; t < trajectory3.getTotalTimeSeconds(); t += 0.05) {
+            
             Trajectory.State s = trajectory3.sample(t);
             double x1 = s.poseMeters.getX(); // proximal
             double y1 = s.poseMeters.getY(); // distal

@@ -37,7 +37,7 @@ public class ArmTrajectory extends Command {
         public TrajectoryConfig safeTrajectory = new TrajectoryConfig(9, 1.5);
         public TrajectoryConfig normalTrajectory = new TrajectoryConfig(1, 1);
     }
-
+    private boolean t = false;
     private final Config m_config = new Config();
     private final ArmSubsystem m_armSubsystem;
     private final double m_startAngle;
@@ -57,9 +57,9 @@ public class ArmTrajectory extends Command {
      * Go to the specified position and optionally oscillate when you get there.
      * Units for angles are degrees
      */
-    public ArmTrajectory(ArmSubsystem robot, Translation2d set, double startAngle, double endAngle) {
+    public ArmTrajectory(ArmSubsystem armSubSystem, Translation2d set, double startAngle, double endAngle) {
         m_set = set;
-        m_armSubsystem = robot;
+        m_armSubsystem = armSubSystem;
         m_endAngle = endAngle;
         m_startAngle = startAngle;
         m_timer = new Timer();
@@ -71,7 +71,10 @@ public class ArmTrajectory extends Command {
         setpointUpper = inst.getTable("Arm Trajec").getDoubleTopic("Setpoint Upper").publish();
         setpointLower = inst.getTable("Arm Trajec").getDoubleTopic("Setpoint Lower").publish();
     }
-
+    public ArmTrajectory(ArmSubsystem armSubSystem, Translation2d set){
+        this(armSubSystem, set, -1, -1);
+        t = true;
+    }
     @Override
     public void initialize() {
         m_lowerController.setIntegratorRange(1, 1);
@@ -81,8 +84,13 @@ public class ArmTrajectory extends Command {
         m_timer.restart();
         final TrajectoryConfig trajectoryConfig;
         trajectoryConfig = m_config.normalTrajectory;
+        if (t == true) {
         m_trajectory = new ArmTrajectories(trajectoryConfig).makeTrajectory(
-                m_armSubsystem.kinematics.forward(m_armSubsystem.getMeasurement()), m_set, m_startAngle, m_endAngle);
+                m_armSubsystem.kinematics.forward(m_armSubsystem.getMeasurement()), m_set);
+            } else {
+                m_trajectory = new ArmTrajectories(trajectoryConfig).onePoint(
+                    m_armSubsystem.kinematics.forward(m_armSubsystem.getMeasurement()), m_set, m_startAngle, m_endAngle);
+                }
 
     }
 
