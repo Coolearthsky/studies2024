@@ -4,17 +4,44 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.arm.Sequence;
 
 public class RobotContainer {
-  public RobotContainer() {
-    configureBindings();
-  }
+    private Command m_auton;
+    private ArmSubsystem m_armSubsystem = new ArmSubsystem();
 
-  private void configureBindings() {}
+    public RobotContainer() {
+        configureBindings();
+    }
 
-  public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
-  }
+    private void configureBindings() {
+    }
+
+    public Command getAutonomousCommand() {
+        return m_auton;
+    }
+
+    public void runTest() {
+        XboxController controller = new XboxController(0);
+        m_armSubsystem.set(0, 0);
+        if (controller.getAButton()) {
+            m_armSubsystem.set(.1, 0);
+        }
+        if (controller.getBButton()) {
+            m_armSubsystem.set(0, .1);
+        }
+        if (controller.getXButton()) {
+            m_armSubsystem.set(-.1, 0);
+        }
+        if (controller.getYButton()) {
+            m_armSubsystem.set(0, -.1);
+        }
+    }
+
+    public void scheduleAuton() {
+        m_auton = new Sequence(m_armSubsystem);
+        m_auton.schedule();
+    }
 }
