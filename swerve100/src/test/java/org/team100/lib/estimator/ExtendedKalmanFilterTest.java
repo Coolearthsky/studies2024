@@ -19,11 +19,11 @@ import edu.wpi.first.math.system.NumericalJacobian;
 /**
  * Verifying ExtendedKalmanFilter behavior.
  */
-public class ExtendedKalmanFilterTest {
+class ExtendedKalmanFilterTest {
     private static final double kDelta = 0.001;
     private static boolean kPrint = false;
 
-    public Matrix<N2, N1> f(Matrix<N2, N1> xmat, Matrix<N1, N1> umat) {
+    Matrix<N2, N1> f(Matrix<N2, N1> xmat, Matrix<N1, N1> umat) {
         double v = xmat.get(1, 0);
         double u = umat.get(0, 0);
         double pdot = v;
@@ -31,13 +31,13 @@ public class ExtendedKalmanFilterTest {
         return VecBuilder.fill(pdot, vdot);
     }
 
-    public Matrix<N2, N1> h(Matrix<N2, N1> x, Matrix<N1, N1> u) {
+     Matrix<N2, N1> h(Matrix<N2, N1> x, Matrix<N1, N1> u) {
         return x;
     }
 
     /** Same test as in BitemporalEstimator, to see if it's the same. */
     @Test
-    public void testFullCorrection() {
+    void testFullCorrection() {
         if (kPrint)
             System.out.println("FULL EKF");
         // not much disturbance, very noisy measurement
@@ -88,7 +88,7 @@ public class ExtendedKalmanFilterTest {
 
     /** Same test as in BitemporalEstimator, to see if it's the same. */
     @Test
-    public void testFullCorrectionAndPrediction() {
+    void testFullCorrectionAndPrediction() {
         if (kPrint)
             System.out.println("FULL EKF CORRECT AND PREDICT");
         // not much disturbance, very noisy measurement
@@ -249,7 +249,7 @@ public class ExtendedKalmanFilterTest {
     /** how does R, Q, and dt affect K? */
     // turn this off because it makes a lot of output.
     // @Test
-    public void testKRQDt() {
+    void testKRQDt() {
         if (kPrint)
             System.out.println("KRQDt ======================================");
         if (kPrint)

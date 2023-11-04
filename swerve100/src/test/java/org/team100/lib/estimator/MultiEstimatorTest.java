@@ -19,12 +19,12 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
 
 /** Illustrates multiple estimators and fusion. */
-public class MultiEstimatorTest {
+class MultiEstimatorTest {
     private static final double kDelta = 0.001;
     private static final double kDt = 0.02;
 
     @Test
-    public void testMultipleSensors() {
+    void testMultipleSensors() {
         WhiteNoiseVector<N2> w = WhiteNoiseVector.noise2(0.015, 0.17);
         MeasurementUncertainty<N2> v = MeasurementUncertainty.for2(0.01, 0.1);
         DoubleIntegratorRotary1D system = new DoubleIntegratorRotary1D(w, v);
@@ -79,7 +79,7 @@ public class MultiEstimatorTest {
     }
 
     @Test
-    public void testMultipleSensorsWithTrend() {
+    void testMultipleSensorsWithTrend() {
         WhiteNoiseVector<N2> w = WhiteNoiseVector.noise2(0.015, 0.17);
         // 0.0001 0.01 = pretty tight measurement variances
         MeasurementUncertainty<N2> v = MeasurementUncertainty.for2(0.01, 0.1);
@@ -177,7 +177,7 @@ public class MultiEstimatorTest {
     }
 
     @Test
-    public void testObserverWrappingCorrectVelocityOnly() {
+    void testObserverWrappingCorrectVelocityOnly() {
         WhiteNoiseVector<N2> w = WhiteNoiseVector.noise2(0.015, 0.17);
         // velocity measurement variance is 0.01.
         MeasurementUncertainty<N2> v = MeasurementUncertainty.for2(0.01, 0.1);
@@ -233,7 +233,7 @@ public class MultiEstimatorTest {
     }
 
     @Test
-    public void testObserverWrappingCorrectPositionOnly() {
+    void testObserverWrappingCorrectPositionOnly() {
         WhiteNoiseVector<N2> w = WhiteNoiseVector.noise2(0.015, 0.17);
         // measurement of position is very tight
         MeasurementUncertainty<N2> v = MeasurementUncertainty.for2(0.01, 0.1);
@@ -275,7 +275,7 @@ public class MultiEstimatorTest {
     }
 
     @Test
-    public void testObserverWrappingPredictAndCorrect() {
+    void testObserverWrappingPredictAndCorrect() {
         // just test the observer across the boundary
         // with both predict and correct
         // goal is pi-0.01,

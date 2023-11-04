@@ -9,10 +9,10 @@ import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.numbers.N1;
 
-public class RandomVectorTest {
+class RandomVectorTest {
     private static final double kDelta = 0.001;
     @Test
-    public void testVacuous() {
+    void testVacuous() {
         Matrix<N1, N1> xV = VecBuilder.fill(1);
         Variance<N1> PV = Variance.fromStdDev(Nat.N1(), VecBuilder.fill(2));
         RandomVector<N1> v = new RandomVector<>(xV, PV);

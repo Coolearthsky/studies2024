@@ -14,18 +14,18 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
 
-public class InversionFeedforwardTest {
+class InversionFeedforwardTest {
     private static final double kDelta = 0.0001;
     private static final double kDt = 0.02;
 
     @Test
-    public void testDoubleIntegrator() {
+    void testDoubleIntegrator() {
         // the model is trivial
         // the r and nextR v differ by 1
         // so u should be 1/dt or 50.
         WhiteNoiseVector<N2> w = WhiteNoiseVector.noise2(0.015, 0.17);
-        MeasurementUncertainty<N2> v = MeasurementUncertainty.for2(0.01,0.1);
-        NonlinearPlant<N2, N1, N2> plant = new DoubleIntegratorRotary1D(w,v);
+        MeasurementUncertainty<N2> v = MeasurementUncertainty.for2(0.01, 0.1);
+        NonlinearPlant<N2, N1, N2> plant = new DoubleIntegratorRotary1D(w, v);
         InversionFeedforward<N2, N1, N2> feedforward = new InversionFeedforward<>(plant);
 
         // position does not matter here.
@@ -37,14 +37,14 @@ public class InversionFeedforwardTest {
     }
 
     @Test
-    public void testPendulum() {
+    void testPendulum() {
         // pendulum model vdot includes position dependence
         // the r and nextR differ by 1
         // so u should be 1/dt or 50.
 
         WhiteNoiseVector<N2> w = WhiteNoiseVector.noise2(0.015, 0.17);
-        MeasurementUncertainty<N2> v = MeasurementUncertainty.for2(0.01,0.1);
-        NonlinearPlant<N2, N1, N2> plant = new Pendulum1D(w,v);
+        MeasurementUncertainty<N2> v = MeasurementUncertainty.for2(0.01, 0.1);
+        NonlinearPlant<N2, N1, N2> plant = new Pendulum1D(w, v);
         InversionFeedforward<N2, N1, N2> feedforward = new InversionFeedforward<>(plant);
 
         {

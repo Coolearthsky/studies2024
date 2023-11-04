@@ -27,7 +27,7 @@ import edu.wpi.first.math.numbers.N2;
 /**
  * Demonstrates angle-wrapping with LinearSystemLoop.
  */
-public class NonlinearSystemLoopTest {
+class NonlinearSystemLoopTest {
     private static final double kDelta = 0.001;
     private static final double kDt = 0.02;
 
@@ -53,7 +53,7 @@ public class NonlinearSystemLoopTest {
             controller, feedforward);
 
     @Test
-    public void testLoop() {
+    void testLoop() {
         // initially, state estimate: at zero, motionless
         Variance<N2> p = Variance.from2StdDev(0.316228, 0.316228);
         // p.set(0, 0, 0.1);
@@ -165,7 +165,7 @@ public class NonlinearSystemLoopTest {
     }
 
     @Test
-    public void testWrapping() {
+    void testWrapping() {
         // start = -pi+0.01
         Variance<N2> p = Variance.from2StdDev(0.316228, 0.316228);
         // p.set(0, 0, 0.1);

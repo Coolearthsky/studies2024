@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import edu.wpi.first.wpilibj.Timer;
 
-public class MotionProfilePerformanceTest {
+class MotionProfilePerformanceTest {
     @Test
     void testLotsOfThem() {
         MotionState start = new MotionState(0, 0);

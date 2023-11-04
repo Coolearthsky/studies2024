@@ -11,7 +11,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 
-public class TestSE2Math {
+class TestSE2Math {
     private static final double kTestEpsilon = 1e-12;
 
     @Test

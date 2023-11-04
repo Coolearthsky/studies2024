@@ -12,7 +12,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 
-public class PoseEstimationHelperTest {
+class PoseEstimationHelperTest {
     private static final double kDelta = 0.01;
 
     public PoseEstimationHelperTest() throws IOException {
@@ -21,7 +21,7 @@ public class PoseEstimationHelperTest {
     }
 
     @Test
-    public void testGetRobotPoseInFieldCoordsUsingCameraRotation() {
+    void testGetRobotPoseInFieldCoordsUsingCameraRotation() {
         Transform3d cameraInRobotCoords = new Transform3d(
                 new Translation3d(1, 1, 1),
                 new Rotation3d(0, 0, 0));
@@ -51,7 +51,7 @@ public class PoseEstimationHelperTest {
     }
 
     @Test
-    public void testGetRobotPoseInFieldCoords5() {
+    void testGetRobotPoseInFieldCoords5() {
         Transform3d cameraInRobotCoords = new Transform3d(
                 new Translation3d(1, 1, 1),
                 new Rotation3d(0, 0, 0));
@@ -84,7 +84,7 @@ public class PoseEstimationHelperTest {
     }
 
     @Test
-    public void testCameraRotationInFieldCoords() {
+    void testCameraRotationInFieldCoords() {
         Transform3d cameraInRobotCoords = new Transform3d(
                 new Translation3d(0.5, 0, 0.5), // front camera
                 new Rotation3d(0, -Math.PI / 4, Math.PI / 4)); // pi/4 tilt up, pi/4 yaw left
@@ -99,7 +99,7 @@ public class PoseEstimationHelperTest {
     }
 
     @Test
-    public void testBlipToTransform() {
+    void testBlipToTransform() {
         { // identity
             Blip blip = new Blip(5,
                     new double[][] {
@@ -122,15 +122,14 @@ public class PoseEstimationHelperTest {
             double rot = Math.sqrt(2) / 2;
             Blip blip = new Blip(5,
                     new double[][] {
-                        { 1, 0, 0 },
-                        { 0, rot, -rot },
-                        { 0, rot, rot } },
+                            { 1, 0, 0 },
+                            { 0, rot, -rot },
+                            { 0, rot, rot } },
                     new double[][] {
                             { -2 },
                             { -1 },
                             { 3 } });
-       
-                                   
+
             Transform3d transform3d = PoseEstimationHelper.blipToTransform(blip);
             assertEquals(3, transform3d.getX(), kDelta);
             assertEquals(2, transform3d.getY(), kDelta);
@@ -142,7 +141,7 @@ public class PoseEstimationHelperTest {
     }
 
     @Test
-    public void testBlipToTranslation() {
+    void testBlipToTranslation() {
         // Blip is "z-forward", one meter up, two meters left, three meters ahead
         // rotation doesn't matter
         Blip blip = new Blip(5,
@@ -164,7 +163,7 @@ public class PoseEstimationHelperTest {
     }
 
     @Test
-    public void testBlipToRotation() {
+    void testBlipToRotation() {
         { // identity rotation
             Blip blip = new Blip(5,
                     new double[][] {
@@ -223,7 +222,7 @@ public class PoseEstimationHelperTest {
      * *should* be.
      */
     @Test
-    public void testtagRotationInRobotCoordsFromGyro() {
+    void testtagRotationInRobotCoordsFromGyro() {
         {
             Rotation3d tagRotationInFieldCoords = new Rotation3d(0, 0, 0); // on the far wall
             Rotation3d cameraRotationInFieldCoords = new Rotation3d(0, 0, Math.PI / 4); // 45 degrees left
@@ -258,7 +257,7 @@ public class PoseEstimationHelperTest {
     }
 
     @Test
-    public void testToFieldCoordinates() {
+    void testToFieldCoordinates() {
         {
             // opposite corner of 1,1 square
             Transform3d tagInCameraCords = new Transform3d(
@@ -298,7 +297,7 @@ public class PoseEstimationHelperTest {
     }
 
     @Test
-    public void testApplyCameraOffset() {
+    void testApplyCameraOffset() {
         // trivial example: if camera offset happens to match the camera global pose
         // then of course the robot global pose is the origin.
         Pose3d cameraInFieldCoords = new Pose3d(

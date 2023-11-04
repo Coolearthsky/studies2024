@@ -19,7 +19,7 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
 
-public class ExtrapolatingEstimatorTest {
+class ExtrapolatingEstimatorTest {
     private static final double kDelta = 0.001;
     private static final double kDt = 0.02;
 
@@ -67,7 +67,7 @@ public class ExtrapolatingEstimatorTest {
     }
 
     @Test
-    public void testZero() {
+    void testZero() {
         NonlinearPlant<N1, N1, N1> plant = new f1ZeroPlant();
         ExtrapolatingEstimator<N1, N1, N1> p = new ExtrapolatingEstimator<>(plant);
         Matrix<N1, N1> u = VecBuilder.fill(0);
@@ -91,7 +91,7 @@ public class ExtrapolatingEstimatorTest {
     }
 
     @Test
-    public void testX() {
+    void testX() {
         NonlinearPlant<N1, N1, N1> plant = new f1xxPlant();
 
         ExtrapolatingEstimator<N1, N1, N1> p = new ExtrapolatingEstimator<>(plant);
@@ -187,7 +187,7 @@ public class ExtrapolatingEstimatorTest {
     }
 
     @Test
-    public void testRandomVectorIntegration1() {
+    void testRandomVectorIntegration1() {
         Matrix<N1, N1> x = new Matrix<>(Nat.N1(), Nat.N1());
         x.set(0, 0, 1);
         Variance<N1> p = Variance.fromStdDev(Nat.N1(),VecBuilder.fill(1));
@@ -205,7 +205,7 @@ public class ExtrapolatingEstimatorTest {
     }
 
     @Test
-    public void testRandomVectorIntegration1WithNoise() {
+    void testRandomVectorIntegration1WithNoise() {
         Matrix<N1, N1> x = new Matrix<>(Nat.N1(), Nat.N1());
         x.set(0, 0, 1);
         Variance<N1> p = Variance.fromStdDev(Nat.N1(), VecBuilder.fill(1));
@@ -224,7 +224,7 @@ public class ExtrapolatingEstimatorTest {
     }
 
     @Test
-    public void testRandomVectorIntegration1x() {
+    void testRandomVectorIntegration1x() {
         Matrix<N1, N1> x = new Matrix<>(Nat.N1(), Nat.N1());
         x.set(0, 0, 1);
 
@@ -244,7 +244,7 @@ public class ExtrapolatingEstimatorTest {
     }
 
     @Test
-    public void testRandomVectorIntegration2() {
+    void testRandomVectorIntegration2() {
         Matrix<N2, N1> x = new Matrix<>(Nat.N2(), Nat.N1());
         x.set(0, 0, 1);
         x.set(1, 0, 1);
@@ -264,7 +264,7 @@ public class ExtrapolatingEstimatorTest {
     }
 
     @Test
-    public void testRandomVectorIntegration2WithNoise() {
+    void testRandomVectorIntegration2WithNoise() {
         Matrix<N2, N1> x = new Matrix<>(Nat.N2(), Nat.N1());
         x.set(0, 0, 1);
         x.set(1, 0, 1);
@@ -293,7 +293,7 @@ public class ExtrapolatingEstimatorTest {
     }
 
     @Test
-    public void testObserverWrappingPredictOnly() {
+    void testObserverWrappingPredictOnly() {
         // just test the observer prediction across the boundary
         // it just predicts over and over.
         // goal is pi-0.01,
@@ -329,7 +329,7 @@ public class ExtrapolatingEstimatorTest {
     }
 
     @Test
-    public void testCoastWrapping() {
+    void testCoastWrapping() {
         WhiteNoiseVector<N2> w = WhiteNoiseVector.noise2(0.015, 0.17);
         MeasurementUncertainty<N2> v = MeasurementUncertainty.for2(0.01,0.1);
         DoubleIntegratorRotary1D system = new DoubleIntegratorRotary1D(w,v);
@@ -359,7 +359,7 @@ public class ExtrapolatingEstimatorTest {
     }
 
     @Test
-    public void testIntegration1() {
+    void testIntegration1() {
 
         NonlinearPlant<N1,N1,N1> system = new MockNonlinearPlant<>() {
             @Override
@@ -378,7 +378,7 @@ public class ExtrapolatingEstimatorTest {
     }
 
     @Test
-    public void testIntegration2() {
+    void testIntegration2() {
         WhiteNoiseVector<N2> w = WhiteNoiseVector.noise2(0.015, 0.17);
         MeasurementUncertainty<N2> v = MeasurementUncertainty.for2(0.01,0.1);
         DoubleIntegratorRotary1D system = new DoubleIntegratorRotary1D(w,v) {

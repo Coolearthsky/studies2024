@@ -109,8 +109,8 @@ public class Telemetry {
 
     public void log(String key, TimedPose val) {
         log(key + "/posestate", val.state());
-        log(key + "/time", val.t());
-        log(key + "/velocity", val.velocity());
+        log(key + "/time", val.getTimeS());
+        log(key + "/velocity", val.velocityM_S());
         log(key + "/accel", val.acceleration());
     }
 

@@ -14,7 +14,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
-public class DistanceViewTest {
+class DistanceViewTest {
     public static final double kTestEpsilon = 1e-12;
 
     @Test

@@ -15,6 +15,11 @@ import edu.wpi.first.math.numbers.N2;
  * One-dimensional linear double-integrator.
  */
 public class DoubleIntegratorCartesian1D extends Cartesian1D {
+    /**
+     * One-dimensional linear double-integrator.
+     * pdot = v
+     * vdot = u
+     */
     public DoubleIntegratorCartesian1D(WhiteNoiseVector<N2> w, MeasurementUncertainty<N2> v) {
         super(w, v);
     }

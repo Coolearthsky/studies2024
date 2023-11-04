@@ -45,7 +45,6 @@ class SubRegulator1DTest {
         assertEquals(0, output.get(0, 0), kDelta);
     }
 
-    
     @Test
     void testFictionCartesian1DAtSetpoint() {
         Vector<N2> stateTolerance_x = VecBuilder.fill(0.02, 0.02);
@@ -67,7 +66,7 @@ class SubRegulator1DTest {
 
     @Test
     void driveOneMeter() {
-        final MotionProfile profileX = MotionProfileGenerator.generateSimpleMotionProfile(
+        MotionProfile profileX = MotionProfileGenerator.generateSimpleMotionProfile(
                 new MotionState((double) 0, 0),
                 new MotionState((double) 1, 0),
                 5,
@@ -96,7 +95,7 @@ class SubRegulator1DTest {
         double actual_v = 0;
         double time = 0;
         // go past the end just to get to exactly-zero velocity.
-        while (time <= duration+1) {
+        while (time <= duration + 1) {
 
             // sample at the current instant
             sample = profileX.get(time);
@@ -147,6 +146,5 @@ class SubRegulator1DTest {
         // the reference ends up exactly at the goal
         assertEquals(1, r_x.get(0, 0), kDelta);
         assertEquals(0, r_x.get(1, 0), kDelta);
-
     }
 }

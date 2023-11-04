@@ -13,7 +13,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
 
-public class JacobianTest {
+class JacobianTest {
     private static final double kDelta = 0.001;
     private static final RandomVector<N2> xZero = new RandomVector<>(VecBuilder.fill(0, 0), Variance.zero2());
 
@@ -26,7 +26,7 @@ public class JacobianTest {
     }
 
     @Test
-    public void testJacobianF() {
+    void testJacobianF() {
         RandomVector<N2> x = new RandomVector<>(new Matrix<>(Nat.N2(), Nat.N1()), Variance.zero2());
         Matrix<N1, N1> u = new Matrix<>(Nat.N1(), Nat.N1());
         Matrix<N2, N2> A = Jacobian.numericalJacobianX(Nat.N2(), Nat.N2(), this::f, x, u);
@@ -34,7 +34,7 @@ public class JacobianTest {
     }
 
     @Test
-    public void testJacobianH() {
+    void testJacobianH() {
         // TODO: make an H version
         RandomVector<N2> x = new RandomVector<>(new Matrix<>(Nat.N2(), Nat.N1()), Variance.zero2());
         Matrix<N1, N1> u = new Matrix<>(Nat.N1(), Nat.N1());
@@ -43,7 +43,7 @@ public class JacobianTest {
     }
 
     @Test
-    public void testJacobianU() {
+    void testJacobianU() {
         RandomVector<N2> x = new RandomVector<>(new Matrix<>(Nat.N2(), Nat.N1()), Variance.zero2());
         Matrix<N1, N1> u = new Matrix<>(Nat.N1(), Nat.N1());
         Matrix<N2, N1> B = Jacobian.numericalJacobianU(Nat.N2(), Nat.N1(), this::f, x, u);
@@ -54,7 +54,7 @@ public class JacobianTest {
      * A = [0 1 0 0] constant
      */
     @Test
-    public void testDoubleIntegratorA() {
+    void testDoubleIntegratorA() {
         Nat<N2> rows = Nat.N2();
         Nat<N2> states = Nat.N2();
         WhiteNoiseVector<N2> w = WhiteNoiseVector.noise2(0.015, 0.17);
@@ -93,7 +93,7 @@ public class JacobianTest {
      * B = [0 1] constant
      */
     @Test
-    public void testDoubleIntegratorB() {
+    void testDoubleIntegratorB() {
         Nat<N2> rows = Nat.N2();
         Nat<N1> inputs = Nat.N1();
         WhiteNoiseVector<N2> w = WhiteNoiseVector.noise2(0.015, 0.17);
@@ -132,7 +132,7 @@ public class JacobianTest {
      * A = [0 1 sin(p) 0]
      */
     @Test
-    public void testPendulumA() {
+    void testPendulumA() {
         Nat<N2> rows = Nat.N2();
         Nat<N2> states = Nat.N2();
         WhiteNoiseVector<N2> w = WhiteNoiseVector.noise2(0.015, 0.17);
@@ -181,7 +181,7 @@ public class JacobianTest {
      * is linear.
      */
     @Test
-    public void testPendulumB() {
+    void testPendulumB() {
         Nat<N2> rows = Nat.N2();
         Nat<N1> inputs = Nat.N1();
         WhiteNoiseVector<N2> w = WhiteNoiseVector.noise2(0.015, 0.17);

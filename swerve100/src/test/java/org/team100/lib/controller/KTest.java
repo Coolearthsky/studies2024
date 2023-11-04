@@ -14,14 +14,14 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.system.Discretization;
 
-public class KTest {
+class KTest {
     static final double kDelta = 0.001;
     static final double kDt = 0.02;
 
     /**
      * exactly from the LQR constructor, for comparison
      */
-    public static Matrix<N1, N2> calculateK(
+    private static Matrix<N1, N2> calculateK(
             Matrix<N2, N2> A,
             Matrix<N2, N1> B,
             Matrix<N2, N2> Q,
@@ -56,7 +56,7 @@ public class KTest {
      * verify that we're calculating K the same as LQR does.
      */
     @Test
-    public void testK() {
+    void testK() {
         Nat<N2> states = Nat.N2();
         Nat<N1> inputs = Nat.N1();
         Matrix<N2, N2> A = Matrix.mat(states, states).fill(0, 1, 0, 0);

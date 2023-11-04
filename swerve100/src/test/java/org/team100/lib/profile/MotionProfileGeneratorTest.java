@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-public class MotionProfileGeneratorTest {
+class MotionProfileGeneratorTest {
     private static final double kDelta = 0.001;
 
     @Test
@@ -81,7 +81,7 @@ public class MotionProfileGeneratorTest {
     }
 
     @Test
-    public void testSampleCount() {
+    void testSampleCount() {
         MotionState start = new MotionState(0,0,0,0);
         MotionState goal = new MotionState(5,0,0,0);
         double resolution = 1;

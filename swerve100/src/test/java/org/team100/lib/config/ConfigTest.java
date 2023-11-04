@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
  * It's good to have non-static configuration objects so we won't fight about
  * the one-and-only static config.
  */
-public class ConfigTest {
+class ConfigTest {
 
     public static class ThingToConfigure {
         public static class Config {

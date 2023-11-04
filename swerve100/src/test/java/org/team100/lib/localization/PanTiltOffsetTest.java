@@ -39,7 +39,7 @@ import edu.wpi.first.math.geometry.Translation3d;
  * tag pose is R(0)|t(1,1)
  * robot pose is R(pi/4)|t(0,0)
  */
-public class PanTiltOffsetTest {
+class PanTiltOffsetTest {
     private static final double kDelta = 0.01;
 
     public PanTiltOffsetTest() throws IOException {
@@ -51,7 +51,7 @@ public class PanTiltOffsetTest {
      * Correct for offset but the offset is zero.
      */
     @Test
-    public void testZeroOffset() {
+    void testZeroOffset() {
         Transform3d cameraInRobotCoords = new Transform3d(
                 new Translation3d(),
                 new Rotation3d());
@@ -108,7 +108,7 @@ public class PanTiltOffsetTest {
      * Dolly back 0.5m behind the robot center.
      */
     @Test
-    public void testDolly() {
+    void testDolly() {
         Transform3d cameraInRobotCoords = new Transform3d(
                 new Translation3d(-0.5, 0, 0),
                 new Rotation3d());
@@ -167,7 +167,7 @@ public class PanTiltOffsetTest {
      * Pan 45 degrees to the left.
      */
     @Test
-    public void testPan() {
+    void testPan() {
         Transform3d cameraInRobotCoords = new Transform3d(
                 new Translation3d(),
                 new Rotation3d(0, 0, Math.PI / 4));
@@ -227,7 +227,7 @@ public class PanTiltOffsetTest {
      * Truck sqrt(2)m left.
      */
     @Test
-    public void testTruck() {
+    void testTruck() {
         Transform3d cameraInRobotCoords = new Transform3d(
                 new Translation3d(0, Math.sqrt(2), 0),
                 new Rotation3d(0, 0, 0));
@@ -287,7 +287,7 @@ public class PanTiltOffsetTest {
      * Moved and rotated, all in 2d.
      */
     @Test
-    public void testAll2d() {
+    void testAll2d() {
         Transform3d cameraInRobotCoords = new Transform3d(
                 new Translation3d(Math.sqrt(2), Math.sqrt(2), 0),
                 new Rotation3d(0, 0, -Math.PI / 2));
@@ -347,7 +347,7 @@ public class PanTiltOffsetTest {
      * Tilt 45 degrees up.
      */
     @Test
-    public void testTilt() {
+    void testTilt() {
         Transform3d cameraInRobotCoords = new Transform3d(
                 new Translation3d(),
                 new Rotation3d(0, -Math.PI / 4, 0)); // upward tilt is negative pitch
@@ -420,7 +420,7 @@ public class PanTiltOffsetTest {
      * should be a simple tilt from there.
      */
     @Test
-    public void testTiltWithPandAndOffset() {
+    void testTiltWithPandAndOffset() {
         // in robot coords the camera rotation is both tilt and pan
         Transform3d cameraInRobotCoords = new Transform3d(
                 new Translation3d(0, Math.sqrt(2), 0),
@@ -493,7 +493,7 @@ public class PanTiltOffsetTest {
      * so tag in camera view should be R(0, PI/4, 0)t(sqrt(2)/2,0-sqrt(2)/2)
      */
     @Test
-    public void testSemiRealisticExample() {
+    void testSemiRealisticExample() {
         // in robot coords the camera rotation is both tilt and pan
         Transform3d cameraInRobotCoords = new Transform3d(
                 new Translation3d(0, -Math.sqrt(2), 1),
@@ -566,7 +566,7 @@ public class PanTiltOffsetTest {
      * so tag in camera view should be R(0, PI/4, 0)t(sqrt(2)/2,0-sqrt(2)/2)
      */
     @Test
-    public void testSemiRealisticExampleWithBlips() {
+    void testSemiRealisticExampleWithBlips() {
         double rot = Math.sqrt(2) / 2;
         Blip blip = new Blip(5,
                 new double[][] { // pure tilt
@@ -688,7 +688,7 @@ public class PanTiltOffsetTest {
      * so tag in camera view should be R(0, PI/4, 0)t(sqrt(2)/2,0-sqrt(2)/2)
      */
     @Test
-    public void testSemiRealisticExampleWithBlipsUsingSingleFunction() {
+    void testSemiRealisticExampleWithBlipsUsingSingleFunction() {
         // CONFIGURATION
 
         // in robot coords the camera rotation is both tilt and pan
@@ -722,7 +722,7 @@ public class PanTiltOffsetTest {
     }
 
     @Test
-    public void testSemiRealisticExampleWithBlipsUsingSingleFunctionUsingCameraRotation() {
+    void testSemiRealisticExampleWithBlipsUsingSingleFunctionUsingCameraRotation() {
         {
             // see diagram at the top of the file.
             // tag pose is R(0)|t(1,1)
@@ -762,17 +762,17 @@ public class PanTiltOffsetTest {
             // camera tilt
             final Transform3d cameraInRobotCoords = new Transform3d(
                     new Translation3d(0, 0, 0),
-                    new Rotation3d(0, -Math.PI/4, 0)); // tilt 45 up
+                    new Rotation3d(0, -Math.PI / 4, 0)); // tilt 45 up
 
             // tag facing 0, at 1,0,1
             final Pose3d tagInFieldCoords = new Pose3d(1, 0, 1, new Rotation3d(0, 0, 0));
 
             double rot = Math.sqrt(2) / 2;
             Blip blip = new Blip(5,
-                    new double[][] {     // tag tilts away, we're looking up at it in camera frame = -x rot
-                        { 1, 0, 0 },
-                        { 0, rot, rot },
-                        { 0, -rot, rot } },
+                    new double[][] { // tag tilts away, we're looking up at it in camera frame = -x rot
+                            { 1, 0, 0 },
+                            { 0, rot, rot },
+                            { 0, -rot, rot } },
                     new double[][] { // unit-square-diagonal range
                             { 0 },
                             { 0 },

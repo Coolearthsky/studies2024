@@ -19,7 +19,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
-public class TrajectoryIteratorTest {
+class TrajectoryIteratorTest {
     public static final double kTestEpsilon = 1e-12;
 
     public static final List<Pose2dWithMotion> kWaypoints = Arrays.asList(

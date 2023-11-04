@@ -10,9 +10,9 @@ import org.junit.jupiter.api.Test;
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
 
-public class BlipSerializerTest {
+class BlipSerializerTest {
     @Test
-    public void testBlip() throws StreamReadException, DatabindException, IOException {
+    void testBlip() throws StreamReadException, DatabindException, IOException {
         // from the python test
         String hexString = "81a4746167739183a2696401a6706f73" +
                 "655f749391cb3ff000000000000091cb" +

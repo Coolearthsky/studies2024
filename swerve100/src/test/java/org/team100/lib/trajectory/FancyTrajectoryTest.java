@@ -124,8 +124,8 @@ class FancyTrajectoryTest {
             assertEquals(0.25, path_setpoint.state().getPose().getX(), 0.01);
             assertEquals(-3.5, path_setpoint.state().getPose().getY(), 0.05);
             assertEquals(1.69, path_setpoint.state().getPose().getRotation().getRadians(), 0.01);
-            assertEquals(4, path_setpoint.t(), 0.01);
-            assertEquals(1, path_setpoint.velocity(), 0.01);
+            assertEquals(4, path_setpoint.getTimeS(), 0.01);
+            assertEquals(1, path_setpoint.velocityM_S(), 0.01);
             assertEquals(0, path_setpoint.acceleration(), 0.001);
             // Rotation2d heading_setpoint = mMotionPlanner.getHeadingSetpoint();
             // assertEquals(0, heading_setpoint.getRadians(), 0.001);
@@ -147,8 +147,8 @@ class FancyTrajectoryTest {
             assertEquals(1.85, path_setpoint.state().getPose().getX(), 0.01);
             assertEquals(-7.11, path_setpoint.state().getPose().getY(), 0.01);
             assertEquals(2.22, path_setpoint.state().getPose().getRotation().getRadians(), 0.01);
-            assertEquals(8, path_setpoint.t(), 0.001);
-            assertEquals(1, path_setpoint.velocity(), 0.001);
+            assertEquals(8, path_setpoint.getTimeS(), 0.001);
+            assertEquals(1, path_setpoint.velocityM_S(), 0.001);
             assertEquals(0, path_setpoint.acceleration(), 0.001);
             // Rotation2d heading_setpoint = mMotionPlanner.getHeadingSetpoint();
             // assertEquals(0, heading_setpoint.getRadians(), 0.001);
@@ -240,8 +240,8 @@ class FancyTrajectoryTest {
             assertEquals(0.25, path_setpoint.state().getPose().getX(), 0.01);
             assertEquals(-3.5, path_setpoint.state().getPose().getY(), 0.05);
             assertEquals(1.69, path_setpoint.state().getPose().getRotation().getRadians(), 0.01);
-            assertEquals(4, path_setpoint.t(), 0.05);
-            assertEquals(1, path_setpoint.velocity(), 0.01);
+            assertEquals(4, path_setpoint.getTimeS(), 0.05);
+            assertEquals(1, path_setpoint.velocityM_S(), 0.01);
             assertEquals(0, path_setpoint.acceleration(), 0.001);
             // Rotation2d heading_setpoint = mMotionPlanner.getHeadingSetpoint();
             // assertEquals(0, heading_setpoint.getRadians(), 0.001);
@@ -265,8 +265,8 @@ class FancyTrajectoryTest {
             assertEquals(1.85, path_setpoint.state().getPose().getX(), 0.05);
             assertEquals(-7.11, path_setpoint.state().getPose().getY(), 0.01);
             assertEquals(2.22, path_setpoint.state().getPose().getRotation().getRadians(), 0.01);
-            assertEquals(8, path_setpoint.t(), 0.05);
-            assertEquals(1, path_setpoint.velocity(), 0.001);
+            assertEquals(8, path_setpoint.getTimeS(), 0.05);
+            assertEquals(1, path_setpoint.velocityM_S(), 0.001);
             assertEquals(0, path_setpoint.acceleration(), 0.001);
             // Rotation2d heading_setpoint = mMotionPlanner.getHeadingSetpoint();
             // assertEquals(0, heading_setpoint.getRadians(), 0.001);
@@ -352,8 +352,8 @@ class FancyTrajectoryTest {
             assertEquals(0.25, path_setpoint.state().getPose().getX(), 0.01);
             assertEquals(-3.5, path_setpoint.state().getPose().getY(), 0.05);
             assertEquals(1.69, path_setpoint.state().getPose().getRotation().getRadians(), 0.01);
-            assertEquals(4, path_setpoint.t(), 0.01);
-            assertEquals(1, path_setpoint.velocity(), 0.01);
+            assertEquals(4, path_setpoint.getTimeS(), 0.01);
+            assertEquals(1, path_setpoint.velocityM_S(), 0.01);
             assertEquals(0, path_setpoint.acceleration(), 0.001);
             // Rotation2d heading_setpoint = mMotionPlanner.getHeadingSetpoint();
             // assertEquals(0, heading_setpoint.getRadians(), 0.001);
@@ -375,8 +375,8 @@ class FancyTrajectoryTest {
             assertEquals(1.85, path_setpoint.state().getPose().getX(), 0.01);
             assertEquals(-7.11, path_setpoint.state().getPose().getY(), 0.01);
             assertEquals(2.22, path_setpoint.state().getPose().getRotation().getRadians(), 0.01);
-            assertEquals(8, path_setpoint.t(), 0.001);
-            assertEquals(1, path_setpoint.velocity(), 0.001);
+            assertEquals(8, path_setpoint.getTimeS(), 0.001);
+            assertEquals(1, path_setpoint.velocityM_S(), 0.001);
             assertEquals(0, path_setpoint.acceleration(), 0.001);
             // Rotation2d heading_setpoint = mMotionPlanner.getHeadingSetpoint();
             // assertEquals(0, heading_setpoint.getRadians(), 0.001);
@@ -462,8 +462,8 @@ class FancyTrajectoryTest {
             assertEquals(0.25, path_setpoint.state().getPose().getX(), 0.01);
             assertEquals(-3.5, path_setpoint.state().getPose().getY(), 0.05);
             assertEquals(1.69, path_setpoint.state().getPose().getRotation().getRadians(), 0.01);
-            assertEquals(4, path_setpoint.t(), 0.01);
-            assertEquals(1, path_setpoint.velocity(), 0.01);
+            assertEquals(4, path_setpoint.getTimeS(), 0.01);
+            assertEquals(1, path_setpoint.velocityM_S(), 0.01);
             assertEquals(0, path_setpoint.acceleration(), 0.001);
             // Rotation2d heading_setpoint = mMotionPlanner.getHeadingSetpoint();
             // assertEquals(0, heading_setpoint.getRadians(), 0.001);
@@ -485,8 +485,8 @@ class FancyTrajectoryTest {
             assertEquals(1.85, path_setpoint.state().getPose().getX(), 0.01);
             assertEquals(-7.11, path_setpoint.state().getPose().getY(), 0.01);
             assertEquals(2.22, path_setpoint.state().getPose().getRotation().getRadians(), 0.01);
-            assertEquals(8, path_setpoint.t(), 0.001);
-            assertEquals(1, path_setpoint.velocity(), 0.001);
+            assertEquals(8, path_setpoint.getTimeS(), 0.001);
+            assertEquals(1, path_setpoint.velocityM_S(), 0.001);
             assertEquals(0, path_setpoint.acceleration(), 0.001);
             // Rotation2d heading_setpoint = mMotionPlanner.getHeadingSetpoint();
             // assertEquals(0, heading_setpoint.getRadians(), 0.001);

@@ -19,14 +19,14 @@ import edu.wpi.first.math.numbers.N2;
 /**
  * similar to the democratic case
  */
-public class VarianceWeightedLinearPoolingTest extends PoolingTest {
+class VarianceWeightedLinearPoolingTest extends PoolingTestUtil {
     private static final double kDelta = 0.001;
 
     private static final VarianceWeightedLinearPooling<N1> p1 = new VarianceWeightedLinearPooling<N1>();
     private static final VarianceWeightedLinearPooling<N2> p2 = new VarianceWeightedLinearPooling<N2>();
 
     @Test
-    public void testUnanimity1() {
+    void testUnanimity1() {
         RandomVector<N1> aV = v1(0, 1);
         RandomVector<N1> bV = v1(0, 1);
         RandomVector<N1> cV = p1.fuse(aV, bV);
@@ -35,7 +35,7 @@ public class VarianceWeightedLinearPoolingTest extends PoolingTest {
     }
 
     @Test
-    public void testUnanimity2() {
+    void testUnanimity2() {
         RandomVector<N2> aV = v2(0, 0, 1, 0, 0, 1);
         RandomVector<N2> bV = v2(0, 0, 1, 0, 0, 1);
         RandomVector<N2> cV = p2.fuse(aV, bV);
@@ -44,7 +44,7 @@ public class VarianceWeightedLinearPoolingTest extends PoolingTest {
     }
 
     @Test
-    public void testDifferentMeans() {
+    void testDifferentMeans() {
         RandomVector<N1> aV = v1(0, 1);
         RandomVector<N1> bV = v1(1, 1);
         RandomVector<N1> cV = p1.fuse(aV, bV);
@@ -54,7 +54,7 @@ public class VarianceWeightedLinearPoolingTest extends PoolingTest {
     }
 
     @Test
-    public void testDifferentVariance() {
+    void testDifferentVariance() {
         RandomVector<N1> aV = v1(0, 1);
         RandomVector<N1> bV = v1(0, 2);
         RandomVector<N1> cV = p1.fuse(aV, bV);
@@ -63,7 +63,7 @@ public class VarianceWeightedLinearPoolingTest extends PoolingTest {
     }
 
     @Test
-    public void testDifferent1() {
+    void testDifferent1() {
         RandomVector<N1> aV = v1(0, 1);
         RandomVector<N1> bV = v1(1, 2);
         RandomVector<N1> cV = p1.fuse(aV, bV);
@@ -73,7 +73,7 @@ public class VarianceWeightedLinearPoolingTest extends PoolingTest {
     }
 
     @Test
-    public void testDifferent2NoCorrelation() {
+    void testDifferent2NoCorrelation() {
         RandomVector<N2> aV = v2(0, 0, 1, 0, 0, 1);
         RandomVector<N2> bV = v2(1, 1, 2, 0, 0, 2);
         RandomVector<N2> cV = p2.fuse(aV, bV);
@@ -83,7 +83,7 @@ public class VarianceWeightedLinearPoolingTest extends PoolingTest {
     }
 
     @Test
-    public void testDifferent2bNoCorrelation() {
+    void testDifferent2bNoCorrelation() {
         RandomVector<N2> aV = v2(0, 0, 1, 0, 0, 2);
         RandomVector<N2> bV = v2(1, 1, 2, 0, 0, 1);
         RandomVector<N2> cV = p2.fuse(aV, bV);
@@ -92,7 +92,7 @@ public class VarianceWeightedLinearPoolingTest extends PoolingTest {
     }
 
     @Test
-    public void testDifferent2WithCorrelation() {
+    void testDifferent2WithCorrelation() {
         // different means, different variances
         RandomVector<N2> aV = v2(0, 0, 1, 0.5, 0.5, 1);
         RandomVector<N2> bV = v2(1, 1, 2, 0.5, 0.5, 2);
@@ -101,7 +101,7 @@ public class VarianceWeightedLinearPoolingTest extends PoolingTest {
     }
 
     @Test
-    public void testDifferent2bWithCorrelation() {
+    void testDifferent2bWithCorrelation() {
         // some off-diagonal covariance terms and different variances
         RandomVector<N2> aV = v2(0, 0, 1, 0.5, 0.5, 2);
         RandomVector<N2> bV = v2(1, 1, 2, 0.5, 0.5, 1);
@@ -112,7 +112,7 @@ public class VarianceWeightedLinearPoolingTest extends PoolingTest {
     }
 
     @Test
-    public void testZeroVariance() {
+    void testZeroVariance() {
         // can't invert this one
         RandomVector<N1> aV = v1(0, 0);
         RandomVector<N1> bV = v1(1, 1);
@@ -121,7 +121,7 @@ public class VarianceWeightedLinearPoolingTest extends PoolingTest {
     }
 
     @Test
-    public void testOKWeights() {
+    void testOKWeights() {
         // means differ by 1
         // variances are identical
         RandomVector<N2> aV = v2(0, 0, 1, 0, 0, 1);
@@ -135,7 +135,7 @@ public class VarianceWeightedLinearPoolingTest extends PoolingTest {
     }
 
     @Test
-    public void testBadWeights() {
+    void testBadWeights() {
         RandomVector<N2> aV = v2(0, 0, 1, 0, 0, 1);
         RandomVector<N2> bV = v2(1, 1, 1, 0, 0, 1);
         // these do not add to identity
@@ -149,8 +149,7 @@ public class VarianceWeightedLinearPoolingTest extends PoolingTest {
      * seems more correct and less mysterious.
      */
     @Test
-    public void testIteration() {
-
+    void testIteration() {
         // initial xhat is zero
         Matrix<N2, N1> xx = new Matrix<>(Nat.N2(), Nat.N1());
         Variance<N2> xP = Variance.from2StdDev(0.1, 0.1);
@@ -193,7 +192,7 @@ public class VarianceWeightedLinearPoolingTest extends PoolingTest {
     }
 
     @Test
-    public void testDontKnow() {
+    void testDontKnow() {
         // fuse an unknown with a known, you should just get the known back.
         RandomVector<N2> aV = v2(0, 0, 1, 0, 0, 1e9);
         RandomVector<N2> bV = v2(1, 1, 1e9, 0, 0, 1);
@@ -203,7 +202,7 @@ public class VarianceWeightedLinearPoolingTest extends PoolingTest {
     }
 
     @Test
-    public void testDontKnowWeights() {
+    void testDontKnowWeights() {
         RandomVector<N2> aV = v2(0, 0, 1, 0, 0, 1e9);
         RandomVector<N2> bV = v2(1, 1, 1e9, 0, 0, 1);
         Pair<Matrix<N2, N2>, Matrix<N2, N2>> weights = p2.weights(aV, bV);
@@ -218,7 +217,7 @@ public class VarianceWeightedLinearPoolingTest extends PoolingTest {
     }
 
     @Test
-    public void testWeights1a() {
+    void testWeights1a() {
         RandomVector<N1> aV = v1(0, 1);
         RandomVector<N1> bV = v1(1, 1e9);
         Pair<Matrix<N1, N1>, Matrix<N1, N1>> weights = p1.weights(aV, bV);
@@ -229,7 +228,7 @@ public class VarianceWeightedLinearPoolingTest extends PoolingTest {
     }
 
     @Test
-    public void testWeightPrimitive() {
+    void testWeightPrimitive() {
         // scalar multiplication is squared by the matrix isn't? what?
 
         RandomVector<N1> a = v1(0, 1);
@@ -250,7 +249,7 @@ public class VarianceWeightedLinearPoolingTest extends PoolingTest {
     }
 
     @Test
-    public void testWeights1b() {
+    void testWeights1b() {
         RandomVector<N1> aV = v1(0, 1);
         RandomVector<N1> bV = v1(1, 1);
         Pair<Matrix<N1, N1>, Matrix<N1, N1>> weights = p1.weights(aV, bV);
@@ -261,7 +260,7 @@ public class VarianceWeightedLinearPoolingTest extends PoolingTest {
     }
 
     @Test
-    public void testVar1() {
+    void testVar1() {
         RandomVector<N1> aV = v1(0, 1);
         RandomVector<N1> bV = v1(0, 1);
         RandomVector<N1> cV = p1.fuse(aV, bV);
@@ -272,7 +271,7 @@ public class VarianceWeightedLinearPoolingTest extends PoolingTest {
     }
 
     @Test
-    public void testVar1WithDispersion() {
+    void testVar1WithDispersion() {
         RandomVector<N1> aV = v1(0, 1);
         RandomVector<N1> bV = v1(1, 1);
         RandomVector<N1> cV = p1.fuse(aV, bV);
@@ -285,7 +284,7 @@ public class VarianceWeightedLinearPoolingTest extends PoolingTest {
     }
 
     @Test
-    public void testVar10() {
+    void testVar10() {
         RandomVector<N1> aV = v1(0, 1);
         RandomVector<N1> bV = v1(0, 10);
         RandomVector<N1> cV = p1.fuse(aV, bV);
@@ -295,7 +294,7 @@ public class VarianceWeightedLinearPoolingTest extends PoolingTest {
     }
 
     @Test
-    public void testVar1000() {
+    void testVar1000() {
         RandomVector<N1> aV = v1(0, 1);
         RandomVector<N1> bV = v1(0, 1000);
         RandomVector<N1> cV = p1.fuse(aV, bV);
@@ -305,7 +304,7 @@ public class VarianceWeightedLinearPoolingTest extends PoolingTest {
     }
 
     //@Test
-    public void testRandom() {
+    void testRandom() {
         // make a bunch of random samples with the variance of the measurement.
         // the mean should converge to 0
         // the variance should converge to 1

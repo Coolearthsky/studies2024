@@ -20,16 +20,16 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.system.LinearSystem;
 
-public class GainCalculatorTest {
+class GainCalculatorTest {
     static final double kDelta = 0.001;
 
     /** K dependence on x is weak, not worth recalculating K all the time. */
     @Test
-    public void testPendulumK() {
+    void testPendulumK() {
         Vector<N2> stateTolerance = VecBuilder.fill(0.01, 0.2);
         Vector<N1> controlTolerance = VecBuilder.fill(12.0);
         WhiteNoiseVector<N2> w = WhiteNoiseVector.noise2(0.015, 0.17);
-        MeasurementUncertainty<N2> v = MeasurementUncertainty.for2(0.01,0.1);
+        MeasurementUncertainty<N2> v = MeasurementUncertainty.for2(0.01, 0.1);
         NonlinearPlant<N2, N1, N2> plant = new Pendulum1D(w, v);
         GainCalculator<N2, N1, N2> gc = new GainCalculator<>(plant, stateTolerance, controlTolerance, 0.01);
         Matrix<N1, N2> K = gc.getK();
@@ -37,11 +37,11 @@ public class GainCalculatorTest {
     }
 
     @Test
-    public void testFrictionK() {
+    void testFrictionK() {
         Vector<N2> stateTolerance = VecBuilder.fill(0.01, 0.2);
         Vector<N1> controlTolerance = VecBuilder.fill(12.0);
         WhiteNoiseVector<N2> w = WhiteNoiseVector.noise2(0, 0);
-        MeasurementUncertainty<N2> v = MeasurementUncertainty.for2(0.01,0.1);
+        MeasurementUncertainty<N2> v = MeasurementUncertainty.for2(0.01, 0.1);
         NonlinearPlant<N2, N1, N2> plant = new FrictionCartesian1D(w, v);
         GainCalculator<N2, N1, N2> gc = new GainCalculator<>(plant, stateTolerance, controlTolerance, 0.01);
         Matrix<N1, N2> K = gc.getK();
@@ -52,11 +52,11 @@ public class GainCalculatorTest {
      * verify that we're calculating K the same as LQR does using the jacobian
      */
     @Test
-    public void testFrictionFK2() {
+    void testFrictionFK2() {
         Vector<N2> stateTolerance = VecBuilder.fill(0.01, 0.2);
         Vector<N1> controlTolerance = VecBuilder.fill(12.0);
         WhiteNoiseVector<N2> w = WhiteNoiseVector.noise2(0.015, 0.17);
-        MeasurementUncertainty<N2> v = MeasurementUncertainty.for2(0.01,0.1);
+        MeasurementUncertainty<N2> v = MeasurementUncertainty.for2(0.01, 0.1);
         NonlinearPlant<N2, N1, N2> plant = new FrictionRotary1D(w, v);
         GainCalculator<N2, N1, N2> gc = new GainCalculator<>(plant, stateTolerance, controlTolerance, 0.02);
         Matrix<N1, N2> K = gc.getK();
@@ -67,7 +67,7 @@ public class GainCalculatorTest {
      * what does the LQR version do
      */
     @Test
-    public void testFrictionLQRK() {
+    void testFrictionLQRK() {
         // double integrator
         Nat<N2> states = Nat.N2();
         Nat<N1> inputs = Nat.N1();
@@ -88,11 +88,11 @@ public class GainCalculatorTest {
     }
 
     @Test
-    public void testPendulumK2() {
+    void testPendulumK2() {
         Vector<N2> stateTolerance = VecBuilder.fill(0.01, 0.2);
         Vector<N1> controlTolerance = VecBuilder.fill(12.0);
         WhiteNoiseVector<N2> w = WhiteNoiseVector.noise2(0.015, 0.17);
-        MeasurementUncertainty<N2> v = MeasurementUncertainty.for2(0.01,0.1);
+        MeasurementUncertainty<N2> v = MeasurementUncertainty.for2(0.01, 0.1);
         NonlinearPlant<N2, N1, N2> plant = new Pendulum1D(w, v);
         GainCalculator<N2, N1, N2> gc = new GainCalculator<>(plant, stateTolerance, controlTolerance, 0.02);
         Matrix<N1, N2> K = gc.getK();
@@ -104,12 +104,12 @@ public class GainCalculatorTest {
      * verify that we're calculating K the same as LQR does using the jacobian
      */
     @Test
-    public void testFK() {
+    void testFK() {
         Vector<N2> stateTolerance = VecBuilder.fill(0.01, 0.2);
         Vector<N1> controlTolerance = VecBuilder.fill(12.0);
         WhiteNoiseVector<N2> w = WhiteNoiseVector.noise2(0.015, 0.17);
-        MeasurementUncertainty<N2> v = MeasurementUncertainty.for2(0.01,0.1);
-        NonlinearPlant<N2, N1, N2> plant = new DoubleIntegratorRotary1D(w,v);
+        MeasurementUncertainty<N2> v = MeasurementUncertainty.for2(0.01, 0.1);
+        NonlinearPlant<N2, N1, N2> plant = new DoubleIntegratorRotary1D(w, v);
         GainCalculator<N2, N1, N2> gc = new GainCalculator<>(plant, stateTolerance, controlTolerance, 0.02);
         Matrix<N1, N2> K = gc.getK();
         assertArrayEquals(new double[] { 572.773, 44.336 }, K.getData(), kDelta);
@@ -119,7 +119,7 @@ public class GainCalculatorTest {
      * what does the LQR version do
      */
     @Test
-    public void testLQRK() {
+    void testLQRK() {
         // double integrator
         Nat<N2> states = Nat.N2();
         Nat<N1> inputs = Nat.N1();

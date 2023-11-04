@@ -12,7 +12,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
 
-public class LinearPoolingTest extends PoolingTest {
+class LinearPoolingTest extends PoolingTestUtil {
     private static final double kDelta = 0.001;
     
     private static final LinearPooling<N1> p1 = new LinearPooling<N1>() {
@@ -31,7 +31,7 @@ public class LinearPoolingTest extends PoolingTest {
     };
 
     @Test
-    public void testDontKnow1() {
+    void testDontKnow1() {
         // fuse an unknown with a known, you should just get the known back.
         RandomVector<N1> aV = v1(0, 1);
         Matrix<N1,N1> pa = VecBuilder.fill(1);
@@ -42,7 +42,7 @@ public class LinearPoolingTest extends PoolingTest {
     }
 
     @Test
-    public void testDontKnow2() {
+    void testDontKnow2() {
         // fuse an unknown with a known, you should just get the known back.
         RandomVector<N2> aV = v2(0, 0, 1, 0, 0, 1e9);
         RandomVector<N2> bV = v2(1, 1, 1e9, 0, 0, 1);
@@ -65,7 +65,7 @@ public class LinearPoolingTest extends PoolingTest {
     }
 
     @Test
-    public void testDispersion2() {
+    void testDispersion2() {
         RandomVector<N2> aV = v2(0, 0, 1, 0, 0, 1e9);
         RandomVector<N2> bV = v2(1, 1, 1e9, 0, 0, 1);
 
@@ -87,7 +87,7 @@ public class LinearPoolingTest extends PoolingTest {
     }
 
     @Test
-    public void testCombinePrimitive() {
+    void testCombinePrimitive() {
         RandomVector<N1> aV = v1(0, 1);
         RandomVector<N1> bV = v1(1, 1e6);
         double pa = 0.999999;

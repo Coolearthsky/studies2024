@@ -60,24 +60,24 @@ public class TimingUtilTest {
             double max_vel,
             double max_acc) {
         assertFalse(traj.isEmpty());
-        assertEquals(traj.getPoint(0).state().velocity(), start_vel, kTestEpsilon);
-        assertEquals(traj.getPoint(traj.length() - 1).state().velocity(), end_vel, kTestEpsilon);
+        assertEquals(traj.getPoint(0).state().velocityM_S(), start_vel, kTestEpsilon);
+        assertEquals(traj.getPoint(traj.length() - 1).state().velocityM_S(), end_vel, kTestEpsilon);
 
         // Go state by state, verifying all constraints are satisfied and integration is
         // correct.
         for (int i = 0; i < traj.length(); ++i) {
             final TimedPose state = traj.getPoint(i).state();
             for (final TimingConstraint constraint : constraints) {
-                assertTrue(state.velocity() - kTestEpsilon <= constraint.getMaxVelocity(state.state()));
+                assertTrue(state.velocityM_S() - kTestEpsilon <= constraint.getMaxVelocity(state.state()));
                 final MinMaxAcceleration accel_limits = constraint.getMinMaxAcceleration(state.state(),
-                        state.velocity());
+                        state.velocityM_S());
                 assertTrue(state.acceleration() - kTestEpsilon <= accel_limits.max_acceleration());
                 assertTrue(state.acceleration() + kTestEpsilon >= accel_limits.min_acceleration());
             }
             if (i > 0) {
                 final TimedPose prev_state = traj.getPoint(i - 1).state();
-                assertEquals(state.velocity(),
-                        prev_state.velocity() + (state.t() - prev_state.t()) * prev_state.acceleration(), kTestEpsilon);
+                assertEquals(state.velocityM_S(),
+                        prev_state.velocityM_S() + (state.getTimeS() - prev_state.getTimeS()) * prev_state.acceleration(), kTestEpsilon);
             }
         }
     }

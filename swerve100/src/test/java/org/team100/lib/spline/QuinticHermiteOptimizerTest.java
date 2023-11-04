@@ -12,11 +12,11 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
-public class QuinticHermiteOptimizerTest {
+class QuinticHermiteOptimizerTest {
     private static double kEpsilon = 1e-12;
 
     @Test
-    public void test() {
+    void test() {
         Pose2d a = new Pose2d(new Translation2d(0, 100), Rotation2d.fromDegrees(270));
         Pose2d b = new Pose2d(new Translation2d(50, 0), Rotation2d.fromDegrees(0));
         Pose2d c = new Pose2d(new Translation2d(100, 100), Rotation2d.fromDegrees(90));
