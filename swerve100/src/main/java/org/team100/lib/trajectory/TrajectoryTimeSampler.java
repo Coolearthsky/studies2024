@@ -5,6 +5,8 @@ package org.team100.lib.trajectory;
  * Derived from 254 TimedView.
  */
 public class TrajectoryTimeSampler {
+    public static class TrajectoryTimeSampleException extends RuntimeException {}
+
     protected final Trajectory trajectory_;
     protected final double startTimeS;
     protected final double endTimeS;
@@ -49,7 +51,7 @@ public class TrajectoryTimeSampler {
                         i - 1, i);
             }
         }
-        throw new RuntimeException();
+        throw new TrajectoryTimeSampleException();
     }
 
     public Trajectory trajectory() {
